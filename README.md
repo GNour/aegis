@@ -1,0 +1,55 @@
+# Harness
+
+Harness is a private control plane for supervised, resumable agentic software
+work. It accepts requests from a local TUI or a restricted Hermes Telegram
+gateway, selects a versioned flow, starts isolated coding-agent sessions through
+Herdr, tracks decisions and recovery state, and preserves knowledge before it
+cleans up task resources.
+
+This repository is the single source of truth for Harness documentation,
+specifications, plans, implementation, tests, integrations, and deployment
+automation. The separate VPS infrastructure repository consumes a pinned Harness
+release and supplies instance-specific variables.
+
+## Current status
+
+The architecture is approved. Implementation is intentionally gated behind the
+reviewed plans under [`docs/plans/`](docs/plans/).
+
+Start here:
+
+- [Documentation map](docs/README.md)
+- [Approved architecture](docs/architecture.md)
+- [Product requirements](docs/specs/00-product-requirements.md)
+- [Implementation roadmap](docs/plans/00-implementation-roadmap.md)
+- [VPS integration contract](docs/integration/vps-refined.md)
+
+## Repository boundaries
+
+Harness owns:
+
+- the Python control service, TUI, state machine, audit ledger, flow engine, and
+  policy engine;
+- Herdr, worker-runtime, worktree, QMD, OpenViking, and RTK adapters;
+- the Hermes `company-control` plugin and `company-orchestrator` skill;
+- schemas, default flows, role profiles, capability profiles, and model aliases;
+- reusable Ansible deployment roles and operational runbooks;
+- all unit, integration, security, recovery, and soak tests.
+
+Harness does not own VPS-wide Coolify configuration, unrelated applications, or
+the owner's interactive `dev` environment.
+
+## Planned development commands
+
+Once the foundation plan is implemented:
+
+```bash
+uv sync --all-groups
+uv run pytest
+uv run ruff check .
+uv run mypy src
+uv run harness --help
+```
+
+No real credentials, IP addresses, bot tokens, provider keys, or subscription
+session data belong in this repository.

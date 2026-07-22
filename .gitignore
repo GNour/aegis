@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Runtime state and artifacts
+.harness-state/
+state/
+artifacts/
+sessions/
+*.db
+*.db-shm
+*.db-wal
+*.jsonl
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+**/vault.yml
+**/secrets.yml
+**/*.age
+**/*.key
+**/*.pem
+**/*token*
+**/*credential*
+
+# Deployment inventory
+deploy/ansible/inventory.ini
+deploy/ansible/group_vars/all.yml
+deploy/ansible/group_vars/vault.yml
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
