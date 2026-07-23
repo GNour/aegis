@@ -80,6 +80,18 @@ _UNIQUE_COLUMNS: Final[dict[str, frozenset[frozenset[str]]]] = {
     "audit_outbox": frozenset({frozenset({"event_id"})}),
     "audit_events": frozenset({frozenset({"sequence"})}),
 }
+_NON_UNIQUE_INDEXES: Final[dict[str, frozenset[tuple[str, ...]]]] = {
+    "tasks": frozenset({("state",)}),
+    "audit_outbox": frozenset({("sequence",), ("task_id", "sequence")}),
+    "flow_runs": frozenset({("task_id",)}),
+    "stage_runs": frozenset({("flow_run_id",)}),
+    "attempts": frozenset({("stage_run_id",)}),
+}
+
+
+def _strip_sqlite_padding(text: str) -> str:
+    """Remove SQLite-recognized leading whitespace plus a UTF-8 BOM."""
+    return text.lstrip("\ufeff \t\n\r\f")
 
 
 def redact(value: object) -> object:
@@ -340,9 +352,25 @@ class SQLiteStore:
             }
             if unique_shapes != _UNIQUE_COLUMNS[table]:
                 raise ValueError(f"migration uniqueness mismatch: {table}")
+            if require_all:
+                non_unique_shapes = {
+                    tuple(str(column[2]) for column in self._connection.execute(f"PRAGMA index_info({index[1]})"))
+                    for index in self._connection.execute(f"PRAGMA index_list({table})")
+                    if int(index[2]) == 0
+                }
+                if non_unique_shapes != _NON_UNIQUE_INDEXES.get(table, frozenset()):
+                    raise ValueError(f"migration index mismatch: {table}")
+        if require_all:
+            audit_outbox_sql = self._connection.execute(
+                "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'audit_outbox'"
+            ).fetchone()
+            if audit_outbox_sql is not None and "INTEGER PRIMARY KEY AUTOINCREMENT" not in " ".join(
+                str(audit_outbox_sql[0]).upper().split()
+            ):
+                raise ValueError("migration constraint mismatch: audit_outbox")
 
     def _execute_migration_script(self, script: str) -> None:
-        script = script.lstrip("\ufeff")
+        script = _strip_sqlite_padding(script)
         statement = ""
         for character in script:
             statement += character
@@ -357,16 +385,16 @@ class SQLiteStore:
 
     @staticmethod
     def _is_transaction_control(statement: str) -> bool:
-        text = statement.lstrip("\ufeff \t\r\n")
+        text = _strip_sqlite_padding(statement)
         while text.startswith("--") or text.startswith("/*"):
             if text.startswith("--"):
                 newline = text.find("\n")
-                text = "" if newline == -1 else text[newline + 1 :].lstrip("\ufeff \t\r\n")
+                text = "" if newline == -1 else _strip_sqlite_padding(text[newline + 1 :])
             else:
                 comment_end = text.find("*/")
                 if comment_end == -1:
                     return False
-                text = text[comment_end + 2 :].lstrip("\ufeff \t\r\n")
+                text = _strip_sqlite_padding(text[comment_end + 2 :])
         keyword = re.match(r"[A-Za-z]+", text)
         return keyword is not None and keyword.group(0).upper() in {
             "BEGIN",
@@ -379,16 +407,16 @@ class SQLiteStore:
 
     @staticmethod
     def _has_sql_content(statement: str) -> bool:
-        text = statement.lstrip("\ufeff \t\r\n")
+        text = _strip_sqlite_padding(statement)
         while text.startswith("--") or text.startswith("/*"):
             if text.startswith("--"):
                 newline = text.find("\n")
-                text = "" if newline == -1 else text[newline + 1 :].lstrip()
+                text = "" if newline == -1 else _strip_sqlite_padding(text[newline + 1 :])
             else:
                 comment_end = text.find("*/")
                 if comment_end == -1:
                     return True
-                text = text[comment_end + 2 :].lstrip()
+                text = _strip_sqlite_padding(text[comment_end + 2 :])
         return bool(text)
 
     @staticmethod
