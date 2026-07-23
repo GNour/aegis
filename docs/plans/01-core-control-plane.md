@@ -228,7 +228,7 @@ git commit -m "feat(domain): define task records and lifecycle"
 - Create: `src/harness/storage/sqlite.py`
 - Create: `tests/unit/storage/test_sqlite.py`
 
-- [ ] **Step 1: Write the idempotency test**
+- [x] **Step 1: Write the idempotency test**
 
 ```python
 from harness.storage.sqlite import SQLiteStore
@@ -242,13 +242,13 @@ def test_same_idempotency_key_returns_original_result(tmp_path) -> None:
     assert store.count_tasks() == 1
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 Run: `uv run pytest tests/unit/storage/test_sqlite.py -q`
 
 Expected: FAIL because the store is missing.
 
-- [ ] **Step 3: Implement migration and transaction boundary**
+- [x] **Step 3: Implement migration and transaction boundary**
 
 Create SQL tables for every authoritative record, `idempotency_records`,
 `audit_outbox`, and `schema_migrations`. Enable `PRAGMA journal_mode=WAL`,
@@ -285,13 +285,13 @@ class SQLiteStore:
         return int(self.connection.execute("SELECT count(*) FROM tasks").fetchone()[0])
 ```
 
-- [ ] **Step 4: Verify persistence and property tests**
+- [x] **Step 4: Verify persistence and property tests**
 
 Run: `uv run pytest tests/unit/storage -q`
 
 Expected: idempotency, conflicting-body, WAL, foreign-key, and migration tests pass.
 
-- [ ] **Step 5: Commit storage**
+- [x] **Step 5: Commit storage**
 
 ```bash
 git add src/harness/storage tests/unit/storage
