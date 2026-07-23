@@ -1,4 +1,4 @@
-# Harness documentation
+# Aegis documentation
 
 This directory is authoritative for the product and implementation. The
 [original request and resolution notes](source/README.md) are preserved under

@@ -22,11 +22,10 @@ same versioned YAML configuration plus documented environment inputs.
 
 ## 2. Product metadata and management CLI
 
-The working CLI name is `harnessctl`, but it is not a permanent product
-identifier. One product metadata definition drives display, command, package,
+The CLI name is `ae`. One product metadata definition drives display, command, package,
 image namespace, Compose project, label, directory, test, and documentation
-names. A rename preserves stable storage identifiers and installs a time-bounded
-compatibility alias for the previous command.
+names. A future post-release rename preserves stable storage identifiers and
+installs a time-bounded compatibility alias for the previous command.
 
 The CLI owns installation status, configuration, container inspection, logs,
 bounded shell/exec access, health diagnosis, update, rollback, backup, restore,
@@ -38,7 +37,7 @@ rootless Docker environment variables or Compose commands.
 `hermesops` and `agentops` have locked passwords, private `0700` homes, no SSH
 authorized keys, no sudo, and no rootful Docker group.
 
-`agentops` owns Harness, Herdr, worktrees, artifacts, QMD, OpenViking, and the
+`agentops` owns Aegis, Herdr, worktrees, artifacts, QMD, OpenViking, and the
 rootless worker runtime. `hermesops` owns only its Hermes configuration, client
 assertion key, and isolated rootless gateway context. It cannot reach the
 `agentops` runtime API, Herdr, worktrees, or runtime credentials.
@@ -49,11 +48,11 @@ roots with explicit ownership and modes.
 
 ## 4. Containers and startup
 
-The rootless Compose appliance contains Harness, Herdr, QMD, OpenViking, and the
+The rootless Compose appliance contains Aegis, Herdr, QMD, OpenViking, and the
 optional Hermes gateway. Task workers and project services are created
 dynamically through the `agentops` rootless runtime.
 
-Only the Harness runtime adapter can reach that runtime API. Workers, Hermes, and
+Only the Aegis runtime adapter can reach that runtime API. Workers, Hermes, and
 knowledge services never receive a Docker socket. Containers may not use
 privileged mode, host networking, devices, the rootful Docker socket, broad
 capabilities, or unrestricted host paths.
@@ -65,10 +64,10 @@ configuration.
 
 ## 5. Exposure and access
 
-Harness and Herdr use Unix sockets. OpenViking and optional QMD HTTP bind
+Aegis and Herdr use Unix sockets. OpenViking and optional QMD HTTP bind
 loopback or private container networks. No internal control component publishes a
 public port. Telegram uses outbound polling. Coolify's public HTTPS dashboard is
-independent of Harness.
+independent of Aegis.
 
 Read-only status and logs may be delegated to the operator group. Shell, exec,
 configuration, secret, update, backup, restore, and destructive operations

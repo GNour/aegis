@@ -1,10 +1,10 @@
-# Harness product requirements
+# Aegis product requirements
 
 Status: accepted
 
 ## 1. Product outcome
 
-Harness lets one operator submit, supervise, pause, resume, and audit agentic
+Aegis lets one operator submit, supervise, pause, resume, and audit agentic
 software work through a local TUI or restricted Telegram conversation. Agents may
 work autonomously inside a task-scoped environment, but they cannot obtain raw
 secrets, unrestricted host access, or unreviewed external authority.
@@ -14,9 +14,9 @@ secrets, unrestricted host access, or unreviewed external authority.
 | Actor | Trust and responsibility |
 |---|---|
 | Operator | Makes product, architecture, scope, risk, and exception decisions |
-| Hermes ops gateway | Conversational client allowed to call typed Harness controls |
-| Harness service | Authoritative policy, flow, state, audit, context, and cleanup engine |
-| Herdr | Private process/session controller called only by Harness |
+| Hermes ops gateway | Conversational client allowed to call typed Aegis controls |
+| Aegis service | Authoritative policy, flow, state, audit, context, and cleanup engine |
+| Herdr | Private process/session controller called only by Aegis |
 | Worker | Role-scoped Codex/OpenCode process in one assigned task environment |
 | Reviewer | Read-only agent or operator evaluating evidence and requirements |
 | Capability broker | Performs approved external effects without disclosing credentials |
@@ -73,7 +73,7 @@ secrets, unrestricted host access, or unreviewed external authority.
 ### Worktrees and services
 
 - **FR-030:** create one Git worktree and unique branch for each writing task.
-- **FR-031:** read `.harness/project.yaml` only from the trusted task base commit,
+- **FR-031:** read `.aegis/project.yaml` only from the trusted task base commit,
   validate it against a strict schema, and snapshot it before worker execution.
 - **FR-032:** provide unique rootless service project names, networks, volumes,
   ports, fixtures, health checks, and resource ceilings per worktree.
@@ -83,7 +83,7 @@ secrets, unrestricted host access, or unreviewed external authority.
   socket, uncontrolled capabilities, production data, and host paths outside the
   approved task roots.
 - **FR-035:** bind previews to loopback and target cleanup only by immutable
-  Harness task labels; never run a global prune.
+  Aegis task labels; never run a global prune.
 
 ### Context, skills, and knowledge
 
@@ -106,7 +106,7 @@ secrets, unrestricted host access, or unreviewed external authority.
   under `packages/`, record their commits and artifact digests, and reject
   missing, dirty, advanced, incompatible, or non-reproducible inputs.
 - **FR-048:** run PromptX only through a typed control-plane adapter using
-  Harness-supplied sanitized facts and brokered model access; PromptX cannot
+  Aegis-supplied sanitized facts and brokered model access; PromptX cannot
   select or grant flows, roles, models, skills, tools, capabilities, approvals,
   or transitions.
 - **FR-049:** compile Subagents at build time into reviewed role configuration;
@@ -144,9 +144,9 @@ secrets, unrestricted host access, or unreviewed external authority.
   its management CLI; deploy `hermesops` and `agentops` as locked, non-SSH,
   non-sudo, non-rootful-Docker service accounts and keep `dev` unchanged during
   the pilot.
-- **FR-064:** expose Harness, Herdr, QMD, and OpenViking only on Unix sockets or
+- **FR-064:** expose Aegis, Herdr, QMD, and OpenViking only on Unix sockets or
   loopback/private interfaces.
-- **FR-065:** keep Coolify public HTTPS access independent of Harness and require
+- **FR-065:** keep Coolify public HTTPS access independent of Aegis and require
   no public raw `:8000` listener.
 - **FR-066:** support equivalent interactive and unattended configuration through
   one versioned schema, with validation and safe apply/rollback behavior.
@@ -182,14 +182,14 @@ secrets, unrestricted host access, or unreviewed external authority.
   product/CLI naming comes from one metadata definition; no usernames, domains,
   IPs, tokens, or project-specific paths are hard-coded.
 - **NFR-009 Companion maintainability:** PromptX and Subagents changes are made
-  and verified in their own repositories before a separate Harness submodule
+  and verified in their own repositories before a separate Aegis submodule
   pointer update; clean recursive clones, builds, upgrades, and rollbacks are
   reproducible from recorded source and artifact digests.
 
 ## 5. Non-goals for the pilot
 
 - automatic merge, public deployment, or production database mutation;
-- a browser-hosted Harness dashboard;
+- a browser-hosted Aegis dashboard;
 - unrestricted Telegram shell access;
 - a large autonomous swarm or more than two concurrent workers;
 - replacing Git with OpenViking or QMD;

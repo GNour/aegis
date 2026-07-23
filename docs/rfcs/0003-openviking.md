@@ -1,13 +1,13 @@
 # 0003 — OpenViking long-term agent context
 Status: accepted for the internal pilot; commercial reuse requires AGPL review
 Date: 2026-07-23
-Sponsor: Harness — needs source-linked long-term memory and hierarchical context
+Sponsor: Aegis — needs source-linked long-term memory and hierarchical context
 that can be rebuilt and audited against Git-backed Markdown.
 
 ## 1. Problem & goal
 
 QMD can search canonical Markdown, but it does not model cross-session user and
-agent memories or hierarchical L0/L1/L2 context. Harness needs reviewed memories
+agent memories or hierarchical L0/L1/L2 context. Aegis needs reviewed memories
 and patterns to carry across sessions without letting workers write canonical
 knowledge directly.
 
@@ -19,7 +19,7 @@ knowledge directly.
 | Git + QMD only | Canonical Markdown and local hybrid search | Lowest runtime and complexity | Mature primitives | Git/QMD licenses |
 | General vector database | Embeddings and similarity search without agent-memory semantics | Separate database and custom memory pipeline | Mature | Varies |
 
-## 3. Fit analysis (hard gates — Harness architecture)
+## 3. Fit analysis (hard gates — Aegis architecture)
 
 - **RAM (§6):** the server process is not the main cost; Ollama embeddings,
   reranking, and memory extraction models are. The live 23 GiB host can pilot
@@ -53,7 +53,7 @@ sharing the root key.
 ## 5. Recommendation
 
 Adopt OpenViking as a derived memory/context layer, never as the canonical
-ledger. Only Harness's knowledge stage may submit approved Markdown and sanitized
+ledger. Only Aegis's knowledge stage may submit approved Markdown and sanitized
 session summaries. Every indexed record carries project ID, source URI, and Git
 commit. Workers have read-only, role-scoped retrieval. Rebuild the resource index
 from Git during acceptance and before trusting it in recovery.
@@ -61,7 +61,7 @@ from Git during acceptance and before trusting it in recovery.
 ## 6. Decision & graduation
 
 - ADR: [0004](../adrs/0004-git-qmd-openviking-knowledge.md).
-- Graduates to: the future Harness numbered build guide.
+- Graduates to: the future Aegis numbered build guide.
 - Validation: API-key isolation, loopback-only listener, Hermes user-key access,
   source citations, rejected direct canonical writes, readiness checks, backup,
   and a full resource-index rebuild from Git.

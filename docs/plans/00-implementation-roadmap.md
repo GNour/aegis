@@ -1,4 +1,4 @@
-# Harness implementation roadmap
+# Aegis implementation roadmap
 
 Status: plans 1–4 and the required companion-package integration plan ready;
 container-first replacement plan 5 pending

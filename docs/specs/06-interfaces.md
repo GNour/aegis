@@ -29,14 +29,14 @@ through an artifact accessor that applies authorization and redaction.
 ## 3. Hermes plugin
 
 The `company-control` plugin exposes exactly the nine FR-001 functions. It maps an
-allowlisted Telegram numeric user ID to a Harness actor, creates a signed principal
+allowlisted Telegram numeric user ID to an Aegis actor, creates a signed principal
 assertion, validates arguments before transport, and renders bounded structured
 responses. It has no shell, Herdr, worktree, provider-key, or Docker access.
 
 Approval messages include a stable short request ID and summary. Natural-language
 "yes" is insufficient when more than one approval is pending; Hermes asks the
 operator to identify the request. The plugin sends the exact server-provided action
-digest back to Harness.
+digest back to Aegis.
 
 ## 4. Hermes skill
 
@@ -48,7 +48,7 @@ escalated, not translated into commands.
 
 ## 5. Notifications
 
-Harness emits bounded attention events for decision/approval requests, quota reset,
+Aegis emits bounded attention events for decision/approval requests, quota reset,
 provider recovery, failed preservation, cleanup quarantine, and task completion.
 The Hermes gateway may deliver them to allowlisted chats. Notification delivery is
 idempotent and records message ID and result; failure never changes task state.

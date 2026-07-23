@@ -11,7 +11,7 @@ build/
 *.egg-info/
 
 # Runtime state and artifacts
-.harness-state/
+.aegis-state/
 state/
 artifacts/
 sessions/

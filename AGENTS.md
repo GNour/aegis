@@ -1,8 +1,8 @@
-# AGENTS.md — Harness
+# AGENTS.md — Aegis
 
 ## Scope
 
-This repository is the sole home of Harness documentation, specifications,
+This repository is the sole home of Aegis documentation, specifications,
 plans, code, tests, Hermes integrations, configuration schemas, and reusable
 deployment automation.
 
@@ -26,7 +26,7 @@ If code and documentation conflict, stop and update both in the same change.
    infrastructure credentials. Use typed, scoped, revocable broker capabilities.
 3. No arbitrary command endpoint. Flows reference registered stages and
    capabilities; project commands execute only inside the approved task sandbox.
-4. `dev` is not a Harness service account. Deploy the ops gateway as `hermesops`
+4. `dev` is not an Aegis service account. Deploy the ops gateway as `hermesops`
    and the control/worker plane as `agentops`.
 5. No sudo, rootful Docker socket, privileged container, host networking, device
    mount, or unrestricted host path for workers.

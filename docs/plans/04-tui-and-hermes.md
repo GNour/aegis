@@ -13,7 +13,7 @@
 ### Task 1: Typed Unix-socket client
 
 **Files:**
-- Create: `src/harness/client.py`
+- Create: `src/aegis/client.py`
 - Create: `tests/contract/test_control_client.py`
 
 - [ ] **Step 1: Write serialization and stable-error tests**
@@ -23,13 +23,13 @@ def test_create_task_sends_idempotency_and_assertion(fake_api, client) -> None:
     client.create_task(project_id="demo", request="fix login", flow_id="auto", idempotency_key="k1")
     request = fake_api.last_request
     assert request.headers["Idempotency-Key"] == "k1"
-    assert request.headers["X-Harness-Principal"]
+    assert request.headers["X-Aegis-Principal"]
     assert request.json()["flow_id"] == "auto"
 
 
 def test_error_code_is_preserved(fake_api, client) -> None:
     fake_api.respond(409, {"error": {"code": "state_conflict", "message": "changed"}, "meta": {"request_id": "r1"}})
-    with pytest.raises(HarnessClientError) as error:
+    with pytest.raises(AegisClientError) as error:
         client.resume_task("t1", expected_version=2)
     assert error.value.code == "state_conflict"
 ```
@@ -46,25 +46,25 @@ Expected: FAIL during import.
 import httpx
 
 
-class HarnessClientError(RuntimeError):
+class AegisClientError(RuntimeError):
     def __init__(self, code: str, message: str, request_id: str) -> None:
         super().__init__(message)
         self.code, self.request_id = code, request_id
 
 
-class HarnessClient:
+class AegisClient:
     def __init__(self, socket_path: str, signer) -> None:
-        self.http = httpx.Client(transport=httpx.HTTPTransport(uds=socket_path), base_url="http://harness", timeout=10.0)
+        self.http = httpx.Client(transport=httpx.HTTPTransport(uds=socket_path), base_url="http://aegis", timeout=10.0)
         self.signer = signer
 
     def request(self, method: str, path: str, body: dict, idempotency_key: str | None = None) -> dict:
-        headers = {"X-Harness-Principal": self.signer.sign(method, path, body)}
+        headers = {"X-Aegis-Principal": self.signer.sign(method, path, body)}
         if idempotency_key:
             headers["Idempotency-Key"] = idempotency_key
         response = self.http.request(method, path, json=body, headers=headers)
         payload = response.json()
         if response.is_error:
-            raise HarnessClientError(payload["error"]["code"], payload["error"]["message"], payload["meta"]["request_id"])
+            raise AegisClientError(payload["error"]["code"], payload["error"]["message"], payload["meta"]["request_id"])
         return payload["data"]
 ```
 
@@ -80,17 +80,17 @@ Expected: all nine operations, timeout mapping, response bounds, and stable erro
 - [ ] **Step 5: Commit the shared client**
 
 ```bash
-git add src/harness/client.py tests/contract/test_control_client.py
+git add src/aegis/client.py tests/contract/test_control_client.py
 git commit -m "feat(client): add typed local control api client"
 ```
 
 ### Task 2: Textual task list, task detail, and creation flow
 
 **Files:**
-- Create: `src/harness/tui/app.py`
-- Create: `src/harness/tui/screens/tasks.py`
-- Create: `src/harness/tui/screens/task_detail.py`
-- Create: `src/harness/tui/screens/create_task.py`
+- Create: `src/aegis/tui/app.py`
+- Create: `src/aegis/tui/screens/tasks.py`
+- Create: `src/aegis/tui/screens/task_detail.py`
+- Create: `src/aegis/tui/screens/create_task.py`
 - Create: `tests/tui/test_task_workflow.py`
 
 - [ ] **Step 1: Write the operator workflow test**
@@ -121,7 +121,7 @@ from textual.app import App
 from textual.binding import Binding
 
 
-class HarnessTui(App):
+class AegisTui(App):
     BINDINGS = [Binding("n", "new_task", "New task"), Binding("r", "refresh", "Refresh"), Binding("q", "quit", "Quit")]
 
     def __init__(self, client) -> None:
@@ -152,15 +152,15 @@ Expected: create/open/refresh, empty/error/loading, and bounded-log snapshots pa
 - [ ] **Step 5: Commit the basic TUI**
 
 ```bash
-git add src/harness/tui tests/tui
+git add src/aegis/tui tests/tui
 git commit -m "feat(tui): add task creation and timeline views"
 ```
 
 ### Task 3: TUI decisions, approvals, recovery, and audit views
 
 **Files:**
-- Create: `src/harness/tui/screens/attention.py`
-- Create: `src/harness/tui/screens/audit.py`
+- Create: `src/aegis/tui/screens/attention.py`
+- Create: `src/aegis/tui/screens/audit.py`
 - Create: `tests/tui/test_attention.py`
 
 - [ ] **Step 1: Write exact-approval display test**
@@ -194,7 +194,7 @@ class AttentionScreen(Screen):
 Render question/options/evidence for decisions and digest/scope/risk/expiry/effect
 for approvals. Add pause/resume/cancel controls, audit-chain verification, config
 validation/simulation, and a controlled Herdr attachment command that opens a new
-local terminal only for an authorized session ID returned by Harness.
+local terminal only for an authorized session ID returned by Aegis.
 
 - [ ] **Step 4: Run attention and audit tests**
 
@@ -205,7 +205,7 @@ Expected: decision, approve, reject, resume, cancel, replay-error, expired, and 
 - [ ] **Step 5: Commit full operator controls**
 
 ```bash
-git add src/harness/tui tests/tui
+git add src/aegis/tui tests/tui
 git commit -m "feat(tui): add decisions recovery and audit controls"
 ```
 
@@ -277,7 +277,7 @@ git commit -m "feat(hermes): expose typed company control tools"
 
 **Files:**
 - Create: `integrations/hermes/skill/SKILL.md`
-- Create: `src/harness/notifications.py`
+- Create: `src/aegis/notifications.py`
 - Create: `integrations/hermes/tests/test_skill_contract.py`
 - Create: `tests/unit/test_notifications.py`
 
@@ -328,6 +328,6 @@ Expected: TUI and Telegram success/error/approval/recovery paths create equivale
 - [ ] **Step 5: Commit interfaces**
 
 ```bash
-git add integrations/hermes src/harness/notifications.py tests
+git add integrations/hermes src/aegis/notifications.py tests
 git commit -m "feat(interfaces): complete tui and telegram supervision"
 ```

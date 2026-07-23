@@ -13,7 +13,7 @@
 ### Task 1: Trusted project manifest schema
 
 **Files:**
-- Create: `src/harness/execution/project_manifest.py`
+- Create: `src/aegis/execution/project_manifest.py`
 - Create: `config/schemas/project-v1.json`
 - Create: `tests/security/test_project_manifest.py`
 
@@ -23,7 +23,7 @@
 import pytest
 from pydantic import ValidationError
 
-from harness.execution.project_manifest import ProjectManifest
+from aegis.execution.project_manifest import ProjectManifest
 
 
 @pytest.mark.parametrize("service", [
@@ -96,15 +96,15 @@ Expected: dangerous fields and shell strings fail; the sanitized fixture passes.
 - [ ] **Step 5: Commit manifest validation**
 
 ```bash
-git add src/harness/execution config/schemas tests/security
+git add src/aegis/execution config/schemas tests/security
 git commit -m "feat(execution): validate trusted project manifests"
 ```
 
 ### Task 2: Git worktree manager with path containment
 
 **Files:**
-- Create: `src/harness/execution/command.py`
-- Create: `src/harness/execution/worktrees.py`
+- Create: `src/aegis/execution/command.py`
+- Create: `src/aegis/execution/worktrees.py`
 - Create: `tests/security/test_worktree_paths.py`
 
 - [ ] **Step 1: Write traversal and branch tests**
@@ -112,7 +112,7 @@ git commit -m "feat(execution): validate trusted project manifests"
 ```python
 import pytest
 
-from harness.execution.worktrees import WorktreeManager
+from aegis.execution.worktrees import WorktreeManager
 
 
 def test_task_path_stays_under_root(tmp_path) -> None:
@@ -174,22 +174,22 @@ Expected: traversal and symlink escape fail; create/remove succeeds in a tempora
 - [ ] **Step 5: Commit the worktree manager**
 
 ```bash
-git add src/harness/execution tests/security tests/integration/execution
+git add src/aegis/execution tests/security tests/integration/execution
 git commit -m "feat(execution): manage contained git worktrees"
 ```
 
 ### Task 3: Rootless service labels, ports, and exact cleanup
 
 **Files:**
-- Create: `src/harness/execution/resources.py`
-- Create: `src/harness/execution/services.py`
+- Create: `src/aegis/execution/resources.py`
+- Create: `src/aegis/execution/services.py`
 - Create: `tests/security/test_resource_cleanup.py`
 
 - [ ] **Step 1: Write the no-global-cleanup test**
 
 ```python
-from harness.execution.resources import ResourceIdentity
-from harness.execution.services import FakeServiceRuntime
+from aegis.execution.resources import ResourceIdentity
+from aegis.execution.services import FakeServiceRuntime
 
 
 def test_cleanup_removes_only_matching_identity() -> None:
@@ -224,19 +224,19 @@ class ResourceIdentity:
 
     def labels(self) -> dict[str, str]:
         return {
-            "dev.harness.instance": self.instance,
-            "dev.harness.task": self.task_id,
-            "dev.harness.nonce": self.nonce,
-            "dev.harness.managed": "true",
+            "dev.aegis.instance": self.instance,
+            "dev.aegis.task": self.task_id,
+            "dev.aegis.nonce": self.nonce,
+            "dev.aegis.managed": "true",
         }
 
     @property
     def compose_project(self) -> str:
-        return f"harness_{self.task_id.replace('-', '')[:16]}_{self.nonce[:8]}"
+        return f"aegis_{self.task_id.replace('-', '')[:16]}_{self.nonce[:8]}"
 ```
 
-The production `ComposeServiceRuntime` renders a Harness-owned Compose override,
-runs `docker --context harness-rootless compose --project-name <exact> up -d
+The production `ComposeServiceRuntime` renders an Aegis-owned Compose override,
+runs `docker --context aegis-rootless compose --project-name <exact> up -d
 --wait`, lists resources by all identity labels, compares nonce/labels before
 removal, and runs only `compose down --volumes --remove-orphans` for that project.
 
@@ -249,21 +249,21 @@ Expected: other-task and unlabeled fixtures survive; exact task resources disapp
 - [ ] **Step 5: Commit service isolation**
 
 ```bash
-git add src/harness/execution tests/security tests/integration/execution
+git add src/aegis/execution tests/security tests/integration/execution
 git commit -m "feat(execution): isolate task project services"
 ```
 
 ### Task 4: Herdr adapter and native session correlation
 
 **Files:**
-- Create: `src/harness/execution/herdr.py`
+- Create: `src/aegis/execution/herdr.py`
 - Create: `tests/contract/test_herdr_adapter.py`
 - Create: `tests/fixtures/herdr/schema.json`
 
 - [ ] **Step 1: Write contract tests against recorded responses**
 
 ```python
-from harness.execution.herdr import HerdrClient
+from aegis.execution.herdr import HerdrClient
 
 
 def test_start_returns_both_session_identifiers(fake_herdr) -> None:
@@ -326,22 +326,22 @@ Expected: all recorded protocol fixtures pass. The optional live marker remains 
 - [ ] **Step 5: Commit Herdr integration**
 
 ```bash
-git add src/harness/execution/herdr.py tests/contract tests/fixtures/herdr
+git add src/aegis/execution/herdr.py tests/contract tests/fixtures/herdr
 git commit -m "feat(herdr): correlate durable worker sessions"
 ```
 
 ### Task 5: Worker sandbox and credential non-exposure gate
 
 **Files:**
-- Create: `src/harness/execution/workers.py`
-- Create: `src/harness/execution/sandbox.py`
+- Create: `src/aegis/execution/workers.py`
+- Create: `src/aegis/execution/sandbox.py`
 - Create: `tests/security/test_worker_sandbox.py`
 
 - [ ] **Step 1: Write the environment/mount/network assertions**
 
 ```python
 def test_worker_spec_contains_only_scoped_inputs(worker_spec) -> None:
-    assert set(worker_spec.environment) == {"HARNESS_TASK_ID", "MODEL_PROXY_URL", "MODEL_CAPABILITY"}
+    assert set(worker_spec.environment) == {"AEGIS_TASK_ID", "MODEL_PROXY_URL", "MODEL_CAPABILITY"}
     assert all("OPENAI" not in key and "TOKEN" not in key for key in worker_spec.environment)
     assert worker_spec.network == "none"
     assert worker_spec.mounts == [("/tasks/t1", "/workspace", "rw"), ("/skills/s1", "/skills", "ro")]
@@ -391,15 +391,15 @@ Expected: every canary location is clean; network and forbidden mount probes fai
 - [ ] **Step 5: Commit worker containment**
 
 ```bash
-git add src/harness/execution tests/security tests/integration/execution
+git add src/aegis/execution tests/security tests/integration/execution
 git commit -m "feat(workers): enforce task-scoped rootless sandboxes"
 ```
 
 ### Task 6: Recovery classification, native resume, and cleanup gate
 
 **Files:**
-- Create: `src/harness/execution/recovery.py`
-- Create: `src/harness/execution/cleanup.py`
+- Create: `src/aegis/execution/recovery.py`
+- Create: `src/aegis/execution/cleanup.py`
 - Create: `tests/recovery/test_resume.py`
 - Create: `tests/recovery/test_cleanup_gate.py`
 
@@ -447,6 +447,6 @@ Expected: process-kill, quota wait, native resume, handoff fallback, orphan quar
 - [ ] **Step 5: Commit durable execution**
 
 ```bash
-git add src/harness/execution tests/integration/execution tests/security tests/recovery
+git add src/aegis/execution tests/integration/execution tests/security tests/recovery
 git commit -m "feat(recovery): resume workers and gate exact cleanup"
 ```

@@ -1,4 +1,4 @@
-"""Frozen, data-only records for the Harness control-plane domain."""
+"""Frozen, data-only records for the Aegis control-plane domain."""
 
 import re
 from math import isfinite
@@ -7,8 +7,8 @@ from typing import Annotated, Any, Mapping
 
 from pydantic import AfterValidator, BaseModel, BeforeValidator, ConfigDict, Field, PlainSerializer
 
-from harness.domain.ids import UtcDatetime, UUID7
-from harness.domain.state import TaskState
+from aegis.domain.ids import UtcDatetime, UUID7
+from aegis.domain.state import TaskState
 
 type JsonPrimitive = str | int | float | bool | None
 type JsonValue = JsonPrimitive | tuple[JsonValue, ...] | Mapping[str, JsonValue]

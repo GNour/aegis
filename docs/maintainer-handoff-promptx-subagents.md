@@ -4,18 +4,18 @@ Status: requested upstream work
 
 Date: 2026-07-24
 
-Audience: PromptX, Subagents, and Harness maintainers
+Audience: PromptX, Subagents, and Aegis maintainers
 
 ## Shared ownership and workflow
 
-PromptX and Subagents are required first-party companion packages for Harness.
-They are not passive third-party dependencies. The Harness maintainers will
+PromptX and Subagents are required first-party companion packages for Aegis.
+They are not passive third-party dependencies. The Aegis maintainers will
 maintain and enhance both repositories through their normal branch, review,
 release, and changelog processes.
 
-Harness tracks each repository as a pinned Git submodule:
+Aegis tracks each repository as a pinned Git submodule:
 
-| Package | Harness path | Upstream |
+| Package | Aegis path | Upstream |
 |---|---|---|
 | PromptX | `packages/promptx` | `https://github.com/GNour/promptx.git` |
 | Subagents | `packages/subagents` | `https://github.com/GNour/subagents.git` |
@@ -25,15 +25,15 @@ For every companion change:
 1. branch in the companion repository; never develop directly on `main`;
 2. add package-local tests and release notes;
 3. merge or accept the companion commit in its own repository;
-4. update the Harness submodule pointer separately;
-5. run Harness compatibility and security gates;
-6. record source and built-artifact digests in the Harness release.
+4. update the Aegis submodule pointer separately;
+5. run Aegis compatibility and security gates;
+6. record source and built-artifact digests in the Aegis release.
 
-Harness must never depend on dirty submodule state or unpublished local commits.
+Aegis must never depend on dirty submodule state or unpublished local commits.
 
 ## PromptX required changes
 
-### P0 — required for Harness runtime admission
+### P0 — required for Aegis runtime admission
 
 1. Publish a versioned runtime package from the repository and expose
    machine-readable `package_version` and `protocol_version` values.
@@ -77,13 +77,13 @@ Harness must never depend on dirty submodule state or unpublished local commits.
    integration, adapter, security, and offline evaluation suites.
 3. Publish a protocol compatibility table and a deprecation window for breaking
    changes.
-4. Add a recorded-contract fixture set that Harness can consume without network
+4. Add a recorded-contract fixture set that Aegis can consume without network
    access.
-5. Keep Claude/Codex hook installers optional; Harness must not need them.
+5. Keep Claude/Codex hook installers optional; Aegis must not need them.
 
 ## Subagents required changes
 
-### P0 — required for Harness catalog compilation
+### P0 — required for Aegis catalog compilation
 
 1. Publish a versioned, data-oriented catalog package with machine-readable
    `package_version` and `catalog_schema_version`.
@@ -101,7 +101,7 @@ Harness must never depend on dirty submodule state or unpublished local commits.
 7. Reject unresolved handoffs, duplicate IDs, cyclic required handoffs, missing
    skill provenance, mutable versions, and unknown catalog kinds.
 8. Provide a package-local validation command and recorded valid/malicious
-   fixtures for Harness contract tests.
+   fixtures for Aegis contract tests.
 
 ### P0 — installer and supply-chain corrections
 
@@ -110,10 +110,10 @@ Harness must never depend on dirty submodule state or unpublished local commits.
    with an incomplete catalog.
 3. Replace destructive destination deletion with staged, atomic replacement,
    backup, and rollback.
-4. Detect actual installed harnesses rather than treating every supported harness
-   as detected.
-5. Preserve or explicitly report every field lost by cross-harness conversion.
-6. Keep installer behavior separate from the data package so Harness can consume
+4. Detect actual installed agent frameworks rather than treating every supported
+   framework as detected.
+5. Preserve or explicitly report every field lost by cross-framework conversion.
+6. Keep installer behavior separate from the data package so Aegis can consume
    the catalog without running installation code.
 
 ### P1 — release and compatibility
@@ -123,19 +123,19 @@ Harness must never depend on dirty submodule state or unpublished local commits.
    generation, schema validation, conversion fidelity, and installer rollback.
 3. Publish checksums, license metadata, SBOM, changelog, and a catalog
    compatibility table.
-4. Version role removals and renames with migration aliases so persisted Harness
+4. Version role removals and renames with migration aliases so persisted Aegis
    stage snapshots remain explainable.
 
-## Harness-owned work
+## Aegis-owned work
 
-The companion maintainers do not need to implement Harness authority:
+The companion maintainers do not need to implement Aegis authority:
 
-- Harness maps advisory role metadata to approved model aliases, exact skills,
+- Aegis maps advisory role metadata to approved model aliases, exact skills,
   typed tools, and capability profiles.
-- Harness owns flow selection, stage transitions, approvals, broker
+- Aegis owns flow selection, stage transitions, approvals, broker
   capabilities, worker isolation, context budgets, persistence, audit, recovery,
   knowledge preservation, and cleanup.
-- Harness owns `StageExecutionPacket`, the PromptX adapter, the Subagents catalog
+- Aegis owns `StageExecutionPacket`, the PromptX adapter, the Subagents catalog
   compiler, integration tests, release provenance, and coordinated rollback.
 
 The complete consuming contract is

@@ -4,13 +4,13 @@ Status: accepted
 
 ## 1. Trust boundary
 
-Harness and Herdr run as `agentops`. Workers run in task-scoped rootless
+Aegis and Herdr run as `agentops`. Workers run in task-scoped rootless
 containers with a filtered environment, read-only base filesystem, writable
 worktree and task temp paths, dropped Linux capabilities, `no-new-privileges`,
 PID/memory/CPU limits, and network disabled unless the stage declares an approved
 egress profile.
 
-Herdr's socket, Harness state, other projects, other worktrees, company-brain
+Herdr's socket, Aegis state, other projects, other worktrees, company-brain
 write credentials, host home directories, and all raw secrets are absent from the
 worker mount namespace.
 
@@ -27,7 +27,7 @@ worker mount namespace.
 
 ## 3. Project manifest
 
-`.harness/project.yaml` declares named commands, services, fixtures, artifacts,
+`.aegis/project.yaml` declares named commands, services, fixtures, artifacts,
 and limits. Command entries are argument arrays, not shell strings. The schema
 rejects interpolation, host paths, privileged flags, devices, unbounded resource
 values, production fixture markers, and unknown service keys.
@@ -37,7 +37,7 @@ worker affect a future task only after human review and merge.
 
 ## 4. Rootless services
 
-Every task receives an immutable label set containing Harness instance, project,
+Every task receives an immutable label set containing Aegis instance, project,
 task, flow run, and creation nonce. Compose project name, network, volumes, and
 ports derive from the task ID. Ports are allocated transactionally from a
 configured loopback range and released only after cleanup verification.
@@ -49,7 +49,7 @@ wait/failure state; it does not silently broaden networking or privileges.
 
 Each runtime adapter implements `start`, `inspect`, `send_control`, `interrupt`,
 `resume`, `export_sanitized`, `usage`, and `close`. Herdr is the only process
-controller. Harness records both Herdr and native runtime IDs.
+controller. Aegis records both Herdr and native runtime IDs.
 
 OpenCode is blocked until the model-proxy acceptance test proves the upstream key
 is absent from environment, files, process inspection, session export, command

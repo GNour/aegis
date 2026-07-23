@@ -1,6 +1,6 @@
 import pytest
 
-from harness.domain.state import TaskState, assert_transition
+from aegis.domain.state import TaskState, assert_transition
 
 
 def test_normal_and_wait_transitions_are_legal() -> None:

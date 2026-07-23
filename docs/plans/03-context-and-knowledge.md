@@ -13,7 +13,7 @@
 ### Task 1: Exact skill resolver and ephemeral read-only bundle
 
 **Files:**
-- Create: `src/harness/context/skills.py`
+- Create: `src/aegis/context/skills.py`
 - Create: `tests/security/test_skill_isolation.py`
 
 - [ ] **Step 1: Write role-isolation tests**
@@ -76,14 +76,14 @@ Expected: undeclared, unknown-version, digest-mismatch, traversal, and write pro
 - [ ] **Step 5: Commit skill isolation**
 
 ```bash
-git add src/harness/context/skills.py tests/security/test_skill_isolation.py
+git add src/aegis/context/skills.py tests/security/test_skill_isolation.py
 git commit -m "feat(context): inject exact read-only role skills"
 ```
 
 ### Task 2: QMD collection ACL and bounded retrieval adapter
 
 **Files:**
-- Create: `src/harness/knowledge/qmd.py`
+- Create: `src/aegis/knowledge/qmd.py`
 - Create: `tests/security/test_qmd_acl.py`
 - Create: `tests/contract/test_qmd_adapter.py`
 
@@ -145,14 +145,14 @@ Expected: authorized lexical results include cited URIs; all ACL, unknown-parame
 - [ ] **Step 5: Commit QMD retrieval**
 
 ```bash
-git add src/harness/knowledge/qmd.py tests/security/test_qmd_acl.py tests/contract/test_qmd_adapter.py
+git add src/aegis/knowledge/qmd.py tests/security/test_qmd_acl.py tests/contract/test_qmd_adapter.py
 git commit -m "feat(knowledge): add scoped qmd retrieval"
 ```
 
 ### Task 3: OpenViking source-linked memory adapter
 
 **Files:**
-- Create: `src/harness/knowledge/openviking.py`
+- Create: `src/aegis/knowledge/openviking.py`
 - Create: `tests/contract/test_openviking_adapter.py`
 
 - [ ] **Step 1: Write source-commit enforcement tests**
@@ -208,15 +208,15 @@ Expected: source/project filters, timeout mapping, readiness, ingestion receipt,
 - [ ] **Step 5: Commit OpenViking adapter**
 
 ```bash
-git add src/harness/knowledge/openviking.py tests/contract/test_openviking_adapter.py
+git add src/aegis/knowledge/openviking.py tests/contract/test_openviking_adapter.py
 git commit -m "feat(knowledge): add source-linked openviking memory"
 ```
 
 ### Task 4: Bounded context compiler
 
 **Files:**
-- Create: `src/harness/context/models.py`
-- Create: `src/harness/context/compiler.py`
+- Create: `src/aegis/context/models.py`
+- Create: `src/aegis/context/compiler.py`
 - Create: `tests/unit/context/test_compiler.py`
 
 - [ ] **Step 1: Write budget and deduplication tests**
@@ -276,14 +276,14 @@ Expected: ordering, deduplication, per-source ceilings, total ceiling, citation,
 - [ ] **Step 5: Commit bounded context**
 
 ```bash
-git add src/harness/context tests/unit/context
+git add src/aegis/context tests/unit/context
 git commit -m "feat(context): compile bounded cited worker context"
 ```
 
 ### Task 5: RTK compressed output with complete artifact retention
 
 **Files:**
-- Create: `src/harness/execution/output.py`
+- Create: `src/aegis/execution/output.py`
 - Create: `tests/unit/execution/test_output_capture.py`
 
 - [ ] **Step 1: Write dual-output tests**
@@ -314,7 +314,7 @@ class OutputCapture:
         return CapturedOutput(model_text=compressed, full_artifact=artifact, full_bytes=len(full.encode()), model_bytes=len(compressed.encode()), saved_bytes=max(0, len(full.encode()) - len(compressed.encode())))
 ```
 
-The worker image calls pinned RTK for supported commands. Harness stores the raw
+The worker image calls pinned RTK for supported commands. Aegis stores the raw
 process stream before compression and records RTK version and savings in `Attempt`.
 
 - [ ] **Step 4: Verify output, redaction, and artifact digest tests**
@@ -326,14 +326,14 @@ Expected: complete output is protected and digested; model output and metrics ar
 - [ ] **Step 5: Commit RTK evidence path**
 
 ```bash
-git add src/harness/execution/output.py tests/unit/execution/test_output_capture.py
+git add src/aegis/execution/output.py tests/unit/execution/test_output_capture.py
 git commit -m "feat(tokens): retain full logs and measure rtk savings"
 ```
 
 ### Task 6: Knowledge preservation coordinator and cleanup lock
 
 **Files:**
-- Create: `src/harness/knowledge/preserve.py`
+- Create: `src/aegis/knowledge/preserve.py`
 - Create: `tests/integration/knowledge/test_preservation.py`
 - Create: `tests/recovery/test_preservation_failure.py`
 
@@ -386,6 +386,6 @@ Expected: exact-commit receipts pass; each injected failure remains recoverable 
 - [ ] **Step 5: Commit the knowledge gate**
 
 ```bash
-git add src/harness/knowledge tests/integration/knowledge tests/recovery
+git add src/aegis/knowledge tests/integration/knowledge tests/recovery
 git commit -m "feat(knowledge): preserve canonical context before cleanup"
 ```

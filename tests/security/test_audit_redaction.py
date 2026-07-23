@@ -1,4 +1,4 @@
-from harness.audit.ledger import Ledger
+from aegis.audit.ledger import Ledger
 
 
 def test_secret_and_raw_request_are_redacted_before_hashing(tmp_path) -> None:

@@ -7,7 +7,7 @@ Status: accepted
 | Class | Required state and behavior |
 |---|---|
 | Process exit/kill | inspect runtime/session, resume or handoff replacement |
-| Harness/Herdr restart | startup reconciliation before new admission |
+| Aegis/Herdr restart | startup reconciliation before new admission |
 | VPS reboot | restore services, reconcile, then resume eligible tasks |
 | Credit/quota limit | `waiting_quota`, provider/model, reset/retry time, no loop |
 | Provider outage | `waiting_provider`, bounded backoff and circuit breaker |

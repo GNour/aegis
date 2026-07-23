@@ -9,21 +9,21 @@ Status: superseded pending container-first rewrite
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Install Harness reproducibly on Ubuntu 24.04 with isolated service accounts, hardened services, private exposure, encrypted backups, recovery drills, and measured pilot gates.
+**Goal:** Install Aegis reproducibly on Ubuntu 24.04 with isolated service accounts, hardened services, private exposure, encrypted backups, recovery drills, and measured pilot gates.
 
-**Architecture:** A reusable Ansible collection in this repository owns Harness-specific accounts, packages, configuration, systemd, rootless runtime, and backup hooks. The VPS repo imports a pinned release and instance variables. Molecule proves convergence and security properties before a staged VPS rollout.
+**Architecture:** A reusable Ansible collection in this repository owns Aegis-specific accounts, packages, configuration, systemd, rootless runtime, and backup hooks. The VPS repo imports a pinned release and instance variables. Molecule proves convergence and security properties before a staged VPS rollout.
 
 **Tech Stack:** Ansible, Molecule with Docker, systemd user/system units, rootless Docker, restic hooks, pytest security/recovery suites, GitHub Actions
 
 ---
 
-### Task 1: Reusable Ansible harness role and Molecule scenario
+### Task 1: Reusable Ansible aegis role and Molecule scenario
 
 **Files:**
 - Create: `deploy/ansible/requirements.yml`
 - Create: `deploy/ansible/Makefile`
-- Create: `deploy/ansible/roles/harness/defaults/main.yml`
-- Create: `deploy/ansible/roles/harness/tasks/main.yml`
+- Create: `deploy/ansible/roles/aegis/defaults/main.yml`
+- Create: `deploy/ansible/roles/aegis/tasks/main.yml`
 - Create: `deploy/ansible/molecule/default/molecule.yml`
 - Create: `deploy/ansible/molecule/default/converge.yml`
 - Create: `deploy/ansible/molecule/default/verify.yml`
@@ -31,7 +31,7 @@ Status: superseded pending container-first rewrite
 - [ ] **Step 1: Write Molecule account assertions before role tasks**
 
 ```yaml
-- name: Verify harness accounts
+- name: Verify aegis accounts
   hosts: all
   gather_facts: false
   tasks:
@@ -45,13 +45,13 @@ Status: superseded pending container-first rewrite
       loop:
         - hermesops
         - agentops
-      register: harness_groups
+      register: aegis_groups
       changed_when: false
     - ansible.builtin.assert:
         that:
           - "'sudo' not in item.stdout.split()"
           - "'docker' not in item.stdout.split()"
-      loop: "{{ harness_groups.results }}"
+      loop: "{{ aegis_groups.results }}"
 ```
 
 - [ ] **Step 2: Run Molecule and confirm role absence**
@@ -63,28 +63,28 @@ Expected: FAIL because the role/defaults do not exist.
 - [ ] **Step 3: Add variables and idempotent account/directories tasks**
 
 ```yaml
-# roles/harness/defaults/main.yml
-harness_gateway_user: hermesops
-harness_orchestrator_user: agentops
-harness_operator_group: harness-operators
-harness_version: "0.5.0-pilot"
-harness_state_dir: /var/lib/harness
-harness_worktree_dir: /var/lib/harness-worktrees
-harness_artifact_dir: /var/lib/harness-artifacts
-harness_runtime_dir: /run/harness
-harness_openviking_bind: 127.0.0.1
-harness_openviking_port: 1933
-harness_worker_concurrency: 2
+# roles/aegis/defaults/main.yml
+aegis_gateway_user: hermesops
+aegis_orchestrator_user: agentops
+aegis_operator_group: aegis-operators
+aegis_version: "0.5.0-pilot"
+aegis_state_dir: /var/lib/aegis
+aegis_worktree_dir: /var/lib/aegis-worktrees
+aegis_artifact_dir: /var/lib/aegis-artifacts
+aegis_runtime_dir: /run/aegis
+aegis_openviking_bind: 127.0.0.1
+aegis_openviking_port: 1933
+aegis_worker_concurrency: 2
 ```
 
 ```yaml
-# roles/harness/tasks/main.yml
-- name: Create Harness operator group
+# roles/aegis/tasks/main.yml
+- name: Create Aegis operator group
   ansible.builtin.group:
-    name: "{{ harness_operator_group }}"
+    name: "{{ aegis_operator_group }}"
     system: true
 
-- name: Create locked Harness service accounts
+- name: Create locked Aegis service accounts
   ansible.builtin.user:
     name: "{{ item.name }}"
     system: true
@@ -94,20 +94,20 @@ harness_worker_concurrency: 2
     groups: "{{ item.groups }}"
     append: false
   loop:
-    - { name: "{{ harness_gateway_user }}", groups: "{{ harness_operator_group }}" }
-    - { name: "{{ harness_orchestrator_user }}", groups: "" }
+    - { name: "{{ aegis_gateway_user }}", groups: "{{ aegis_operator_group }}" }
+    - { name: "{{ aegis_orchestrator_user }}", groups: "" }
 
-- name: Create private Harness directories
+- name: Create private Aegis directories
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    owner: "{{ harness_orchestrator_user }}"
-    group: "{{ harness_orchestrator_user }}"
+    owner: "{{ aegis_orchestrator_user }}"
+    group: "{{ aegis_orchestrator_user }}"
     mode: "{{ item.mode }}"
   loop:
-    - { path: "{{ harness_state_dir }}", mode: "0700" }
-    - { path: "{{ harness_worktree_dir }}", mode: "0700" }
-    - { path: "{{ harness_artifact_dir }}", mode: "0700" }
+    - { path: "{{ aegis_state_dir }}", mode: "0700" }
+    - { path: "{{ aegis_worktree_dir }}", mode: "0700" }
+    - { path: "{{ aegis_artifact_dir }}", mode: "0700" }
 ```
 
 - [ ] **Step 4: Run lint, converge, and idempotency**
@@ -120,52 +120,52 @@ Expected: lint exits 0; Molecule's second convergence reports zero changes and a
 
 ```bash
 git add deploy/ansible
-git commit -m "feat(deploy): provision isolated harness accounts"
+git commit -m "feat(deploy): provision isolated aegis accounts"
 ```
 
 ### Task 2: Pinned installation and hardened systemd services
 
 **Files:**
-- Create: `deploy/ansible/roles/harness/tasks/install.yml`
-- Create: `deploy/ansible/roles/harness/tasks/services.yml`
-- Create: `deploy/ansible/roles/harness/templates/harness.service.j2`
-- Create: `deploy/ansible/roles/harness/templates/herdr.service.j2`
-- Create: `deploy/ansible/roles/harness/templates/hermes-ops.service.j2`
-- Create: `deploy/ansible/roles/harness/templates/openviking.service.j2`
+- Create: `deploy/ansible/roles/aegis/tasks/install.yml`
+- Create: `deploy/ansible/roles/aegis/tasks/services.yml`
+- Create: `deploy/ansible/roles/aegis/templates/aegis.service.j2`
+- Create: `deploy/ansible/roles/aegis/templates/herdr.service.j2`
+- Create: `deploy/ansible/roles/aegis/templates/hermes-ops.service.j2`
+- Create: `deploy/ansible/roles/aegis/templates/openviking.service.j2`
 
 - [ ] **Step 1: Add service-hardening assertions to Molecule**
 
 ```yaml
-- name: Read Harness unit security score
-  ansible.builtin.command: systemd-analyze security harness.service --no-pager
-  register: harness_security
+- name: Read Aegis unit security score
+  ansible.builtin.command: systemd-analyze security aegis.service --no-pager
+  register: aegis_security
   changed_when: false
 - ansible.builtin.assert:
     that:
-      - "'NoNewPrivileges=yes' in harness_security.stdout"
-      - "'ProtectSystem=strict' in harness_security.stdout"
+      - "'NoNewPrivileges=yes' in aegis_security.stdout"
+      - "'ProtectSystem=strict' in aegis_security.stdout"
 ```
 
 - [ ] **Step 2: Run Molecule and confirm units are missing**
 
 Run: `cd deploy/ansible && make molecule`
 
-Expected: FAIL because `harness.service` is not installed.
+Expected: FAIL because `aegis.service` is not installed.
 
 - [ ] **Step 3: Install checksum-pinned artifacts and units**
 
 ```ini
-# templates/harness.service.j2
+# templates/aegis.service.j2
 [Unit]
-Description=Harness agent control plane
+Description=Aegis agent control plane
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-User={{ harness_orchestrator_user }}
-Group={{ harness_orchestrator_user }}
+User={{ aegis_orchestrator_user }}
+Group={{ aegis_orchestrator_user }}
 UMask=0077
-ExecStart=/opt/harness/{{ harness_version }}/bin/harness serve --socket {{ harness_runtime_dir }}/control.sock
+ExecStart=/opt/aegis/{{ aegis_version }}/bin/aegis serve --socket {{ aegis_runtime_dir }}/control.sock
 Restart=on-failure
 RestartSec=10s
 StartLimitIntervalSec=300
@@ -175,7 +175,7 @@ PrivateTmp=yes
 PrivateDevices=yes
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths={{ harness_state_dir }} {{ harness_worktree_dir }} {{ harness_artifact_dir }} {{ harness_runtime_dir }}
+ReadWritePaths={{ aegis_state_dir }} {{ aegis_worktree_dir }} {{ aegis_artifact_dir }} {{ aegis_runtime_dir }}
 RestrictSUIDSGID=yes
 LockPersonality=yes
 
@@ -183,9 +183,9 @@ LockPersonality=yes
 WantedBy=multi-user.target
 ```
 
-Download the immutable Harness artifact to a versioned path, verify
-`harness_release_sha256`, install its locked environment, and atomically update
-`/opt/harness/current`. Preflight `hermes gateway start --help` and render only
+Download the immutable Aegis artifact to a versioned path, verify
+`aegis_release_sha256`, install its locked environment, and atomically update
+`/opt/aegis/current`. Preflight `hermes gateway start --help` and render only
 supported flags; the unit must not include `--foreground` unless the installed
 version documents it.
 
@@ -198,15 +198,15 @@ Expected: all units become active, use intended users, pass readiness, stay belo
 - [ ] **Step 5: Commit services**
 
 ```bash
-git add deploy/ansible/roles/harness deploy/ansible/molecule
-git commit -m "feat(deploy): install pinned hardened harness services"
+git add deploy/ansible/roles/aegis deploy/ansible/molecule
+git commit -m "feat(deploy): install pinned hardened aegis services"
 ```
 
 ### Task 3: Rootless runtime, sockets, and exposure assertions
 
 **Files:**
-- Create: `deploy/ansible/roles/harness/tasks/rootless.yml`
-- Create: `deploy/ansible/roles/harness/tasks/sockets.yml`
+- Create: `deploy/ansible/roles/aegis/tasks/rootless.yml`
+- Create: `deploy/ansible/roles/aegis/tasks/sockets.yml`
 - Create: `deploy/ansible/molecule/default/verify_exposure.yml`
 
 - [ ] **Step 1: Write negative socket/listener checks**
@@ -224,7 +224,7 @@ git commit -m "feat(deploy): install pinned hardened harness services"
       - "'[::]:8181' not in sockets.stdout"
 
 - name: Confirm gateway cannot read Herdr socket
-  ansible.builtin.command: "sudo -u {{ harness_gateway_user }} test ! -r {{ harness_runtime_dir }}/herdr.sock"
+  ansible.builtin.command: "sudo -u {{ aegis_gateway_user }} test ! -r {{ aegis_runtime_dir }}/herdr.sock"
   changed_when: false
 ```
 
@@ -237,8 +237,8 @@ Expected: FAIL before rootless runtime and socket permissions converge.
 - [ ] **Step 3: Configure rootless ownership and socket modes**
 
 Enable subordinate UID/GID ranges and linger for `agentops`, install the pinned
-rootless runtime, create a named `harness-rootless` context, and verify a rootless
-container reports a non-host root UID mapping. Create `/run/harness` through
+rootless runtime, create a named `aegis-rootless` context, and verify a rootless
+container reports a non-host root UID mapping. Create `/run/aegis` through
 `RuntimeDirectory` and set control socket group/mode `0660`; keep Herdr socket
 `0600 agentops:agentops`. Bind OpenViking to `127.0.0.1:1933` and QMD HTTP, when
 enabled, to `127.0.0.1:8181`.
@@ -247,21 +247,21 @@ enabled, to `127.0.0.1:8181`.
 
 Run: `cd deploy/ansible && make molecule`
 
-Expected: no Harness component listens publicly; `hermesops` can reach only the control socket; worker runtime has no rootful Docker socket.
+Expected: no Aegis component listens publicly; `hermesops` can reach only the control socket; worker runtime has no rootful Docker socket.
 
 - [ ] **Step 5: Commit isolation wiring**
 
 ```bash
-git add deploy/ansible/roles/harness deploy/ansible/molecule
-git commit -m "feat(deploy): configure private rootless harness runtime"
+git add deploy/ansible/roles/aegis deploy/ansible/molecule
+git commit -m "feat(deploy): configure private rootless aegis runtime"
 ```
 
 ### Task 4: Secret materialization and encrypted backup/restore
 
 **Files:**
-- Create: `deploy/ansible/roles/harness/tasks/secrets.yml`
-- Create: `deploy/ansible/roles/harness/tasks/backup.yml`
-- Create: `deploy/ansible/roles/harness/templates/backup-paths.conf.j2`
+- Create: `deploy/ansible/roles/aegis/tasks/secrets.yml`
+- Create: `deploy/ansible/roles/aegis/tasks/backup.yml`
+- Create: `deploy/ansible/roles/aegis/templates/backup-paths.conf.j2`
 - Create: `scripts/restore-drill.sh`
 - Create: `tests/security/test_repository_secrets.py`
 
@@ -292,14 +292,14 @@ Expected: repository scan passes; Molecule backup/restore assertions fail becaus
 - [ ] **Step 3: Add per-service secret files and backup paths**
 
 ```yaml
-- name: Materialize Harness service secrets
+- name: Materialize Aegis service secrets
   ansible.builtin.copy:
     content: "{{ item.value }}"
     dest: "{{ item.path }}"
     owner: "{{ item.owner }}"
     group: "{{ item.owner }}"
     mode: "0600"
-  loop: "{{ harness_secret_files }}"
+  loop: "{{ aegis_secret_files }}"
   no_log: true
 ```
 
@@ -366,7 +366,7 @@ Expected: all checks pass and manifest `--check` reports no drift.
 
 ```bash
 git add .github scripts/build-release-manifest.py tests/release
-git commit -m "ci(release): gate and describe harness artifacts"
+git commit -m "ci(release): gate and describe aegis artifacts"
 ```
 
 ### Task 6: VPS stabilization, staged install, and soak ledger
@@ -393,7 +393,7 @@ required_zero_counts:
   secret_exposures: 0
   cleanup_cross_task_deletions: 0
 required_drills:
-  - harness_process_kill
+  - aegis_process_kill
   - herdr_process_kill
   - vps_reboot
   - provider_outage
@@ -405,7 +405,7 @@ required_drills:
 
 - [ ] **Step 2: Validate the config before runbooks exist**
 
-Run: `uv run harness config validate-soak config/soak/pilot.yaml`
+Run: `uv run ae config validate-soak config/soak/pilot.yaml`
 
 Expected: FAIL because the soak validator is not registered.
 
@@ -420,14 +420,14 @@ Telegram remains disabled until local security/recovery gates pass.
 
 - [ ] **Step 4: Execute the pre-deployment verification set**
 
-Run: `uv run harness config validate-soak config/soak/pilot.yaml && uv run pytest && cd deploy/ansible && make lint && make molecule`
+Run: `uv run ae config validate-soak config/soak/pilot.yaml && uv run pytest && cd deploy/ansible && make lint && make molecule`
 
 Expected: validator and full automated suite pass. Live VPS commands remain operator-gated and record their evidence in the pilot ledger.
 
 - [ ] **Step 5: Commit operational rollout documentation**
 
 ```bash
-git add docs/runbooks config/soak src/harness/cli.py tests
+git add docs/runbooks config/soak src/aegis/cli.py tests
 git commit -m "docs(ops): define staged vps rollout and soak gate"
 ```
 
@@ -439,7 +439,7 @@ git commit -m "docs(ops): define staged vps rollout and soak gate"
 
 - [ ] **Step 1: Generate evidence from the task registry**
 
-Run: `uv run harness report soak --config config/soak/pilot.yaml --output docs/releases/pilot-evidence.md`
+Run: `uv run ae report soak --config config/soak/pilot.yaml --output docs/releases/pilot-evidence.md`
 
 Expected: the report states pass/fail for every numeric gate and drill using task/audit/artifact references.
 
@@ -458,7 +458,7 @@ explicit operator approve/reject decision.
 
 - [ ] **Step 4: Tag only an approved candidate**
 
-Run: `git tag -s v1.0.0 -m "Harness 1.0.0"`
+Run: `git tag -s v1.0.0 -m "Aegis 1.0.0"`
 
 Expected: the signed tag is created only when `1.0.0-readiness.md` records approval and all evidence links resolve.
 

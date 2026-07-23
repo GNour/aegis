@@ -6,9 +6,9 @@ from uuid import UUID
 
 import pytest
 
-from harness.domain.ids import ensure_uuid7, new_uuid7
-from harness.storage import sqlite as sqlite_module
-from harness.storage.sqlite import SQLiteStore
+from aegis.domain.ids import ensure_uuid7, new_uuid7
+from aegis.storage import sqlite as sqlite_module
+from aegis.storage.sqlite import SQLiteStore
 
 _ACTOR_ID = new_uuid7()
 _CORRELATION_ID = new_uuid7()

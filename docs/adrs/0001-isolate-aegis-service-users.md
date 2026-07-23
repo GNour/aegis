@@ -1,4 +1,4 @@
-# 0001 — Isolate the Harness gateway and worker plane
+# 0001 — Isolate the Aegis gateway and worker plane
 Status: accepted
 Date: 2026-07-23
 
@@ -6,7 +6,7 @@ Date: 2026-07-23
 
 The existing `dev` account combines interactive subscription logins, project
 workspaces, Docker-group membership, and the ops Hermes gateway. Docker-group
-membership is root-equivalent, while the Harness
+membership is root-equivalent, while the Aegis
 [execution specification](../specs/03-execution-and-isolation.md) requires
 capability and secret isolation. The owner wants `dev` preserved during the pilot.
 
@@ -14,8 +14,8 @@ capability and secret isolation. The owner wants `dev` preserved during the pilo
 
 We will keep `dev` as the owner's interactive account and create two locked,
 non-SSH service accounts: `hermesops` for the private Telegram gateway and
-`agentops` for Harness, Herdr, worktrees, rootless workers, QMD, and OpenViking.
-Hermes may call only the Harness control socket. It cannot access the Herdr socket,
+`agentops` for Aegis, Herdr, worktrees, rootless workers, QMD, and OpenViking.
+Hermes may call only the Aegis control socket. It cannot access the Herdr socket,
 worktrees, rootful Docker, runtime credentials, or host commands.
 
 ## Consequences

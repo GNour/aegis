@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a tested local Harness service with typed records, transactional state, tamper-evident audit, versioned flows, policy decisions, approvals, and a Unix-socket API.
+**Goal:** Build a tested local Aegis service with typed records, transactional state, tamper-evident audit, versioned flows, policy decisions, approvals, and a Unix-socket API.
 
 **Architecture:** Python 3.12 packages keep domain types pure, place SQLite and JSONL behind ports, compile configuration into immutable snapshots, and expose commands through FastAPI on a Unix socket. State mutations write an audit outbox in the same transaction; a flusher appends the canonical ledger.
 
@@ -14,8 +14,8 @@
 
 **Files:**
 - Create: `pyproject.toml`
-- Create: `src/harness/__init__.py`
-- Create: `src/harness/cli.py`
+- Create: `src/aegis/__init__.py`
+- Create: `src/aegis/cli.py`
 - Create: `tests/test_cli.py`
 
 - [x] **Step 1: Write the failing CLI test**
@@ -23,26 +23,26 @@
 ```python
 from typer.testing import CliRunner
 
-from harness.cli import app
+from aegis.cli import app
 
 
 def test_version_command() -> None:
     result = CliRunner().invoke(app, ["version"])
     assert result.exit_code == 0
-    assert result.stdout.strip() == "harness 0.1.0-dev"
+    assert result.stdout.strip() == "aegis 0.1.0-dev"
 ```
 
 - [x] **Step 2: Run the test and confirm collection fails**
 
 Run: `uv run pytest tests/test_cli.py -q`
 
-Expected: FAIL because `harness.cli` does not exist.
+Expected: FAIL because `aegis.cli` does not exist.
 
 - [x] **Step 3: Add the package metadata and minimal CLI**
 
 ```toml
 [project]
-name = "harness-control-plane"
+name = "aegis-control-plane"
 version = "0.1.0.dev0"
 requires-python = ">=3.12"
 dependencies = [
@@ -65,14 +65,14 @@ dev = [
 ]
 
 [project.scripts]
-harness = "harness.cli:app"
+aegis = "aegis.cli:app"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/harness"]
+packages = ["src/aegis"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -86,11 +86,11 @@ target-version = "py312"
 [tool.mypy]
 python_version = "3.12"
 strict = true
-packages = ["harness"]
+packages = ["aegis"]
 ```
 
 ```python
-# src/harness/cli.py
+# src/aegis/cli.py
 import typer
 
 app = typer.Typer(no_args_is_help=True)
@@ -98,7 +98,7 @@ app = typer.Typer(no_args_is_help=True)
 
 @app.command()
 def version() -> None:
-    typer.echo("harness 0.1.0-dev")
+    typer.echo("aegis 0.1.0-dev")
 ```
 
 - [x] **Step 4: Lock and verify the shell**
@@ -110,16 +110,16 @@ Expected: one test passes; Ruff and mypy exit 0.
 - [x] **Step 5: Commit the foundation**
 
 ```bash
-git add pyproject.toml uv.lock src/harness tests/test_cli.py
-git commit -m "build(core): initialize harness python project"
+git add pyproject.toml uv.lock src/aegis tests/test_cli.py
+git commit -m "build(core): initialize aegis python project"
 ```
 
 ### Task 2: Domain records and legal task transitions
 
 **Files:**
-- Create: `src/harness/domain/ids.py`
-- Create: `src/harness/domain/models.py`
-- Create: `src/harness/domain/state.py`
+- Create: `src/aegis/domain/ids.py`
+- Create: `src/aegis/domain/models.py`
+- Create: `src/aegis/domain/state.py`
 - Create: `tests/unit/domain/test_state.py`
 
 - [x] **Step 1: Write transition tests**
@@ -127,7 +127,7 @@ git commit -m "build(core): initialize harness python project"
 ```python
 import pytest
 
-from harness.domain.state import TaskState, assert_transition
+from aegis.domain.state import TaskState, assert_transition
 
 
 def test_normal_and_wait_transitions_are_legal() -> None:
@@ -150,7 +150,7 @@ Expected: FAIL during import.
 - [x] **Step 3: Implement strict IDs, records, and transition table**
 
 ```python
-# src/harness/domain/state.py
+# src/aegis/domain/state.py
 from enum import StrEnum
 
 
@@ -210,28 +210,28 @@ fields from `docs/specs/01-domain-and-control-api.md`.
 
 - [x] **Step 4: Verify domain behavior and typing**
 
-Run: `uv run pytest tests/unit/domain -q && uv run mypy src/harness/domain`
+Run: `uv run pytest tests/unit/domain -q && uv run mypy src/aegis/domain`
 
 Expected: all domain tests pass and mypy exits 0.
 
 - [x] **Step 5: Commit the domain**
 
 ```bash
-git add src/harness/domain tests/unit/domain
+git add src/aegis/domain tests/unit/domain
 git commit -m "feat(domain): define task records and lifecycle"
 ```
 
 ### Task 3: SQLite store, migrations, and idempotent command transaction
 
 **Files:**
-- Create: `src/harness/storage/schema/0001_initial.sql`
-- Create: `src/harness/storage/sqlite.py`
+- Create: `src/aegis/storage/schema/0001_initial.sql`
+- Create: `src/aegis/storage/sqlite.py`
 - Create: `tests/unit/storage/test_sqlite.py`
 
 - [x] **Step 1: Write the idempotency test**
 
 ```python
-from harness.storage.sqlite import SQLiteStore
+from aegis.storage.sqlite import SQLiteStore
 
 
 def test_same_idempotency_key_returns_original_result(tmp_path) -> None:
@@ -255,7 +255,7 @@ Create SQL tables for every authoritative record, `idempotency_records`,
 `PRAGMA foreign_keys=ON`, and `PRAGMA synchronous=FULL` on initialization.
 
 ```python
-# src/harness/storage/sqlite.py
+# src/aegis/storage/sqlite.py
 import json
 import sqlite3
 from pathlib import Path
@@ -294,22 +294,22 @@ Expected: idempotency, conflicting-body, WAL, foreign-key, and migration tests p
 - [x] **Step 5: Commit storage**
 
 ```bash
-git add src/harness/storage tests/unit/storage
+git add src/aegis/storage tests/unit/storage
 git commit -m "feat(storage): add transactional sqlite state"
 ```
 
 ### Task 4: Redacted hash-linked audit ledger and outbox flusher
 
 **Files:**
-- Create: `src/harness/audit/redaction.py`
-- Create: `src/harness/audit/ledger.py`
+- Create: `src/aegis/audit/redaction.py`
+- Create: `src/aegis/audit/ledger.py`
 - Create: `tests/security/test_audit_redaction.py`
 - Create: `tests/unit/audit/test_ledger.py`
 
 - [x] **Step 1: Write redaction and tamper tests**
 
 ```python
-from harness.audit.ledger import Ledger
+from aegis.audit.ledger import Ledger
 
 
 def test_secret_is_redacted_before_hashing(tmp_path) -> None:
@@ -353,7 +353,7 @@ Expected: all tests pass, including process-restart outbox recovery.
 - [x] **Step 5: Commit audit durability**
 
 ```bash
-git add src/harness/audit src/harness/storage tests/unit/audit tests/unit/storage tests/security
+git add src/aegis/audit src/aegis/storage tests/unit/audit tests/unit/storage tests/security
 git commit -m "feat(audit): add redacted hash-linked event ledger"
 ```
 
@@ -365,9 +365,9 @@ catalog, and immutable packet contracts.
 ### Task 5: Flow catalog, routing, simulator, and atomic reload
 
 **Files:**
-- Create: `src/harness/config/models.py`
-- Create: `src/harness/config/catalog.py`
-- Create: `src/harness/config/simulate.py`
+- Create: `src/aegis/config/models.py`
+- Create: `src/aegis/config/catalog.py`
+- Create: `src/aegis/config/simulate.py`
 - Create: `config/flows/feature-delivery.yaml`
 - Create: `config/routing.yaml`
 - Create: `tests/unit/config/test_catalog.py`
@@ -375,7 +375,7 @@ catalog, and immutable packet contracts.
 - [ ] **Step 1: Write snapshot and failed-reload tests**
 
 ```python
-from harness.config.catalog import CatalogManager
+from aegis.config.catalog import CatalogManager
 
 
 def test_task_snapshot_survives_reload(config_dir) -> None:
@@ -398,11 +398,11 @@ Create frozen Pydantic models for model aliases, capabilities, roles, stages,
 flows, and routing rules. Reject unknown keys, duplicate IDs/versions, unresolved
 references, arbitrary command fields, cycles, and missing mandatory gates. Build
 the new `Catalog` fully, calculate canonical hashes, then assign it under one
-lock. Add `harness config validate` and `harness flow simulate` Typer commands.
+lock. Add `ae config validate` and `ae flow simulate` Typer commands.
 
 - [ ] **Step 4: Verify fixtures, CLI, and deterministic output**
 
-Run: `uv run pytest tests/unit/config -q && uv run harness config validate --root config && uv run harness flow simulate --root config --fixture tests/fixtures/requests/feature.json`
+Run: `uv run pytest tests/unit/config -q && uv run ae config validate --root config && uv run ae flow simulate --root config --fixture tests/fixtures/requests/feature.json`
 
 Expected: tests pass; validation reports the catalog hash; simulation reports the
 feature flow, its stages, capabilities, budgets, and routing rule IDs.
@@ -410,17 +410,17 @@ feature flow, its stages, capabilities, budgets, and routing rule IDs.
 - [ ] **Step 5: Commit configuration engine**
 
 ```bash
-git add src/harness/config config tests/unit/config tests/fixtures src/harness/cli.py
+git add src/aegis/config config tests/unit/config tests/fixtures src/aegis/cli.py
 git commit -m "feat(flows): add versioned catalog and routing simulator"
 ```
 
 ### Task 6: Policy, one-use approvals, and Unix-socket API
 
 **Files:**
-- Create: `src/harness/policy/engine.py`
-- Create: `src/harness/policy/approvals.py`
-- Create: `src/harness/api/app.py`
-- Create: `src/harness/api/auth.py`
+- Create: `src/aegis/policy/engine.py`
+- Create: `src/aegis/policy/approvals.py`
+- Create: `src/aegis/api/app.py`
+- Create: `src/aegis/api/auth.py`
 - Create: `tests/security/test_approval_replay.py`
 - Create: `tests/integration/api/test_tasks.py`
 
@@ -467,6 +467,6 @@ Expected: all core, API, policy, replay, redaction, and config tests pass.
 - [ ] **Step 5: Commit the first vertical release**
 
 ```bash
-git add src/harness tests config
+git add src/aegis tests config
 git commit -m "feat(api): expose policy-enforced local control plane"
 ```

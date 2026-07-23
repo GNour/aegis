@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Final, Self, cast
 
-from harness.domain.ids import ensure_uuid7, new_uuid7
+from aegis.domain.ids import ensure_uuid7, new_uuid7
 
 _SCHEMA_DIR: Final = Path(__file__).with_name("schema")
 _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {

@@ -1,14 +1,14 @@
-# Harness
+# Aegis
 
-Harness is a private control plane for supervised, resumable agentic software
+Aegis is a private control plane for supervised, resumable agentic software
 work. It accepts requests from a local TUI or a restricted Hermes Telegram
 gateway, selects a versioned flow, starts isolated coding-agent sessions through
 Herdr, tracks decisions and recovery state, and preserves knowledge before it
 cleans up task resources.
 
-This repository is the single source of truth for Harness documentation,
+This repository is the single source of truth for Aegis documentation,
 specifications, plans, implementation, tests, integrations, and deployment
-automation. The separate VPS infrastructure repository consumes a pinned Harness
+automation. The separate VPS infrastructure repository consumes a pinned Aegis
 release and supplies instance-specific variables.
 
 ## Current status
@@ -29,20 +29,20 @@ Start here:
 
 ## Repository boundaries
 
-Harness owns:
+Aegis owns:
 
 - the Python control service, TUI, state machine, audit ledger, flow engine, and
   policy engine;
 - Herdr, worker-runtime, worktree, QMD, OpenViking, and RTK adapters;
 - the Hermes `company-control` plugin and `company-orchestrator` skill;
 - schemas, default flows, role profiles, capability profiles, and model aliases;
-- the Harness integration, compatibility testing, and coordinated release of the
+- the Aegis integration, compatibility testing, and coordinated release of the
   maintained PromptX and Subagents companion-package submodules;
 - the container-first installer, rootless Compose bundle, management CLI,
   optional fleet integrations, and operational runbooks;
 - all unit, integration, security, recovery, and soak tests.
 
-Harness does not own VPS-wide Coolify configuration, unrelated applications, or
+Aegis does not own VPS-wide Coolify configuration, unrelated applications, or
 the owner's interactive `dev` environment.
 
 ## Planned development commands
@@ -54,7 +54,7 @@ uv sync --all-groups
 uv run pytest
 uv run ruff check .
 uv run mypy src
-uv run harness --help
+uv run ae --help
 ```
 
 No real credentials, IP addresses, bot tokens, provider keys, or subscription

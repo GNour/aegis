@@ -34,7 +34,7 @@ resolves to a registered stage declaring:
 - decision, approval, fallback, resume, knowledge, artifact, and cleanup behavior.
 
 Flow files cannot contain shell commands. Project commands exist only in a trusted,
-snapshotted `.harness/project.yaml` and execute through the sandbox adapter.
+snapshotted `.aegis/project.yaml` and execute through the sandbox adapter.
 
 ## 3. Routing
 
@@ -65,10 +65,10 @@ worker capability.
 
 ## 5. Reload and compatibility
 
-`harness config validate` parses all files, rejects unknown fields/references and
-cycles, compiles the catalog, and runs policy fixtures. `harness flow simulate`
+`ae config validate` parses all files, rejects unknown fields/references and
+cycles, compiles the catalog, and runs policy fixtures. `ae flow simulate`
 accepts a fixture request and prints routing, stages, gates, capabilities, and
-budgets without creating state. `harness config reload` builds a complete new
+budgets without creating state. `ae config reload` builds a complete new
 catalog and swaps it atomically only after validation succeeds.
 
 Active tasks always use stored snapshots. Removed model aliases or runtime

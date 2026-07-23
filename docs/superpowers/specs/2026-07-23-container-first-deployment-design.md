@@ -6,14 +6,13 @@ Date: 2026-07-23
 
 ## 1. Outcome
 
-Harness ships as a rootless Docker Compose appliance. An operator installs,
+Aegis ships as a rootless Docker Compose appliance. An operator installs,
 configures, starts, inspects, upgrades, backs up, restores, and removes it through
 one host-side management command without needing to understand its internal
 containers.
 
-The working command name is `harnessctl`, but the product name is not final. This
-design therefore calls it `<product-cli>` and requires all packaging names to be
-generated from one product metadata definition.
+The command name is `ae`. The design uses `<product-cli>` where generated
+packaging must derive the value from one product metadata definition.
 
 The initial host compatibility contract is:
 
@@ -70,7 +69,7 @@ A single versioned product metadata file defines:
 - documentation variables.
 
 Installers, release workflows, Compose templates, tests, and documentation derive
-these values instead of embedding `Harness` or `harnessctl` independently.
+these values instead of embedding `Aegis` or `ae` independently.
 Persistent internal identifiers remain stable when renaming them would orphan
 volumes or break upgrades.
 
@@ -82,7 +81,7 @@ and remains for a documented support window.
 
 The appliance contains:
 
-- the Harness API, engine, policy, audit, and TUI container;
+- the Aegis API, engine, policy, audit, and TUI container;
 - the Herdr session-controller container;
 - QMD and OpenViking knowledge containers;
 - an optional Hermes ops gateway container;
@@ -97,16 +96,16 @@ The installer preserves the two-account trust boundary:
   artifacts, and the rootless worker runtime;
 - `hermesops` owns only the optional gateway and its isolated rootless container
   context;
-- the gateway can reach the typed Harness control socket but cannot access
+- the gateway can reach the typed Aegis control socket but cannot access
   Herdr, worker-runtime sockets, worktrees, provider credentials, or the
   `agentops` container context.
 
-Only the Harness control-plane adapter can access the `agentops` rootless runtime
+Only the Aegis control-plane adapter can access the `agentops` rootless runtime
 API. Worker, gateway, and knowledge containers never receive a Docker socket.
 There is no rootful Docker socket, privileged container, host networking, device
 mount, or unrestricted host path.
 
-The Compose networks are private. Harness, Herdr, QMD, and OpenViking publish no
+The Compose networks are private. Aegis, Herdr, QMD, and OpenViking publish no
 public ports. Loopback bindings and Unix sockets are used where a container
 boundary requires a host endpoint. Telegram uses outbound polling.
 

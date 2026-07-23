@@ -1,4 +1,4 @@
-# Harness Architecture
+# Aegis Architecture
 
 Status: approved design
 
@@ -6,9 +6,9 @@ Date: 2026-07-23
 
 ## 1. Goal and scope
 
-Harness is a self-contained control plane for supervised, resumable agentic work
+Aegis is a self-contained control plane for supervised, resumable agentic work
 on the VPS. A human can create and steer work through a local TUI or Telegram.
-Hermes interprets requests and uses typed Harness tools. Harness selects a
+Hermes interprets requests and uses typed Aegis tools. Aegis selects a
 versioned flow, enforces policy, starts durable coding-agent sessions through
 Herdr, supplies isolated project services, records every run and decision, and
 preserves knowledge before cleanup.
@@ -16,7 +16,7 @@ preserves knowledge before cleanup.
 The first worker runtimes are Codex and OpenCode. The design permits additional
 runtimes through adapters without changing the flow engine.
 
-CrewAI and Mastra are deliberately excluded. Harness uses a small deterministic
+CrewAI and Mastra are deliberately excluded. Aegis uses a small deterministic
 state machine; Herdr owns terminal/session durability, and OpenViking owns
 long-term agent memory.
 
@@ -31,7 +31,7 @@ Read-only inspection on 2026-07-23 found:
   workspaces, Docker-group access, and current developer tools.
 - Multica's server containers are removed. A stale daemon, CLI, and home-state
   directory remain and require scoped cleanup; there is no migration or fallback
-  phase in Harness.
+  phase in Aegis.
 - Both Hermes services are restart-looping because the installed Hermes version
   rejects the units' obsolete `--foreground` argument.
 - Coolify is intentionally public at `https://coolify.nco-tech.com`. The raw
@@ -41,25 +41,25 @@ Read-only inspection on 2026-07-23 found:
   repair must preserve the existing login state and occur only after dependency
   inspection.
 
-The stabilization work is part of the rollout, but Harness does not repurpose
+The stabilization work is part of the rollout, but Aegis does not repurpose
 `dev` or remove its Docker membership during the pilot.
 
 ## 3. Accounts and trust boundaries
 
 Existing accounts:
 
-| Account | Responsibility | Harness change |
+| Account | Responsibility | Aegis change |
 |---|---|---|
 | `deploy` | Host bootstrap, optional fleet automation, and break-glass administration | No role change |
 | `dev` | Owner's interactive development environment | No role or group change during pilot |
-| `hermes` | Restricted family gateway | No Harness access |
+| `hermes` | Restricted family gateway | No Aegis access |
 
 New accounts:
 
 | Account | Responsibility | Explicit exclusions |
 |---|---|---|
-| `hermesops` | Private ops Telegram gateway and Harness client | No SSH key, sudo, agent runtime, repos, worktrees, provider keys, or Herdr socket; its optional rootless context can run only the gateway stack |
-| `agentops` | Harness, Herdr, flow state, worktrees, rootless workers, QMD, OpenViking | No sudo or rootful Docker group |
+| `hermesops` | Private ops Telegram gateway and Aegis client | No SSH key, sudo, agent runtime, repos, worktrees, provider keys, or Herdr socket; its optional rootless context can run only the gateway stack |
+| `agentops` | Aegis, Herdr, flow state, worktrees, rootless workers, QMD, OpenViking | No sudo or rootful Docker group |
 
 Both new accounts have locked passwords, private `0700` homes, and no direct SSH
 authorization. `deploy` performs installation and account-scoped setup with
@@ -72,14 +72,14 @@ where required. The control path is:
 ```text
 Telegram
   -> Hermes (`hermesops`)
-  -> /run/harness/control.sock
-  -> Harness (`agentops`)
+  -> /run/aegis/control.sock
+  -> Aegis (`agentops`)
   -> Herdr private socket
   -> task worktree + rootless worker/runtime services
 ```
 
 Hermes cannot reach Herdr directly. The Herdr socket, agent terminals, worktree
-roots, and runtime credentials are private to `agentops`. The Harness control
+roots, and runtime credentials are private to `agentops`. The Aegis control
 socket uses Unix peer identity plus an operator group; it is never exposed over
 the public network.
 
@@ -93,7 +93,7 @@ the public network.
 |-- packages/
 |   |-- promptx/            # required runtime companion Git submodule
 |   `-- subagents/          # required build-time catalog Git submodule
-|-- src/harness/
+|-- src/aegis/
 |   |-- api/                 # typed control functions
 |   |-- domain/              # manifests, runs, decisions, events
 |   |-- engine/              # lifecycle and flow execution
@@ -109,7 +109,7 @@ the public network.
 |   |-- role-profiles/
 |   `-- model-aliases.yaml
 |-- integrations/hermes/
-|   |-- plugin/              # typed Harness tools
+|   |-- plugin/              # typed Aegis tools
 |   `-- skill/SKILL.md       # conversation and routing behavior
 |-- deploy/
 |   |-- compose/             # generated rootless appliance bundles
@@ -119,12 +119,12 @@ the public network.
 `-- tests/
 ```
 
-This repository owns Harness code, schemas, integrations, tests, deployment
+This repository owns Aegis code, schemas, integrations, tests, deployment
 automation, specifications, plans, RFCs, ADRs, and runbooks. The VPS
-infrastructure repository consumes the pinned Harness release and supplies
-instance variables; it does not duplicate Harness implementation.
+infrastructure repository consumes the pinned Aegis release and supplies
+instance variables; it does not duplicate Aegis implementation.
 
-Harness is released as a rootless Docker Compose appliance. A renameable
+Aegis is released as a rootless Docker Compose appliance. A renameable
 host-side management CLI hides Compose contexts, service-account runtime
 variables, and container topology. The bootstrap supports interactive and
 unattended configuration, installs Docker and Compose when absent, and converges
@@ -161,7 +161,7 @@ The Hermes integration has two parts:
   and handle resume/cancel operations. A skill does not grant capabilities.
 
 For a new task Hermes calls `list_flows`, proposes a fit, and sends
-`create_task(flow_id=...)` or `create_task(flow_id="auto")`. Harness independently
+`create_task(flow_id=...)` or `create_task(flow_id="auto")`. Aegis independently
 evaluates routing rules and returns the selected flow, version, reason, risk, and
 stage plan. Required human decisions are surfaced before the relevant stage.
 
@@ -203,7 +203,7 @@ project, intent, risk, requested outcome, current resource pressure, and previou
 attempts. Deterministic rules run before model suggestions. Ambiguous or
 high-impact routing becomes a human decision.
 
-Harness provides schema validation, a flow linter, a dry-run simulator, and a
+Aegis provides schema validation, a flow linter, a dry-run simulator, and a
 generated flow catalog. Reload is atomic. Each task stores the exact flow content
 hash and version it began with; active work cannot change when a flow is edited.
 
@@ -249,7 +249,7 @@ Actions fall into four policy classes:
 | Class | Behavior |
 |---|---|
 | Autonomous | Read/write the assigned worktree; run approved setup, test, lint, build, review, and documentation operations; commit locally |
-| Policy-mediated | A scoped Harness adapter performs an external effect without revealing its credential; the flow decides whether it is automatic or human-gated |
+| Policy-mediated | A scoped Aegis adapter performs an external effect without revealing its credential; the flow decides whether it is automatic or human-gated |
 | Human decision | Ambiguous requirements, product or architecture trade-offs, conflicting reviews, irreversible choices, scope expansion, and policy exceptions pause for a person |
 | Nondelegable | Raw secret/key disclosure, disabling safeguards, or unrestricted host access is escalated, but approval never hands the capability to the agent; a broker or the human performs the scoped operation |
 
@@ -258,7 +258,7 @@ expiration. It is signed and single-use. Replay, mismatch, expiry, or prior use
 fails closed.
 
 Raw provider, Git, Coolify, deployment, and infrastructure keys stay outside
-workers. Harness adapters hold long-lived credentials. Where a runtime requires
+workers. Aegis adapters hold long-lived credentials. Where a runtime requires
 model access, it receives a task-scoped, revocable proxy capability rather than
 the upstream provider key. Codex subscription-auth isolation must be validated
 against its sandbox before it is admitted as a writing worker.
@@ -269,7 +269,7 @@ Every writing task gets one Git worktree and at most one writing agent. Read-onl
 research, testing, and review may run in parallel when they cannot mutate the
 worktree.
 
-A repository may include `.harness/project.yaml` describing:
+A repository may include `.aegis/project.yaml` describing:
 
 - setup, lint, test, and build commands;
 - rootless Compose services and health checks;
@@ -278,14 +278,14 @@ A repository may include `.harness/project.yaml` describing:
 - resource limits and permitted outbound destinations;
 - artifacts to preserve before cleanup.
 
-Harness assigns a unique rootless Compose project, network, volume set, and port
+Aegis assigns a unique rootless Compose project, network, volume set, and port
 namespace to the worktree. Services remain available through implementation,
 testing, and review.
 
 Validation rejects privileged containers, host networking, devices, the
 rootful-Docker socket, host paths outside the worktree, production data, and
 unrestricted capabilities. Preview ports bind to loopback. Cleanup targets exact
-Harness labels and never performs global Docker pruning.
+Aegis labels and never performs global Docker pruning.
 
 The pilot limit is two simultaneous workers because per-worktree databases,
 browsers, and build services can create large RAM spikes. The limit may increase
@@ -301,24 +301,24 @@ Git-backed Markdown is canonical. The retrieval split is:
 
 QMD uses a project-isolated index plus explicitly allowed policy/brain
 collections. Secrets, raw transcripts, generated files, dependencies, and
-archives are excluded. Harness owns the QMD configuration and disables
+archives are excluded. Aegis owns the QMD configuration and disables
 project-controlled update commands. Keyword search is the default; semantic
 search and reranking are used only when justified. Results return short cited
 snippets before full sections.
 
-QMD is not a globally attached MCP. A strict Harness wrapper exposes only
+QMD is not a globally attached MCP. A strict Aegis wrapper exposes only
 role-scoped `qmd_search` and `qmd_get` operations and validates collection names
 and limits before calling QMD.
 
-Harness keeps a versioned skill registry, but never mounts the whole registry.
-Every role profile names exact skill versions and tool definitions. Harness
+Aegis keeps a versioned skill registry, but never mounts the whole registry.
+Every role profile names exact skill versions and tool definitions. Aegis
 builds an ephemeral, read-only skill directory for that worker and stage. There
 is no globally injected skill catalog; the minimal worker contract is rendered
 into the role prompt.
 
 The pinned Subagents submodule is the maintained source catalog for approved role
 metadata, skill references, and advisory handoffs. Release builds validate and
-compile selected catalog entries into Harness role profiles. Subagents tool
+compile selected catalog entries into Aegis role profiles. Subagents tool
 strings never grant authority, and its repository, installer, update scripts, and
 global catalog are absent from runtime and worker images.
 
@@ -336,24 +336,24 @@ It deduplicates content, prefers summaries to transcripts, and uses progressive
 disclosure. Full session history is not preloaded into later stages.
 
 PromptX is a required control-plane runtime companion built from its pinned
-submodule. Harness supplies sanitized, digest-recorded facts and calls PromptX
+submodule. Aegis supplies sanitized, digest-recorded facts and calls PromptX
 through a fixed typed adapter. Optional refinement reaches only the loopback
 model broker through a scoped capability. PromptX cannot choose a flow, role,
 model, skill, tool, capability, approval, or stage transition.
 
 A stage packet compiler combines the exact task, flow, stage, role, skill,
 capability, context, budget, companion version, evidence, and handoff snapshots
-into one immutable `StageExecutionPacket`. Harness persists its canonical hash
+into one immutable `StageExecutionPacket`. Aegis persists its canonical hash
 before Herdr dispatch and reuses it for restart or native resume.
 
 RTK is pinned in worker images and configured for supported runtimes. Compressed
 command output reaches the model, while full logs remain artifacts retrievable on
-demand. Harness records RTK savings, stage context composition, input/output/tool
+demand. Aegis records RTK savings, stage context composition, input/output/tool
 tokens, model cost, retries, and budget warnings.
 
 ## 11. Recovery and resume
 
-Harness records Herdr pane IDs and native Codex/OpenCode session IDs. On failure
+Aegis records Herdr pane IDs and native Codex/OpenCode session IDs. On failure
 it first attempts native resume; if that is unavailable, it starts a replacement
 from the latest validated handoff.
 
@@ -362,7 +362,7 @@ and project services. Orphaned processes are quarantined before cleanup.
 
 Credit exhaustion, rate limits, provider downtime, subscription-window limits,
 and external blockers record the failure class, provider/model, attempt, and
-earliest retry time. Harness stops retry loops and enters a resumable wait state.
+earliest retry time. Aegis stops retry loops and enters a resumable wait state.
 Resume can be manual through TUI/Telegram, scheduled at a known reset time, or
 automatic when the flow permits. A resume cannot broaden permissions, change the
 approved scope, or silently switch to a more privileged runtime.
@@ -414,16 +414,16 @@ comes from the allowlisted Telegram ID mapped by the Hermes plugin.
 
 ## 14. Exposure, secrets, and backups
 
-Harness, Herdr, QMD, and OpenViking add no public ports. Harness and Herdr use
+Aegis, Herdr, QMD, and OpenViking add no public ports. Aegis and Herdr use
 Unix sockets. QMD is invoked through a local adapter. OpenViking binds to
 `127.0.0.1:1933` in API-key mode; the root key remains private to `agentops`, and
 `hermesops` receives only a user-scoped key if direct native memory access is
 required.
 
 Public Coolify access remains `https://coolify.nco-tech.com` through Traefik.
-Harness does not need the raw public `:8000` listener.
+Aegis does not need the raw public `:8000` listener.
 
-Backup coverage adds Harness SQLite/JSONL state, flow and policy snapshots,
+Backup coverage adds Aegis SQLite/JSONL state, flow and policy snapshots,
 Herdr session metadata, the company-brain Git repository, approved sanitized
 session archives, and OpenViking state required beyond its rebuildable indexes.
 QMD indexes are rebuildable from Git and need not be backed up; its pinned config
@@ -433,7 +433,7 @@ and model manifest do.
 
 1. Stabilize current Hermes units, public exposure, firewall drift, permissions,
    backups, and stale Multica remnants without repurposing `dev`.
-2. Land and accept the Harness, Herdr, OpenViking, OpenCode, and QMD RFCs plus
+2. Land and accept the Aegis, Herdr, OpenViking, OpenCode, and QMD RFCs plus
    pivotal ADRs; update conflicting numbered docs.
 3. Build the idempotent Ubuntu 22.04/24.04 bootstrap, create `hermesops` and
    `agentops`, install their isolated rootless contexts, directories, sockets,
@@ -468,11 +468,11 @@ and model manifest do.
 - Path traversal, symlink escape, secret reads, dangerous actions, approval
   replay, unauthorized QMD collections, and prompt-injection escalation fail
   safely.
-- Worker kill, Harness restart, VPS reboot, provider outage, credit exhaustion,
+- Worker kill, Aegis restart, VPS reboot, provider outage, credit exhaustion,
   and quota-reset resume are exercised.
 - Required Markdown, decisions, handoffs, sessions, and artifacts exist before
   cleanup.
 - QMD and OpenViking receipts point to the exact committed knowledge source.
 - Clean Ubuntu 22.04 and 24.04 install, second-run idempotency, reboot, update,
   rollback, backup/restore, rename compatibility, and scoped uninstall pass;
-  Harness and existing Hermes tests remain green.
+  Aegis and existing Hermes tests remain green.

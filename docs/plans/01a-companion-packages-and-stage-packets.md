@@ -4,7 +4,7 @@
 
 **Goal:** Pin admitted PromptX and Subagents releases, compile an authority-free role catalog, call PromptX through a bounded broker-only adapter, and persist an immutable `StageExecutionPacket` before any future worker dispatch.
 
-**Architecture:** Harness treats both repositories as verified source inputs, never ambient tools. Build-time code validates the submodule pins and compiles selected Subagents data into immutable release assets; runtime code validates the installed PromptX artifact and produces a bounded enrichment. A pure packet compiler combines only validated snapshots, and the SQLite store inserts the canonical packet exactly once before a dispatcher may consume it.
+**Architecture:** Aegis treats both repositories as verified source inputs, never ambient tools. Build-time code validates the submodule pins and compiles selected Subagents data into immutable release assets; runtime code validates the installed PromptX artifact and produces a bounded enrichment. A pure packet compiler combines only validated snapshots, and the SQLite store inserts the canonical packet exactly once before a dispatcher may consume it.
 
 **Tech Stack:** Python 3.12, uv, Pydantic v2, PyYAML, SQLite WAL, Git submodules, Node.js 20 for the admitted PromptX build, pytest, Hypothesis, Ruff, and mypy
 
@@ -21,7 +21,7 @@ have package-local tests and release notes, and expose these commands:
 npm --prefix packages/promptx ci
 npm --prefix packages/promptx run check
 npm --prefix packages/promptx run build
-node packages/promptx/dist/cli/index.js harness-contract --version-json
+node packages/promptx/dist/cli/index.js aegis-contract --version-json
 
 packages/subagents/bin/subagents-catalog validate
 packages/subagents/bin/subagents-catalog generate --check
@@ -31,7 +31,7 @@ packages/subagents/bin/subagents-catalog version --json
 Expected: every command exits `0`; the version commands return strict JSON with
 the approved package/protocol or package/catalog-schema versions. If an upstream
 command or contract differs, update the upstream repository and its handoff
-evidence before changing this plan or adding a Harness pin.
+evidence before changing this plan or adding an Aegis pin.
 
 ## File map
 
@@ -39,15 +39,15 @@ evidence before changing this plan or adding a Harness pin.
 |---|---|
 | `.gitmodules` and `packages/` | HTTPS source pins; never runtime search paths |
 | `config/companions.lock.json` | Canonical admitted source, contract, and artifact digests |
-| `config/companions/role-mappings.yaml` | Reviewed mapping from advisory roles to Harness authority |
-| `src/harness/companions/lock.py` | Lock parsing and clean/pinned submodule verification |
-| `src/harness/companions/subagents.py` | Strict upstream catalog and compiled-role contracts |
-| `src/harness/companions/catalog.py` | Deterministic, authority-removing catalog compiler |
-| `src/harness/companions/promptx.py` | Fixed JSON subprocess adapter and readiness verification |
-| `src/harness/domain/stage_packet.py` | Immutable packet/input models and canonical hashing |
-| `src/harness/engine/stage_packets.py` | The only assembly path from validated snapshots to packets |
-| `src/harness/storage/schema/0003_stage_execution_packets.sql` | Durable one-packet-per-stage record |
-| `src/harness/data/companions/` | Embedded compiled catalog and provenance assets |
+| `config/companions/role-mappings.yaml` | Reviewed mapping from advisory roles to Aegis authority |
+| `src/aegis/companions/lock.py` | Lock parsing and clean/pinned submodule verification |
+| `src/aegis/companions/subagents.py` | Strict upstream catalog and compiled-role contracts |
+| `src/aegis/companions/catalog.py` | Deterministic, authority-removing catalog compiler |
+| `src/aegis/companions/promptx.py` | Fixed JSON subprocess adapter and readiness verification |
+| `src/aegis/domain/stage_packet.py` | Immutable packet/input models and canonical hashing |
+| `src/aegis/engine/stage_packets.py` | The only assembly path from validated snapshots to packets |
+| `src/aegis/storage/schema/0003_stage_execution_packets.sql` | Durable one-packet-per-stage record |
+| `src/aegis/data/companions/` | Embedded compiled catalog and provenance assets |
 | `tools/companions.py` | Build/check commands used by maintainers and CI |
 | `tests/companions/fixtures/` | Valid, malicious, incompatible, and degraded contract fixtures |
 
@@ -58,8 +58,8 @@ evidence before changing this plan or adding a Harness pin.
 - Create: `packages/promptx` as a Git submodule
 - Create: `packages/subagents` as a Git submodule
 - Create: `config/companions.lock.json`
-- Create: `src/harness/companions/__init__.py`
-- Create: `src/harness/companions/lock.py`
+- Create: `src/aegis/companions/__init__.py`
+- Create: `src/aegis/companions/lock.py`
 - Create: `tests/unit/companions/test_lock.py`
 - Create: `tests/security/test_companion_source_state.py`
 
@@ -72,7 +72,7 @@ from pathlib import Path
 
 import pytest
 
-from harness.companions.lock import (
+from aegis.companions.lock import (
     CompanionLock,
     CompanionSourceError,
     GitResult,
@@ -163,7 +163,7 @@ Run:
 uv run pytest tests/unit/companions/test_lock.py tests/security/test_companion_source_state.py -q
 ```
 
-Expected: FAIL during collection because `harness.companions.lock` does not
+Expected: FAIL during collection because `aegis.companions.lock` does not
 exist.
 
 - [ ] **Step 3: Add HTTPS submodules at the accepted upstream commits**
@@ -286,15 +286,15 @@ Expected: tests pass, both recursive status outputs are empty, and the diff chec
 passes.
 
 ```bash
-git add .gitmodules packages config/companions.lock.json src/harness/companions tests
+git add .gitmodules packages config/companions.lock.json src/aegis/companions tests
 git commit -m "build(companions): pin admitted package sources"
 ```
 
-### Task 2: Define strict Subagents input and Harness role contracts
+### Task 2: Define strict Subagents input and Aegis role contracts
 
 **Files:**
 - Create: `config/companions/role-mappings.yaml`
-- Create: `src/harness/companions/subagents.py`
+- Create: `src/aegis/companions/subagents.py`
 - Create: `tests/companions/fixtures/subagents-valid.json`
 - Create: `tests/companions/fixtures/subagents-unknown-field.json`
 - Create: `tests/companions/fixtures/subagents-duplicate-role.json`
@@ -309,7 +309,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from harness.companions.subagents import SubagentsCatalog
+from aegis.companions.subagents import SubagentsCatalog
 
 FIXTURES = Path("tests/companions/fixtures")
 
@@ -345,7 +345,7 @@ Run:
 uv run pytest tests/unit/companions/test_subagents_contract.py -q
 ```
 
-Expected: FAIL during collection because `harness.companions.subagents` does not
+Expected: FAIL during collection because `aegis.companions.subagents` does not
 exist.
 
 - [ ] **Step 3: Implement the complete input and output models**
@@ -499,23 +499,23 @@ Run:
 
 ```bash
 uv run pytest tests/unit/companions/test_subagents_contract.py -q
-uv run ruff check src/harness/companions tests/unit/companions
+uv run ruff check src/aegis/companions tests/unit/companions
 uv run mypy src
 ```
 
 Expected: all commands pass.
 
 ```bash
-git add config/companions/role-mappings.yaml src/harness/companions/subagents.py tests
+git add config/companions/role-mappings.yaml src/aegis/companions/subagents.py tests
 git commit -m "feat(companions): define strict role catalog contracts"
 ```
 
 ### Task 3: Compile Subagents deterministically into release data
 
 **Files:**
-- Create: `src/harness/companions/catalog.py`
-- Create: `src/harness/data/companions/roles.compiled.json`
-- Create: `src/harness/data/companions/roles.provenance.json`
+- Create: `src/aegis/companions/catalog.py`
+- Create: `src/aegis/data/companions/roles.compiled.json`
+- Create: `src/aegis/data/companions/roles.provenance.json`
 - Create: `tools/companions.py`
 - Create: `tests/unit/companions/test_catalog_compiler.py`
 - Create: `tests/security/test_catalog_authority.py`
@@ -523,8 +523,8 @@ git commit -m "feat(companions): define strict role catalog contracts"
 - [ ] **Step 1: Write failing determinism and authority tests**
 
 ```python
-from harness.companions.catalog import compile_catalog
-from harness.companions.subagents import RoleMappings, SubagentsCatalog
+from aegis.companions.catalog import compile_catalog
+from aegis.companions.subagents import RoleMappings, SubagentsCatalog
 
 
 def test_compilation_is_deterministic(catalog: SubagentsCatalog, mappings: RoleMappings) -> None:
@@ -558,7 +558,7 @@ Run:
 uv run pytest tests/unit/companions/test_catalog_compiler.py tests/security/test_catalog_authority.py -q
 ```
 
-Expected: FAIL during collection because `harness.companions.catalog` does not
+Expected: FAIL during collection because `aegis.companions.catalog` does not
 exist.
 
 - [ ] **Step 3: Implement canonical compilation**
@@ -573,7 +573,7 @@ from hashlib import sha256
 
 from pydantic import TypeAdapter
 
-from harness.companions.subagents import CompiledCatalog, RoleMappings, SubagentsCatalog
+from aegis.companions.subagents import CompiledCatalog, RoleMappings, SubagentsCatalog
 
 
 @dataclass(frozen=True)
@@ -631,14 +631,14 @@ git diff --check
 Expected: all checks pass.
 
 ```bash
-git add src/harness/companions/catalog.py src/harness/data tests tools/companions.py
+git add src/aegis/companions/catalog.py src/aegis/data tests tools/companions.py
 git commit -m "feat(companions): compile reviewed role catalog"
 ```
 
 ### Task 4: Add the bounded PromptX control-plane adapter
 
 **Files:**
-- Create: `src/harness/companions/promptx.py`
+- Create: `src/aegis/companions/promptx.py`
 - Create: `tests/companions/fixtures/promptx-success.json`
 - Create: `tests/companions/fixtures/promptx-degraded.json`
 - Create: `tests/companions/fixtures/promptx-unknown-field.json`
@@ -652,7 +652,7 @@ from pathlib import Path
 
 import pytest
 
-from harness.companions.promptx import (
+from aegis.companions.promptx import (
     BrokerLease,
     PromptXAdapter,
     PromptXProtocolError,
@@ -727,7 +727,7 @@ Run:
 uv run pytest tests/unit/companions/test_promptx_adapter.py tests/security/test_promptx_boundary.py -q
 ```
 
-Expected: FAIL during collection because `harness.companions.promptx` does not
+Expected: FAIL during collection because `aegis.companions.promptx` does not
 exist.
 
 - [ ] **Step 3: Implement strict request, response, and diagnostic models**
@@ -783,7 +783,7 @@ Invoke only the admitted executable with:
 ```python
 command = [
     str(self.executable),
-    "harness-contract",
+    "aegis-contract",
     "enrich",
     "--input-json",
     "-",
@@ -809,24 +809,24 @@ Run:
 
 ```bash
 uv run pytest tests/unit/companions/test_promptx_adapter.py tests/security/test_promptx_boundary.py -q
-uv run ruff check src/harness/companions tests/unit/companions tests/security
+uv run ruff check src/aegis/companions tests/unit/companions tests/security
 uv run mypy src
 ```
 
 Expected: all commands pass.
 
 ```bash
-git add src/harness/companions/promptx.py tests/companions tests/unit/companions tests/security
+git add src/aegis/companions/promptx.py tests/companions tests/unit/companions tests/security
 git commit -m "feat(companions): add bounded PromptX adapter"
 ```
 
 ### Task 5: Define and canonically compile `StageExecutionPacket`
 
 **Files:**
-- Create: `src/harness/domain/stage_packet.py`
-- Create: `src/harness/engine/__init__.py`
-- Create: `src/harness/engine/stage_packets.py`
-- Modify: `src/harness/domain/__init__.py`
+- Create: `src/aegis/domain/stage_packet.py`
+- Create: `src/aegis/engine/__init__.py`
+- Create: `src/aegis/engine/stage_packets.py`
+- Modify: `src/aegis/domain/__init__.py`
 - Create: `tests/unit/domain/test_stage_packet.py`
 - Create: `tests/unit/engine/test_stage_packet_compiler.py`
 - Create: `tests/security/test_stage_packet_authority.py`
@@ -838,8 +838,8 @@ import pytest
 
 from pydantic import ValidationError
 
-from harness.domain.stage_packet import StagePacketInput
-from harness.engine.stage_packets import StagePacketCompiler
+from aegis.domain.stage_packet import StagePacketInput
+from aegis.engine.stage_packets import StagePacketCompiler
 
 
 def test_packet_hash_is_stable_and_captures_exact_companions(
@@ -873,8 +873,8 @@ Run:
 uv run pytest tests/unit/domain/test_stage_packet.py tests/unit/engine/test_stage_packet_compiler.py tests/security/test_stage_packet_authority.py -q
 ```
 
-Expected: FAIL during collection because `harness.domain.stage_packet` and
-`harness.engine.stage_packets` do not exist.
+Expected: FAIL during collection because `aegis.domain.stage_packet` and
+`aegis.engine.stage_packets` do not exist.
 
 - [ ] **Step 3: Implement immutable packet contracts**
 
@@ -1011,15 +1011,15 @@ uv run mypy src
 Expected: all commands pass.
 
 ```bash
-git add src/harness/domain src/harness/engine tests/unit/domain tests/unit/engine tests/security
+git add src/aegis/domain src/aegis/engine tests/unit/domain tests/unit/engine tests/security
 git commit -m "feat(engine): compile immutable stage packets"
 ```
 
 ### Task 6: Persist packets exactly once before dispatch
 
 **Files:**
-- Create: `src/harness/storage/schema/0003_stage_execution_packets.sql`
-- Modify: `src/harness/storage/sqlite.py`
+- Create: `src/aegis/storage/schema/0003_stage_execution_packets.sql`
+- Modify: `src/aegis/storage/sqlite.py`
 - Create: `tests/unit/storage/test_stage_packets.py`
 - Create: `tests/recovery/test_stage_packet_restart.py`
 
@@ -1028,7 +1028,7 @@ git commit -m "feat(engine): compile immutable stage packets"
 ```python
 import pytest
 
-from harness.storage.sqlite import SQLiteStore
+from aegis.storage.sqlite import SQLiteStore
 
 
 def test_store_inserts_one_exact_packet(store: SQLiteStore, packet) -> None:
@@ -1119,7 +1119,7 @@ uv run mypy src
 Expected: all storage and restart tests pass.
 
 ```bash
-git add src/harness/storage tests/unit/storage tests/recovery
+git add src/aegis/storage tests/unit/storage tests/recovery
 git commit -m "feat(storage): persist exact stage packets"
 ```
 
@@ -1127,7 +1127,7 @@ git commit -m "feat(storage): persist exact stage packets"
 
 **Files:**
 - Modify: `tools/companions.py`
-- Modify: `src/harness/cli.py`
+- Modify: `src/aegis/cli.py`
 - Modify: `pyproject.toml`
 - Create: `tests/integration/test_companion_build.py`
 - Create: `tests/integration/test_companion_readiness.py`
@@ -1143,8 +1143,8 @@ import zipfile
 def test_wheel_contains_compiled_catalog_but_not_subagents_source(built_wheel) -> None:
     with zipfile.ZipFile(built_wheel) as wheel:
         names = set(wheel.namelist())
-    assert "harness/data/companions/roles.compiled.json" in names
-    assert "harness/data/companions/roles.provenance.json" in names
+    assert "aegis/data/companions/roles.compiled.json" in names
+    assert "aegis/data/companions/roles.provenance.json" in names
     assert all("packages/subagents" not in name for name in names)
     assert all("install.sh" not in name for name in names)
 
@@ -1198,16 +1198,16 @@ Add explicit package-data entries:
 
 ```toml
 [tool.hatch.build.targets.wheel]
-packages = ["src/harness"]
+packages = ["src/aegis"]
 
 [tool.hatch.build.targets.wheel.force-include]
-"src/harness/data/companions/roles.compiled.json" = "harness/data/companions/roles.compiled.json"
-"src/harness/data/companions/roles.provenance.json" = "harness/data/companions/roles.provenance.json"
+"src/aegis/data/companions/roles.compiled.json" = "aegis/data/companions/roles.compiled.json"
+"src/aegis/data/companions/roles.provenance.json" = "aegis/data/companions/roles.provenance.json"
 ```
 
 The control-plane container build later copies the verified PromptX runtime
 artifact and lock. Worker-image contexts must exclude `packages/`,
-`src/harness/companions/`, the compiled global catalog, and all broker material.
+`src/aegis/companions/`, the compiled global catalog, and all broker material.
 
 - [ ] **Step 5: Add the bounded readiness CLI and commit**
 
@@ -1232,7 +1232,7 @@ uv run pytest tests/integration/test_companion_build.py tests/integration/test_c
 Expected: all commands pass.
 
 ```bash
-git add tools/companions.py src/harness/cli.py pyproject.toml tests/integration tests/security
+git add tools/companions.py src/aegis/cli.py pyproject.toml tests/integration tests/security
 git commit -m "build(companions): enforce release readiness"
 ```
 
@@ -1323,7 +1323,7 @@ This plan is complete only when:
 1. the two HTTPS submodules and lock point to accepted, clean upstream commits;
 2. a clean recursive clone reproduces the PromptX and compiled Subagents assets;
 3. PromptX readiness and every enrichment validate exact versions and digests;
-4. the compiled role catalog contains only reviewed Harness authority;
+4. the compiled role catalog contains only reviewed Aegis authority;
 5. every packet is canonical, stored once, and reloaded unchanged after restart;
 6. no worker or runtime artifact contains prohibited companion source, installer,
    global catalog, provider credential, or broker token;

@@ -48,14 +48,14 @@ and marks them flushed; startup completes any committed but unflushed events.
 
 ## 4. API transport and identity
 
-The versioned HTTP API is served through `/run/harness/control.sock`. Filesystem
+The versioned HTTP API is served through `/run/aegis/control.sock`. Filesystem
 ownership/mode is the first boundary. Every request also carries a short-lived
 signed principal assertion containing actor, interface, allowed operation, issue
 time, expiry, nonce, and request-body digest.
 
 - The TUI obtains an operator assertion from the local operator credential file.
 - The Hermes plugin signs only allowlisted Telegram identities and operations.
-- Harness validates signature, expiry, nonce replay, operation, and body digest.
+- Aegis validates signature, expiry, nonce replay, operation, and body digest.
 - Assertions are redacted from logs and never forwarded to workers.
 
 ## 5. Operations

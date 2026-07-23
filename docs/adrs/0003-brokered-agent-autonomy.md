@@ -13,7 +13,7 @@ prompting an agent not to read an environment variable is not a security boundar
 
 We will allow routine worktree operations autonomously inside a rootless,
 task-scoped runtime. External effects and secret-dependent operations go through
-typed Harness adapters. Workers receive revocable task capabilities rather than
+typed Aegis adapters. Workers receive revocable task capabilities rather than
 long-lived upstream credentials. Human approval signs one exact action when a
 flow or policy requires judgment. Nondelegable actions may be performed by the
 broker or human after escalation, but approval never exposes a raw secret or
@@ -22,7 +22,7 @@ unrestricted host access to the worker.
 ## Consequences
 
 Agents can iterate without approval fatigue while credentials and host authority
-stay outside their sandbox. Harness must build a credential/model proxy, strict
+stay outside their sandbox. Aegis must build a credential/model proxy, strict
 path and network policy, one-use approvals, revocation, redaction, and negative
 tests. Some actions that CLIs normally perform directly must instead use adapters.
 

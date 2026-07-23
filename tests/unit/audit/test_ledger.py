@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from harness.audit.ledger import Ledger, flush_outbox
-from harness.domain.ids import new_uuid7
-from harness.storage.sqlite import SQLiteStore
+from aegis.audit.ledger import Ledger, flush_outbox
+from aegis.domain.ids import new_uuid7
+from aegis.storage.sqlite import SQLiteStore
 
 
 def _signer(payload: bytes) -> str:

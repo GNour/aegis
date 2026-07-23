@@ -10,11 +10,11 @@ manifests, reminders, and approved reusable knowledge. Product-specific specs an
 ADRs remain in their product repository.
 
 Workers cannot push canonical knowledge. They produce structured proposals;
-Harness validates and a curator/human approves required classes before commit.
+Aegis validates and a curator/human approves required classes before commit.
 
 ## 2. Skill isolation
 
-Roles declare exact skill IDs and versions. Harness resolves those versions from
+Roles declare exact skill IDs and versions. Aegis resolves those versions from
 the trusted registry, copies only them into a task/stage directory, makes that
 directory read-only, and records digests in the stage snapshot. Tool definitions
 are generated from the same role/capability profile. No worker receives a global
@@ -22,7 +22,7 @@ skill list, unrelated skill description, or unrequested MCP server.
 
 ## 3. QMD retrieval
 
-Harness owns QMD collection configuration. Each project has an isolated collection
+Aegis owns QMD collection configuration. Each project has an isolated collection
 plus explicit read-only policy/brain collections. Index excludes secret patterns,
 raw sessions, archives, dependencies, generated output, and unrelated projects.
 Project-controlled update commands are disabled.
@@ -35,7 +35,7 @@ stage capability and resource admission.
 
 ## 4. OpenViking memory
 
-OpenViking binds to loopback with API-key authentication. Harness owns the root
+OpenViking binds to loopback with API-key authentication. Aegis owns the root
 key; direct Hermes access, if retained, uses a separate user key. Each record has
 project, type, canonical source URI, Git commit, review state, and ingestion
 receipt. Retrieval results without a resolvable source commit are excluded from

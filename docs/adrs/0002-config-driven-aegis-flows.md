@@ -1,4 +1,4 @@
-# 0002 — Use versioned declarative Harness flows
+# 0002 — Use versioned declarative Aegis flows
 Status: accepted
 Date: 2026-07-23
 
@@ -14,13 +14,13 @@ free-form agent-generated workflows could introduce arbitrary capabilities.
 We will define flows, stages, routing rules, role profiles, model aliases,
 capability profiles, budgets, and per-role skills as versioned configuration.
 Flows reference only registered stages and capabilities and cannot embed arbitrary
-host commands. Harness validates, lints, simulates, and atomically reloads them.
+host commands. Aegis validates, lints, simulates, and atomically reloads them.
 Each task snapshots the exact flow version and content hash at creation.
 
 ## Consequences
 
 New or revised workflows become reviewable data changes. Hermes can propose or
-request a flow, but server-side routing and policy remain authoritative. Harness
+request a flow, but server-side routing and policy remain authoritative. Aegis
 must maintain schemas, migrations, compatibility rules, generated documentation,
 and simulation fixtures. Active tasks remain stable when definitions change.
 

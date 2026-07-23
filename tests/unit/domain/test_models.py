@@ -4,8 +4,8 @@ from uuid import RFC_4122, UUID
 import pytest
 from pydantic import ValidationError
 
-from harness.domain.ids import ensure_uuid7, new_uuid7
-from harness.domain.models import (
+from aegis.domain.ids import ensure_uuid7, new_uuid7
+from aegis.domain.models import (
     ApprovalRequest,
     ArtifactRecord,
     Attempt,
@@ -19,7 +19,7 @@ from harness.domain.models import (
     StageRun,
     TaskManifest,
 )
-from harness.domain.state import TaskState
+from aegis.domain.state import TaskState
 
 
 def identifiers(count: int) -> tuple[str, ...]:
@@ -41,7 +41,7 @@ def task_manifest() -> TaskManifest:
         creator_id=creator_id,
         budgets={"max_cost_usd": 5},
         base_commit="a" * 40,
-        branch="harness/task-state",
+        branch="aegis/task-state",
         worktree="C:/worktrees/task-state",
         created_at=now,
         updated_at=now,
@@ -60,7 +60,7 @@ def test_task_manifest_preserves_required_contract_fields() -> None:
     assert manifest.creator_id
     assert manifest.budgets == {"max_cost_usd": 5}
     assert manifest.base_commit == "a" * 40
-    assert manifest.branch == "harness/task-state"
+    assert manifest.branch == "aegis/task-state"
     assert manifest.worktree == "C:/worktrees/task-state"
     assert manifest.created_at.tzinfo is timezone.utc
     assert manifest.updated_at.tzinfo is timezone.utc
@@ -82,7 +82,7 @@ def test_cleanup_record_defaults_failure_reason_to_none() -> None:
     record = CleanupRecord(
         id=new_uuid7(),
         task_id=new_uuid7(),
-        target_labels={"harness.task_id": "task-123"},
+        target_labels={"aegis.task_id": "task-123"},
         preconditions=("writes_frozen",),
         actions=("remove_worktree",),
         verified=False,

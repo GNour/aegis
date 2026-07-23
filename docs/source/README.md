@@ -5,7 +5,7 @@ for provenance and must not override accepted architecture or specifications.
 
 The approved design resolves its major open points as follows:
 
-| Original proposal | Accepted Harness direction |
+| Original proposal | Accepted Aegis direction |
 |---|---|
 | Dedicated WSL first, eventual VPS | Build directly for the audited Ubuntu 24.04 VPS while keeping deployment reusable |
 | Orchestrator account not fully split | `hermesops` gateway and `agentops` control/worker plane |

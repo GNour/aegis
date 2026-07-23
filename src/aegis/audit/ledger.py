@@ -12,11 +12,11 @@ from pathlib import Path
 from threading import RLock
 from typing import TYPE_CHECKING, Final, Iterator, cast
 
-from harness.audit.redaction import redact
-from harness.domain.ids import new_uuid7
+from aegis.audit.redaction import redact
+from aegis.domain.ids import new_uuid7
 
 if TYPE_CHECKING:
-    from harness.storage.sqlite import SQLiteStore
+    from aegis.storage.sqlite import SQLiteStore
 
 Signer = Callable[[bytes], str]
 Verifier = Callable[[bytes, str], bool]

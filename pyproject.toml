@@ -1,5 +1,5 @@
 [project]
-name = "harness-control-plane"
+name = "aegis-control-plane"
 version = "0.1.0.dev0"
 requires-python = ">=3.12"
 dependencies = [
@@ -22,14 +22,14 @@ dev = [
 ]
 
 [project.scripts]
-harness = "harness.cli:app"
+ae = "aegis.cli:app"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/harness"]
+packages = ["src/aegis"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -43,4 +43,4 @@ target-version = "py312"
 [tool.mypy]
 python_version = "3.12"
 strict = true
-packages = ["harness"]
+packages = ["aegis"]

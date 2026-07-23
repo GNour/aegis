@@ -1,15 +1,15 @@
 # 0002 — Herdr durable agent sessions
 Status: accepted for the internal pilot; commercial reuse requires a license review
 Date: 2026-07-23
-Sponsor: Harness — needs durable Codex/OpenCode terminals, worktrees, native
+Sponsor: Aegis — needs durable Codex/OpenCode terminals, worktrees, native
 session references, event subscriptions, and restart recovery.
 
 ## 1. Problem & goal
 
-Harness must run heterogeneous coding CLIs for hours, survive disconnects and
+Aegis must run heterogeneous coding CLIs for hours, survive disconnects and
 service restarts, identify blocked/done agents, and resume native conversations.
 Building and maintaining a terminal multiplexer plus agent integrations inside
-Harness would be a large distraction.
+Aegis would be a large distraction.
 
 ## 2. Options considered
 
@@ -17,9 +17,9 @@ Harness would be a large distraction.
 |---|---|---|---|---|
 | **Herdr** | Agent-aware terminal multiplexer with Unix-socket API, worktrees, events, and native session integrations | One Rust process plus session scrollback | Active; APIs are young and fast-moving | AGPL-3.0-or-later or commercial |
 | tmux + custom adapters | Stable process persistence with custom parsing/hooks for every agent | Low runtime, high engineering burden | tmux mature; adapters local | ISC for tmux; local code |
-| Harness-owned subprocess supervisor | No external multiplexer | Highest implementation and recovery burden | New | Local code |
+| Aegis-owned subprocess supervisor | No external multiplexer | Highest implementation and recovery burden | New | Local code |
 
-## 3. Fit analysis (hard gates — Harness architecture)
+## 3. Fit analysis (hard gates — Aegis architecture)
 
 - **RAM (§6):** expected to be small compared with worker CLIs and project
   services, but no upstream RAM guarantee is relied on. Measure idle and
@@ -46,22 +46,22 @@ Verified 2026-07-23 against the official
 
 Install a pinned stable Linux x86_64 release into `agentops`'s `~/.local/bin`,
 verify its checksum, and disable automatic unpinned upgrades. Install the Codex
-and OpenCode integrations. At startup, Harness reads the JSON schema shipped by
+and OpenCode integrations. At startup, Aegis reads the JSON schema shipped by
 that exact binary (`herdr api schema --json`) and refuses an unsupported protocol.
-Harness prefers CLI wrappers for ordinary operations and uses the raw socket only
+Aegis prefers CLI wrappers for ordinary operations and uses the raw socket only
 for event subscriptions and request/response operations that require it.
 
 ## 5. Recommendation
 
 Adopt Herdr behind a narrow adapter. Persist its native session references and
-worktree provenance in Harness. Do not expose its socket to Hermes or workers.
+worktree provenance in Aegis. Do not expose its socket to Hermes or workers.
 Pin the release and protocol schema, keep pane-content persistence off initially,
 and retain a documented fallback to handoff-based restart if native resume fails.
 
 ## 6. Decision & graduation
 
-- ADR: [0001](../adrs/0001-isolate-harness-service-users.md).
-- Graduates to: the future Harness numbered build guide.
+- ADR: [0001](../adrs/0001-isolate-aegis-service-users.md).
+- Graduates to: the future Aegis numbered build guide.
 - Validation: create/inspect/remove worktrees; detect Codex/OpenCode states;
   survive detach; restart Herdr; resume supported native sessions; rebuild from a
   handoff when resume is unavailable; confirm the socket is inaccessible to
