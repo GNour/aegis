@@ -13,8 +13,11 @@ release and supplies instance-specific variables.
 
 ## Current status
 
-The architecture is approved. Implementation is intentionally gated behind the
-reviewed plans under [`docs/plans/`](docs/plans/).
+The architecture is approved and implementation is underway through the reviewed
+plans under [`docs/plans/`](docs/plans/). Core control-plane tasks 1–4 are
+complete: the Python shell, domain records and lifecycle, transactional SQLite
+state, and redacted hash-linked audit ledger. Flow/routing and API work begin
+with core tasks 5–6.
 
 Start here:
 

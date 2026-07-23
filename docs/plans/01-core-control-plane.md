@@ -306,7 +306,7 @@ git commit -m "feat(storage): add transactional sqlite state"
 - Create: `tests/security/test_audit_redaction.py`
 - Create: `tests/unit/audit/test_ledger.py`
 
-- [ ] **Step 1: Write redaction and tamper tests**
+- [x] **Step 1: Write redaction and tamper tests**
 
 ```python
 from harness.audit.ledger import Ledger
@@ -329,13 +329,13 @@ def test_modified_event_breaks_chain(tmp_path) -> None:
     assert ledger.verify() == [1]
 ```
 
-- [ ] **Step 2: Confirm both tests fail**
+- [x] **Step 2: Confirm both tests fail**
 
 Run: `uv run pytest tests/unit/audit tests/security/test_audit_redaction.py -q`
 
 Expected: FAIL because ledger modules are missing.
 
-- [ ] **Step 3: Implement canonical redaction and chaining**
+- [x] **Step 3: Implement canonical redaction and chaining**
 
 Use a recursive redactor with case-insensitive exact sensitive keys and compiled
 token patterns. Serialize with `json.dumps(..., sort_keys=True,
@@ -344,13 +344,13 @@ prior hash, type, and redacted payload. Flush and `os.fsync` after each append.
 Implement `flush_outbox(store, ledger)` to append committed outbox rows in
 sequence and mark each flushed in a new transaction.
 
-- [ ] **Step 4: Run audit and storage suites**
+- [x] **Step 4: Run audit and storage suites**
 
 Run: `uv run pytest tests/unit/audit tests/unit/storage tests/security/test_audit_redaction.py -q`
 
 Expected: all tests pass, including process-restart outbox recovery.
 
-- [ ] **Step 5: Commit audit durability**
+- [x] **Step 5: Commit audit durability**
 
 ```bash
 git add src/harness/audit src/harness/storage tests/unit/audit tests/unit/storage tests/security
