@@ -91,7 +91,7 @@ _NON_UNIQUE_INDEXES: Final[dict[str, frozenset[tuple[str, ...]]]] = {
 
 def _strip_sqlite_padding(text: str) -> str:
     """Remove SQLite-recognized leading whitespace plus a UTF-8 BOM."""
-    return text.lstrip("\ufeff \t\n\r\f")
+    return text.lstrip("\ufeff \t\n\r\f\v")
 
 
 def redact(value: object) -> object:
@@ -356,7 +356,7 @@ class SQLiteStore:
                 non_unique_shapes = {
                     tuple(str(column[2]) for column in self._connection.execute(f"PRAGMA index_info({index[1]})"))
                     for index in self._connection.execute(f"PRAGMA index_list({table})")
-                    if int(index[2]) == 0
+                    if int(index[2]) == 0 and (len(index) < 5 or int(index[4]) == 0)
                 }
                 if non_unique_shapes != _NON_UNIQUE_INDEXES.get(table, frozenset()):
                     raise ValueError(f"migration index mismatch: {table}")
@@ -364,9 +364,11 @@ class SQLiteStore:
             audit_outbox_sql = self._connection.execute(
                 "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'audit_outbox'"
             ).fetchone()
-            if audit_outbox_sql is not None and "INTEGER PRIMARY KEY AUTOINCREMENT" not in " ".join(
-                str(audit_outbox_sql[0]).upper().split()
-            ):
+            if audit_outbox_sql is not None and re.match(
+                r"(?is)^\s*CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[\w\"`\[\]]+\s*\(\s*"
+                r"sequence\s+INTEGER\s+PRIMARY\s+KEY\s+AUTOINCREMENT\s*,",
+                str(audit_outbox_sql[0]),
+            ) is None:
                 raise ValueError("migration constraint mismatch: audit_outbox")
 
     def _execute_migration_script(self, script: str) -> None:

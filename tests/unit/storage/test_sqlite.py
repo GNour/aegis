@@ -407,6 +407,18 @@ def test_migration_rejects_form_feed_prefixed_transaction_control(tmp_path) -> N
         SQLiteStore(tmp_path / "state.db", schema_dir=migrations)
 
 
+def test_migration_rejects_vertical_tab_prefixed_transaction_control(tmp_path) -> None:
+    migrations = tmp_path / "migrations"
+    migrations.mkdir()
+    (migrations / "0001_initial.sql").write_text(
+        (sqlite_module._SCHEMA_DIR / "0001_initial.sql").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    (migrations / "0002_bad.sql").write_text("\vCOMMIT;", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="transaction control"):
+        SQLiteStore(tmp_path / "state.db", schema_dir=migrations)
+
+
 @pytest.mark.parametrize("prefix", ["/* leading */ ", "-- leading\n"])
 def test_migration_rejects_bom_after_a_leading_comment(tmp_path, prefix: str) -> None:
     migrations = tmp_path / "migrations"
@@ -479,6 +491,18 @@ def test_rejects_missing_declared_non_unique_index(tmp_path) -> None:
         pass
     with sqlite3.connect(path) as connection:
         connection.execute("DROP INDEX idx_tasks_state")
+
+    with pytest.raises(ValueError, match="migration index mismatch: tasks"):
+        SQLiteStore(path)
+
+
+def test_rejects_partial_replacement_for_a_required_index(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with SQLiteStore(path):
+        pass
+    with sqlite3.connect(path) as connection:
+        connection.execute("DROP INDEX idx_tasks_state")
+        connection.execute("CREATE INDEX partial_tasks_state ON tasks(state) WHERE state <> ''")
 
     with pytest.raises(ValueError, match="migration index mismatch: tasks"):
         SQLiteStore(path)
