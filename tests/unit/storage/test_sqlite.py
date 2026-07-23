@@ -7,6 +7,7 @@ from uuid import UUID
 import pytest
 
 from harness.domain.ids import ensure_uuid7, new_uuid7
+from harness.storage import sqlite as sqlite_module
 from harness.storage.sqlite import SQLiteStore
 
 _ACTOR_ID = new_uuid7()
@@ -304,6 +305,33 @@ def test_replay_returns_original_intake_response_after_task_transitions(tmp_path
 
     with SQLiteStore(path) as store:
         assert create_task(store, "key-1", {"request": "fix bug"}) == original
+
+
+def test_migrations_upgrade_and_bootstrap_with_a_future_schema_change(tmp_path) -> None:
+    migrations = tmp_path / "migrations"
+    migrations.mkdir()
+    (migrations / "0001_initial.sql").write_text(
+        (sqlite_module._SCHEMA_DIR / "0001_initial.sql").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    upgrade = """-- semicolon in this comment ; must not split a statement
+ALTER TABLE tasks ADD COLUMN migration_note TEXT NOT NULL DEFAULT 'contains;a:semicolon';
+CREATE TABLE upgrade_markers (id TEXT PRIMARY KEY, note TEXT NOT NULL DEFAULT 'marker;value');
+"""
+    upgraded_path = tmp_path / "upgraded.db"
+    with SQLiteStore(upgraded_path, schema_dir=migrations) as store:
+        assert store.applied_migrations() == ("0001_initial",)
+    (migrations / "0002_upgrade.sql").write_text(upgrade, encoding="utf-8")
+    with SQLiteStore(upgraded_path, schema_dir=migrations) as store:
+        assert store.applied_migrations() == ("0001_initial", "0002_upgrade")
+
+    fresh_path = tmp_path / "fresh.db"
+    with SQLiteStore(fresh_path, schema_dir=migrations) as store:
+        assert store.applied_migrations() == ("0001_initial", "0002_upgrade")
+
+    for path in (upgraded_path, fresh_path):
+        with sqlite3.connect(path) as connection:
+            assert connection.execute("SELECT migration_note FROM tasks LIMIT 1").fetchall() == []
+            assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'upgrade_markers'").fetchone()
 
 
 def test_rejects_preexisting_malformed_stage_runs_table(tmp_path) -> None:

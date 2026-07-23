@@ -96,8 +96,9 @@ def redact(value: object) -> object:
 class SQLiteStore:
     """Own a local SQLite control-plane database and its forward migrations."""
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, *, schema_dir: Path | None = None) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
+        self._schema_dir = schema_dir or _SCHEMA_DIR
         self._connection = sqlite3.connect(path, isolation_level=None, timeout=30)
         self._connection.execute("PRAGMA busy_timeout=30000")
         self._enable_wal()
@@ -241,9 +242,15 @@ class SQLiteStore:
             "CREATE TABLE IF NOT EXISTS schema_migrations "
             "(filename TEXT PRIMARY KEY, checksum TEXT NOT NULL, applied_at TEXT NOT NULL)"
         )
+        migrations = sorted(self._schema_dir.glob("[0-9][0-9][0-9][0-9]_*.sql"))
         try:
             self._connection.execute("BEGIN IMMEDIATE")
-            for migration in sorted(_SCHEMA_DIR.glob("[0-9][0-9][0-9][0-9]_*.sql")):
+            has_applied_migrations = self._connection.execute(
+                "SELECT 1 FROM schema_migrations LIMIT 1"
+            ).fetchone() is not None
+            if not has_applied_migrations:
+                self._validate_existing_schema()
+            for migration in migrations:
                 filename = migration.stem
                 script = migration.read_text(encoding="utf-8")
                 checksum = hashlib.sha256(script.encode("utf-8")).hexdigest()
@@ -254,13 +261,12 @@ class SQLiteStore:
                     if applied[0] != checksum:
                         raise ValueError(f"migration drift detected for {filename}")
                     continue
-                self._validate_existing_schema()
                 self._execute_migration_script(script)
-                self._validate_existing_schema(require_all=True)
                 self._connection.execute(
                     "INSERT INTO schema_migrations (filename, checksum, applied_at) VALUES (?, ?, ?)",
                     (filename, checksum, datetime.now(UTC).isoformat()),
                 )
+            self._validate_existing_schema(require_all=True)
             self._connection.commit()
         except Exception:
             self._connection.rollback()
@@ -311,9 +317,15 @@ class SQLiteStore:
                 raise ValueError(f"migration foreign key mismatch: {table}")
 
     def _execute_migration_script(self, script: str) -> None:
-        for statement in script.split(";"):
-            if statement.strip():
-                self._connection.execute(statement)
+        statement = ""
+        for line in script.splitlines(keepends=True):
+            statement += line
+            if sqlite3.complete_statement(statement):
+                if statement.strip():
+                    self._connection.execute(statement)
+                statement = ""
+        if statement.strip():
+            raise ValueError("incomplete migration statement")
 
     @staticmethod
     def _canonical_json(value: Mapping[str, object]) -> str:
