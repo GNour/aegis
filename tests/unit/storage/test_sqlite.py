@@ -121,6 +121,20 @@ def test_migration_is_recorded_once_after_reopening(tmp_path) -> None:
     assert second.applied_migrations() == ("0001_initial",)
 
 
+def test_rejects_reconstructed_migration_ledger_without_primary_key(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with SQLiteStore(path):
+        pass
+    with sqlite3.connect(path) as connection:
+        connection.execute("DROP TABLE schema_migrations")
+        connection.execute(
+            "CREATE TABLE schema_migrations (filename TEXT, checksum TEXT NOT NULL, applied_at TEXT NOT NULL)"
+        )
+
+    with pytest.raises(ValueError, match="migration constraint mismatch: schema_migrations"):
+        SQLiteStore(path)
+
+
 def test_created_task_has_canonical_uuid7_and_atomic_outbox_event(tmp_path) -> None:
     with SQLiteStore(tmp_path / "state.db") as store:
         actor_id = new_uuid7()

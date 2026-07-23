@@ -18,6 +18,7 @@ _BEARER_VALUE: Final = re.compile(r"\bbearer\s+[A-Za-z0-9._~+/-]+=*", re.I)
 _TOKEN_VALUE: Final = re.compile(r"\b(?:sk-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9_-]{8,})\b", re.I)
 _REDACTED: Final = "[REDACTED]"
 _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {
+    "schema_migrations": (frozenset({"filename", "checksum", "applied_at"}), {}),
     "tasks": (frozenset({"id", "payload_json", "state", "version", "schema_version", "created_at"}), {}),
     "idempotency_records": (frozenset({"key", "payload_json", "task_id", "response_json", "created_at", "actor_id", "principal_type", "correlation_id", "causation_id"}), {"task_id": "tasks"}),
     "audit_outbox": (frozenset({"sequence", "event_id", "event_type", "event_version", "actor_id", "principal_type", "correlation_id", "causation_id", "idempotency_key", "payload_json", "created_at", "task_id"}), {"task_id": "tasks"}),
@@ -34,12 +35,14 @@ _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {
     "audit_events": (frozenset({"id", "sequence", "event_type", "event_version", "actor_id", "correlation_id", "payload_json", "prior_hash", "event_hash", "occurred_at", "task_id", "causation_id", "schema_version"}), {"task_id": "tasks"}),
 }
 _PRIMARY_KEYS: Final[dict[str, str]] = {
+    "schema_migrations": "filename",
     "tasks": "id", "idempotency_records": "key", "audit_outbox": "sequence", "flow_runs": "id",
     "stage_runs": "id", "attempts": "id", "decision_requests": "id", "approval_requests": "id",
     "session_links": "id", "handoff_packets": "id", "artifacts": "id", "knowledge_syncs": "id",
     "cleanup_records": "id", "audit_events": "id",
 }
 _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
+    "schema_migrations": frozenset(),
     "tasks": frozenset(),
     "idempotency_records": frozenset(),
     "audit_outbox": frozenset({"causation_id", "task_id"}),
@@ -56,6 +59,7 @@ _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "audit_events": frozenset({"task_id", "causation_id"}),
 }
 _INTEGER_COLUMNS: Final[dict[str, frozenset[str]]] = {
+    "schema_migrations": frozenset(),
     "tasks": frozenset({"version", "schema_version"}),
     "idempotency_records": frozenset(),
     "audit_outbox": frozenset({"sequence", "event_version"}),
