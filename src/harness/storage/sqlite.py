@@ -6,22 +6,18 @@ import re
 import sqlite3
 import time
 from collections.abc import Mapping
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Final, Self, cast
 
 from harness.domain.ids import ensure_uuid7, new_uuid7
 
 _SCHEMA_DIR: Final = Path(__file__).with_name("schema")
-_SENSITIVE_KEY: Final = re.compile(r"(?:api[_-]?key|authorization|credential|password|secret|token)", re.I)
-_BEARER_VALUE: Final = re.compile(r"\bbearer\s+[A-Za-z0-9._~+/-]+=*", re.I)
-_TOKEN_VALUE: Final = re.compile(r"\b(?:sk-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9_-]{8,})\b", re.I)
-_REDACTED: Final = "[REDACTED]"
 _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {
     "schema_migrations": (frozenset({"filename", "checksum", "applied_at"}), {}),
     "tasks": (frozenset({"id", "payload_json", "state", "version", "schema_version", "created_at"}), {}),
     "idempotency_records": (frozenset({"key", "payload_json", "task_id", "response_json", "created_at", "actor_id", "principal_type", "correlation_id", "causation_id"}), {"task_id": "tasks"}),
-    "audit_outbox": (frozenset({"sequence", "event_id", "event_type", "event_version", "actor_id", "principal_type", "correlation_id", "causation_id", "idempotency_key", "payload_json", "created_at", "task_id"}), {"task_id": "tasks"}),
+    "audit_outbox": (frozenset({"sequence", "event_id", "event_type", "event_version", "actor_id", "principal_type", "correlation_id", "causation_id", "idempotency_key", "payload_json", "created_at", "task_id", "claim_token", "claim_expires_at", "flushed_at"}), {"task_id": "tasks"}),
     "flow_runs": (frozenset({"id", "task_id", "flow_id", "flow_version", "flow_hash", "routing_reason", "state", "current_stage_id", "schema_version"}), {"task_id": "tasks"}),
     "stage_runs": (frozenset({"id", "flow_run_id", "stage_id", "stage_snapshot_json", "role_id", "model_alias", "skills_json", "capability_profile", "state", "ordinal", "budgets_json", "schema_version"}), {"flow_run_id": "flow_runs"}),
     "attempts": (frozenset({"id", "stage_run_id", "runtime", "started_at", "input_tokens", "output_tokens", "tool_tokens", "cost_usd", "native_session_id", "herdr_session_id", "finished_at", "failure_class", "exit_result", "schema_version"}), {"stage_run_id": "stage_runs"}),
@@ -45,7 +41,7 @@ _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "schema_migrations": frozenset(),
     "tasks": frozenset(),
     "idempotency_records": frozenset(),
-    "audit_outbox": frozenset({"causation_id", "task_id"}),
+    "audit_outbox": frozenset({"causation_id", "task_id", "claim_token", "claim_expires_at", "flushed_at"}),
     "flow_runs": frozenset(),
     "stage_runs": frozenset(),
     "attempts": frozenset({"native_session_id", "herdr_session_id", "finished_at", "failure_class", "exit_result"}),
@@ -93,25 +89,15 @@ _NON_UNIQUE_INDEXES: Final[dict[str, frozenset[tuple[str, ...]]]] = {
 }
 
 
+def _event_integer(value: object, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"ledger event {field} must be an integer")
+    return value
+
+
 def _strip_sqlite_padding(text: str) -> str:
     """Remove SQLite-recognized leading whitespace plus a UTF-8 BOM."""
     return text.lstrip("\ufeff \t\n\r\f\v")
-
-
-def redact(value: object) -> object:
-    """Recursively remove sensitive values before any payload is persisted."""
-    if isinstance(value, Mapping):
-        return {
-            str(key): _REDACTED if _SENSITIVE_KEY.search(str(key)) else redact(item)
-            for key, item in value.items()
-        }
-    if isinstance(value, list):
-        return [redact(item) for item in value]
-    if isinstance(value, tuple):
-        return tuple(redact(item) for item in value)
-    if isinstance(value, str):
-        return _TOKEN_VALUE.sub(_REDACTED, _BEARER_VALUE.sub("Bearer " + _REDACTED, value))
-    return value
 
 
 class SQLiteStore:
@@ -227,6 +213,18 @@ class SQLiteStore:
         """Return the outbox count; a read-only helper used to assert transaction behavior."""
         return int(self._connection.execute("SELECT COUNT(*) FROM audit_outbox").fetchone()[0])
 
+    def count_unflushed_outbox_events(self) -> int:
+        """Return committed events that still need an append-only ledger write."""
+        return int(
+            self._connection.execute(
+                "SELECT COUNT(*) FROM audit_outbox WHERE flushed_at IS NULL"
+            ).fetchone()[0]
+        )
+
+    def count_audit_events(self) -> int:
+        """Return durable audit-event rows mirrored from the JSONL ledger."""
+        return int(self._connection.execute("SELECT COUNT(*) FROM audit_events").fetchone()[0])
+
     def pragma(self, name: str) -> object:
         """Return a SQLite pragma value for read-only store verification."""
         if name not in {"journal_mode", "foreign_keys", "synchronous"}:
@@ -243,20 +241,145 @@ class SQLiteStore:
     def outbox_events(self) -> tuple[dict[str, object], ...]:
         """Return full read-only outbox records for audit-event handoff assertions."""
         rows = self._connection.execute(
-            "SELECT event_id, event_type, event_version, actor_id, principal_type, correlation_id, "
+            "SELECT sequence, event_id, event_type, event_version, actor_id, principal_type, correlation_id, "
             "causation_id, idempotency_key, payload_json, created_at, task_id "
             "FROM audit_outbox ORDER BY sequence"
         ).fetchall()
-        return tuple(
-            {
-                "event_id": str(row[0]), "type": str(row[1]), "event_version": int(row[2]),
-                "actor_id": str(row[3]), "principal_type": str(row[4]),
-                "correlation_id": str(row[5]), "causation_id": row[6],
-                "idempotency_key": str(row[7]), "payload": cast(dict[str, object], json.loads(str(row[8]))),
-                "occurred_at": str(row[9]), "task_id": row[10],
-            }
-            for row in rows
+        return tuple(self._outbox_row_to_event(row) for row in rows)
+
+    def claim_outbox_events(
+        self, claimer_id: str, *, limit: int = 100, lease_seconds: int = 60
+    ) -> tuple[dict[str, object], ...]:
+        """Claim the next contiguous unflushed prefix for one ledger flusher lease."""
+        claimer_id = ensure_uuid7(claimer_id)
+        if limit < 1 or lease_seconds < 1:
+            raise ValueError("outbox claim limit and lease must be positive")
+        now = datetime.now(UTC)
+        now_text = now.isoformat()
+        expiry = (now + timedelta(seconds=lease_seconds)).isoformat()
+        self._connection.execute("BEGIN IMMEDIATE")
+        try:
+            rows = self._connection.execute(
+                "SELECT sequence, event_id, event_type, event_version, actor_id, principal_type, correlation_id, "
+                "causation_id, idempotency_key, payload_json, created_at, task_id, claim_token, claim_expires_at "
+                "FROM audit_outbox WHERE flushed_at IS NULL ORDER BY sequence"
+            ).fetchall()
+            claimed: list[dict[str, object]] = []
+            for row in rows:
+                token = row[12]
+                expires_at = row[13]
+                if token is not None and expires_at is not None and str(expires_at) > now_text:
+                    break
+                if token is not None and expires_at is None:
+                    break
+                if len(claimed) >= limit:
+                    break
+                sequence = int(row[0])
+                updated = self._connection.execute(
+                    "UPDATE audit_outbox SET claim_token = ?, claim_expires_at = ? "
+                    "WHERE sequence = ? AND flushed_at IS NULL "
+                    "AND (claim_token IS NULL OR claim_expires_at <= ?)",
+                    (claimer_id, expiry, sequence, now_text),
+                ).rowcount
+                if updated != 1:
+                    break
+                claimed.append(self._outbox_row_to_event(row))
+            self._connection.commit()
+            return tuple(claimed)
+        except Exception:
+            self._connection.rollback()
+            raise
+
+    def mark_outbox_flushed(
+        self, sequence: int, claim_token: str, event: Mapping[str, object]
+    ) -> bool:
+        """Mirror one ledger event into SQLite and atomically mark its outbox row flushed."""
+        claim_token = ensure_uuid7(claim_token)
+        self._connection.execute("BEGIN IMMEDIATE")
+        try:
+            row = self._connection.execute(
+                "SELECT event_id, event_type, event_version, actor_id, correlation_id, causation_id, "
+                "payload_json, created_at, task_id FROM audit_outbox "
+                "WHERE sequence = ? AND claim_token = ? AND flushed_at IS NULL",
+                (sequence, claim_token),
+            ).fetchone()
+            if row is None:
+                self._connection.commit()
+                return False
+            self._validate_ledger_event(row, sequence, event)
+            self._connection.execute(
+                "INSERT OR IGNORE INTO audit_events "
+                "(id, sequence, event_type, event_version, actor_id, correlation_id, payload_json, prior_hash, "
+                "event_hash, occurred_at, task_id, causation_id, schema_version) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)",
+                (
+                    str(event["event_id"]), sequence, str(event["event_type"]),
+                    _event_integer(event["event_version"], "event_version"), str(event["actor_id"]), str(event["correlation_id"]),
+                    self._canonical_json(cast(Mapping[str, object], event["payload"])),
+                    str(event["prior_hash"]), str(event["event_hash"]), str(event["occurred_at"]),
+                    event["task_id"], event["causation_id"],
+                ),
+            )
+            persisted = self._connection.execute(
+                "SELECT id, event_hash, payload_json, prior_hash FROM audit_events WHERE sequence = ?",
+                (sequence,),
+            ).fetchone()
+            if (
+                persisted is None
+                or tuple(str(value) for value in persisted[:2])
+                != (str(event["event_id"]), str(event["event_hash"]))
+                or str(persisted[2]) != self._canonical_json(cast(Mapping[str, object], event["payload"]))
+                or str(persisted[3]) != str(event["prior_hash"])
+            ):
+                raise ValueError("audit event integrity error")
+            self._connection.execute(
+                "UPDATE audit_outbox SET flushed_at = ?, claim_token = NULL, claim_expires_at = NULL "
+                "WHERE sequence = ? AND claim_token = ? AND flushed_at IS NULL",
+                (datetime.now(UTC).isoformat(), sequence, claim_token),
+            )
+            self._connection.commit()
+            return True
+        except Exception:
+            self._connection.rollback()
+            raise
+
+    def release_outbox_claim(self, sequence: int, claim_token: str) -> None:
+        """Release an unflushed claim after a ledger or database failure so retry can resume."""
+        claim_token = ensure_uuid7(claim_token)
+        with self._connection:
+            self._connection.execute(
+                "UPDATE audit_outbox SET claim_token = NULL, claim_expires_at = NULL "
+                "WHERE sequence = ? AND claim_token = ? AND flushed_at IS NULL",
+                (sequence, claim_token),
+            )
+
+    @staticmethod
+    def _outbox_row_to_event(row: sqlite3.Row) -> dict[str, object]:
+        return {
+            "sequence": int(row[0]), "event_id": str(row[1]), "event_type": str(row[2]),
+            "type": str(row[2]), "event_version": int(row[3]), "actor_id": str(row[4]),
+            "principal_type": str(row[5]), "correlation_id": str(row[6]),
+            "causation_id": row[7], "idempotency_key": str(row[8]),
+            "payload": cast(dict[str, object], json.loads(str(row[9]))), "created_at": str(row[10]),
+            "occurred_at": str(row[10]), "task_id": row[11],
+        }
+
+    def _validate_ledger_event(
+        self, row: sqlite3.Row, sequence: int, event: Mapping[str, object]
+    ) -> None:
+        expected = (
+            str(row[0]), str(row[1]), int(row[2]), str(row[3]), str(row[4]), row[5],
+            self._canonical_json(cast(Mapping[str, object], json.loads(str(row[6])))), str(row[7]), row[8],
         )
+        actual = (
+            str(event.get("event_id")), str(event.get("event_type")),
+            _event_integer(event.get("event_version", 0), "event_version"),
+            str(event.get("actor_id")), str(event.get("correlation_id")), event.get("causation_id"),
+            self._canonical_json(cast(Mapping[str, object], event.get("payload", {}))),
+            str(event.get("occurred_at")), event.get("task_id"),
+        )
+        if sequence < 1 or expected != actual:
+            raise ValueError("ledger event does not match claimed outbox event")
 
     def _after_task_insert(self) -> None:
         """Provide a failure-injection seam between task and outbox writes."""

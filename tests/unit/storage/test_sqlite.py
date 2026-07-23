@@ -117,8 +117,8 @@ def test_migration_is_recorded_once_after_reopening(tmp_path) -> None:
     first = SQLiteStore(path)
     second = SQLiteStore(path)
 
-    assert first.applied_migrations() == ("0001_initial",)
-    assert second.applied_migrations() == ("0001_initial",)
+    assert first.applied_migrations() == ("0001_initial", "0002_audit_outbox_leases")
+    assert second.applied_migrations() == ("0001_initial", "0002_audit_outbox_leases")
 
 
 def test_rejects_reconstructed_migration_ledger_without_primary_key(tmp_path) -> None:
@@ -360,6 +360,10 @@ def test_migrations_upgrade_and_bootstrap_with_a_future_schema_change(tmp_path) 
     (migrations / "0001_initial.sql").write_text(
         (sqlite_module._SCHEMA_DIR / "0001_initial.sql").read_text(encoding="utf-8"), encoding="utf-8"
     )
+    (migrations / "0002_audit_outbox_leases.sql").write_text(
+        (sqlite_module._SCHEMA_DIR / "0002_audit_outbox_leases.sql").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
     upgrade = """-- semicolon in this comment ; must not split a statement
 ALTER TABLE tasks ADD COLUMN migration_note TEXT NOT NULL DEFAULT 'contains;a:semicolon';
 CREATE TABLE upgrade_markers (id TEXT PRIMARY KEY, note TEXT NOT NULL DEFAULT 'marker;value');
@@ -369,14 +373,18 @@ CREATE TABLE same_line_one (id TEXT PRIMARY KEY); CREATE TABLE same_line_two (id
 """
     upgraded_path = tmp_path / "upgraded.db"
     with SQLiteStore(upgraded_path, schema_dir=migrations, allow_schema_extensions=True) as store:
-        assert store.applied_migrations() == ("0001_initial",)
-    (migrations / "0002_upgrade.sql").write_text(upgrade, encoding="utf-8")
+        assert store.applied_migrations() == ("0001_initial", "0002_audit_outbox_leases")
+    (migrations / "0003_upgrade.sql").write_text(upgrade, encoding="utf-8")
     with SQLiteStore(upgraded_path, schema_dir=migrations, allow_schema_extensions=True) as store:
-        assert store.applied_migrations() == ("0001_initial", "0002_upgrade")
+        assert store.applied_migrations() == (
+            "0001_initial", "0002_audit_outbox_leases", "0003_upgrade"
+        )
 
     fresh_path = tmp_path / "fresh.db"
     with SQLiteStore(fresh_path, schema_dir=migrations, allow_schema_extensions=True) as store:
-        assert store.applied_migrations() == ("0001_initial", "0002_upgrade")
+        assert store.applied_migrations() == (
+            "0001_initial", "0002_audit_outbox_leases", "0003_upgrade"
+        )
 
     for path in (upgraded_path, fresh_path):
         with sqlite3.connect(path) as connection:
@@ -491,7 +499,7 @@ def test_rejects_missing_audit_outbox_event_id_uniqueness(tmp_path) -> None:
             "event_type TEXT NOT NULL, event_version INTEGER NOT NULL, actor_id TEXT NOT NULL, "
             "principal_type TEXT NOT NULL, correlation_id TEXT NOT NULL, causation_id TEXT, "
             "idempotency_key TEXT NOT NULL, payload_json TEXT NOT NULL, created_at TEXT NOT NULL, "
-            "task_id TEXT REFERENCES tasks(id))"
+            "task_id TEXT REFERENCES tasks(id), claim_token TEXT, claim_expires_at TEXT, flushed_at TEXT)"
         )
         connection.execute(
             "CREATE UNIQUE INDEX partial_outbox_event_id ON audit_outbox(event_id) WHERE event_id <> ''"
@@ -589,7 +597,10 @@ def test_concurrent_fresh_initialization_records_migration_once(tmp_path) -> Non
     with ThreadPoolExecutor(max_workers=2) as executor:
         results = list(executor.map(lambda _: initialize(), range(2)))
 
-    assert results == [("0001_initial",), ("0001_initial",)]
+    assert results == [
+        ("0001_initial", "0002_audit_outbox_leases"),
+        ("0001_initial", "0002_audit_outbox_leases"),
+    ]
 
 
 def test_failure_after_task_insert_rolls_back_every_record(tmp_path) -> None:
