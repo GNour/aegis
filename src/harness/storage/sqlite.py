@@ -323,7 +323,7 @@ class SQLiteStore:
             unique_shapes = {
                 frozenset(str(column[2]) for column in self._connection.execute(f"PRAGMA index_info({index[1]})"))
                 for index in self._connection.execute(f"PRAGMA index_list({table})")
-                if int(index[2]) == 1
+                if int(index[2]) == 1 and (len(index) < 5 or int(index[4]) == 0)
             }
             if not _UNIQUE_COLUMNS[table] <= unique_shapes:
                 raise ValueError(f"migration uniqueness mismatch: {table}")

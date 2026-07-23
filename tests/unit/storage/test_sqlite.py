@@ -409,6 +409,11 @@ def test_rejects_missing_audit_outbox_event_id_uniqueness(tmp_path) -> None:
             "idempotency_key TEXT NOT NULL, payload_json TEXT NOT NULL, created_at TEXT NOT NULL, "
             "task_id TEXT REFERENCES tasks(id))"
         )
+        connection.execute(
+            "CREATE UNIQUE INDEX partial_outbox_event_id ON audit_outbox(event_id) WHERE event_id <> ''"
+        )
+        connection.execute("INSERT INTO audit_outbox (sequence, event_id, event_type, event_version, actor_id, principal_type, correlation_id, idempotency_key, payload_json, created_at) VALUES (1, '', 'event', 1, 'actor', 'system', 'correlation', 'key-1', '{}', 'now')")
+        connection.execute("INSERT INTO audit_outbox (sequence, event_id, event_type, event_version, actor_id, principal_type, correlation_id, idempotency_key, payload_json, created_at) VALUES (2, '', 'event', 1, 'actor', 'system', 'correlation', 'key-2', '{}', 'now')")
 
     with pytest.raises(ValueError, match="migration uniqueness mismatch: audit_outbox"):
         SQLiteStore(path)
@@ -422,6 +427,9 @@ def test_rejects_missing_audit_event_sequence_uniqueness(tmp_path) -> None:
             "event_version INTEGER NOT NULL, actor_id TEXT NOT NULL, correlation_id TEXT NOT NULL, "
             "payload_json TEXT NOT NULL, prior_hash TEXT NOT NULL, event_hash TEXT NOT NULL, occurred_at TEXT NOT NULL, "
             "task_id TEXT REFERENCES tasks(id), causation_id TEXT, schema_version INTEGER NOT NULL)"
+        )
+        connection.execute(
+            "CREATE UNIQUE INDEX partial_audit_event_sequence ON audit_events(sequence) WHERE sequence > 0"
         )
 
     with pytest.raises(ValueError, match="migration uniqueness mismatch: audit_events"):
