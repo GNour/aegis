@@ -135,6 +135,29 @@ def test_rejects_reconstructed_migration_ledger_without_primary_key(tmp_path) ->
         SQLiteStore(path)
 
 
+@pytest.mark.parametrize(
+    ("definition", "record", "message"),
+    [
+        ("checksum TEXT NOT NULL, applied_at TEXT NOT NULL", "('sum', 'now')", "schema mismatch"),
+        (
+            "filename TEXT PRIMARY KEY, checksum INTEGER NOT NULL, applied_at TEXT NOT NULL",
+            "('0001_initial', 1, 'now')",
+            "constraint mismatch",
+        ),
+    ],
+)
+def test_rejects_populated_malformed_migration_ledger_before_reading_rows(
+    tmp_path, definition: str, record: str, message: str
+) -> None:
+    path = tmp_path / "state.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(f"CREATE TABLE schema_migrations ({definition})")
+        connection.execute(f"INSERT INTO schema_migrations VALUES {record}")
+
+    with pytest.raises(ValueError, match=message):
+        SQLiteStore(path)
+
+
 def test_created_task_has_canonical_uuid7_and_atomic_outbox_event(tmp_path) -> None:
     with SQLiteStore(tmp_path / "state.db") as store:
         actor_id = new_uuid7()

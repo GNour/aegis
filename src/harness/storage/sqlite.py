@@ -266,6 +266,7 @@ class SQLiteStore:
             "CREATE TABLE IF NOT EXISTS schema_migrations "
             "(filename TEXT PRIMARY KEY, checksum TEXT NOT NULL, applied_at TEXT NOT NULL)"
         )
+        self._validate_migration_ledger()
         migrations = sorted(self._schema_dir.glob("[0-9][0-9][0-9][0-9]_*.sql"))
         try:
             self._connection.execute("BEGIN IMMEDIATE")
@@ -380,6 +381,20 @@ class SQLiteStore:
                 str(audit_outbox_sql[0]),
             ) is None:
                 raise ValueError("migration constraint mismatch: audit_outbox")
+
+    def _validate_migration_ledger(self) -> None:
+        details = {
+            str(item[1]): (str(item[2]).upper(), int(item[3]), int(item[5]))
+            for item in self._connection.execute("PRAGMA table_info(schema_migrations)")
+        }
+        expected = {"filename", "checksum", "applied_at"}
+        if set(details) != expected:
+            raise ValueError("migration schema mismatch: schema_migrations")
+        if details["filename"][2] != 1 or any(
+            details[column][0] != "TEXT" or details[column][1] != 1
+            for column in ("checksum", "applied_at")
+        ):
+            raise ValueError("migration constraint mismatch: schema_migrations")
 
     def _execute_migration_script(self, script: str) -> None:
         script = _strip_sqlite_padding(script)
