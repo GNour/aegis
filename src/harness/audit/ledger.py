@@ -23,6 +23,8 @@ Verifier = Callable[[bytes, str], bool]
 
 _GENESIS_HASH: Final = "0" * 64
 _MANIFEST_SUFFIX: Final = ".manifest"
+_CHECKPOINT_SUFFIX: Final = ".checkpoint"
+_ROTATION_SUFFIX: Final = ".rotation"
 _LOCK_SUFFIX: Final = ".lock"
 _SEGMENT_VERSION: Final = 1
 _EVENT_FIELDS: Final = frozenset(
@@ -65,12 +67,15 @@ class Ledger:
     ) -> None:
         self._path = path
         self._manifest_path = path.with_name(path.name + _MANIFEST_SUFFIX)
+        self._checkpoint_path = path.with_name(path.name + _CHECKPOINT_SUFFIX)
+        self._rotation_path = path.with_name(path.name + _ROTATION_SUFFIX)
         self._lock_path = path.with_name(path.name + _LOCK_SUFFIX)
         self._signer = signer
         self._verifier = verifier
         self._lock = RLock()
         self._path.parent.mkdir(parents=True, exist_ok=True)
         with self._lock, self._file_lock():
+            self._recover_rotation()
             self._load_verified(reconcile_manifest=True)
 
     def append(self, event_type: str, payload: Mapping[str, object]) -> dict[str, object]:
@@ -117,6 +122,8 @@ class Ledger:
         """Seal the active segment with a signed manifest and start its successor."""
         if self._signer is None:
             raise ValueError("audit rotation requires a segment manifest signer")
+        if self._verifier is None:
+            raise ValueError("audit rotation requires a segment manifest verifier")
         with self._lock, self._file_lock():
             records, state = self._load_verified(reconcile_manifest=True)
             if not records:
@@ -137,20 +144,63 @@ class Ledger:
             signature = self._signer(self._canonical_json(body).encode("utf-8"))
             if not isinstance(signature, str) or not signature:
                 raise ValueError("audit segment signer returned an invalid signature")
+            target_state = _LedgerState(
+                terminal_sequence=terminal_sequence,
+                terminal_hash=terminal_hash,
+                active_start_sequence=terminal_sequence + 1,
+                active_prior_hash=terminal_hash,
+            )
+            intent = self._rotation_intent(
+                "prepared", state, target_state, segment_path, {**body, "signature": signature}
+            )
+            self._write_rotation_intent(intent)
+            self._after_rotation_transition("prepared")
             self._atomic_write_json(self._segment_manifest_path(segment_path), {**body, "signature": signature})
+            intent["phase"] = "segment_manifest_written"
+            self._write_rotation_intent(intent)
+            self._after_rotation_transition("segment_manifest_written")
             os.replace(self._path, segment_path)
             self._fsync_directory()
+            intent["phase"] = "active_renamed"
+            self._write_rotation_intent(intent)
+            self._after_rotation_transition("active_renamed")
             self._path.touch(exist_ok=False)
             self._fsync_file(self._path)
-            self._write_state_manifest(
-                _LedgerState(
-                    terminal_sequence=terminal_sequence,
-                    terminal_hash=terminal_hash,
-                    active_start_sequence=terminal_sequence + 1,
-                    active_prior_hash=terminal_hash,
-                )
-            )
+            intent["phase"] = "active_created"
+            self._write_rotation_intent(intent)
+            self._after_rotation_transition("active_created")
+            self._write_state_manifest(target_state)
+            self._write_checkpoint(target_state)
+            intent["phase"] = "state_written"
+            self._write_rotation_intent(intent)
+            self._after_rotation_transition("state_written")
+            self._remove_rotation_intent()
             return segment_path
+
+    def _after_rotation_transition(self, phase: str) -> None:
+        """Provide a fault-injection seam after each durable rotation transition."""
+
+    def _rotation_intent(
+        self,
+        phase: str,
+        source: _LedgerState,
+        target: _LedgerState,
+        segment_path: Path,
+        segment_manifest: Mapping[str, object],
+    ) -> dict[str, object]:
+        return {
+            "phase": phase,
+            "segment_file": segment_path.name,
+            "source_terminal_sequence": source.terminal_sequence,
+            "source_terminal_hash": source.terminal_hash,
+            "source_active_start_sequence": source.active_start_sequence,
+            "source_active_prior_hash": source.active_prior_hash,
+            "target_terminal_sequence": target.terminal_sequence,
+            "target_terminal_hash": target.terminal_hash,
+            "target_active_start_sequence": target.active_start_sequence,
+            "target_active_prior_hash": target.active_prior_hash,
+            "segment_manifest": dict(segment_manifest),
+        }
 
     def verify(self) -> list[int]:
         """Return the first bad sequence or file position; never raise for malformed events."""
@@ -212,14 +262,14 @@ class Ledger:
             if expected_sequence != next_sequence:
                 raise ValueError("audit sequence is not contiguous")
             self._append_line(candidate)
-            self._write_state_manifest(
-                _LedgerState(
-                    terminal_sequence=expected_sequence,
-                    terminal_hash=str(candidate["event_hash"]),
-                    active_start_sequence=state.active_start_sequence,
-                    active_prior_hash=state.active_prior_hash,
-                )
+            updated_state = _LedgerState(
+                terminal_sequence=expected_sequence,
+                terminal_hash=str(candidate["event_hash"]),
+                active_start_sequence=state.active_start_sequence,
+                active_prior_hash=state.active_prior_hash,
             )
+            self._write_state_manifest(updated_state)
+            self._write_checkpoint(updated_state)
             return candidate
 
     def _load_verified(self, *, reconcile_manifest: bool) -> tuple[list[dict[str, object]], _LedgerState]:
@@ -237,7 +287,100 @@ class Ledger:
             state = self._state_for_records(records, state)
             self._write_state_manifest(state)
         self._raise_if_segments_invalid(state)
+        self._reconcile_checkpoint(state)
         return records, state
+
+    def _recover_rotation(self) -> None:
+        intent = self._read_json(self._rotation_path)
+        if intent is None:
+            return
+        source, target, segment_path, segment_manifest = self._parse_rotation_intent(intent)
+        if segment_path.exists():
+            if not self._segment_manifest_path(segment_path).exists():
+                self._atomic_write_json(self._segment_manifest_path(segment_path), segment_manifest)
+            if not self._path.exists():
+                self._path.touch(exist_ok=False)
+                self._fsync_file(self._path)
+        elif self._path.exists():
+            records, malformed_position = self._read_records(self._path)
+            if malformed_position is not None:
+                raise ValueError(f"rotation source is malformed at position {malformed_position}")
+            mismatch = self._verify_records(
+                records, source.active_start_sequence, source.active_prior_hash
+            )
+            if (
+                mismatch is not None
+                or not records
+                or _integer(records[-1]["sequence"], "sequence") != source.terminal_sequence
+                or str(records[-1]["event_hash"]) != source.terminal_hash
+            ):
+                raise ValueError("rotation source no longer matches its durable intent")
+            self._atomic_write_json(self._segment_manifest_path(segment_path), segment_manifest)
+            os.replace(self._path, segment_path)
+            self._fsync_directory()
+            self._path.touch(exist_ok=False)
+            self._fsync_file(self._path)
+        else:
+            raise ValueError("rotation intent has neither an active nor a sealed segment")
+        self._write_state_manifest(target)
+        self._write_checkpoint(target)
+        self._remove_rotation_intent()
+
+    def _parse_rotation_intent(
+        self, intent: Mapping[str, object]
+    ) -> tuple[_LedgerState, _LedgerState, Path, dict[str, object]]:
+        expected = {
+            "phase", "segment_file", "source_terminal_sequence", "source_terminal_hash",
+            "source_active_start_sequence", "source_active_prior_hash", "target_terminal_sequence",
+            "target_terminal_hash", "target_active_start_sequence", "target_active_prior_hash",
+            "segment_manifest",
+        }
+        phases = {
+            "prepared", "segment_manifest_written", "active_renamed", "active_created", "state_written"
+        }
+        if set(intent) != expected or intent["phase"] not in phases:
+            raise ValueError("rotation intent has an invalid schema")
+        segment_file = intent["segment_file"]
+        segment_manifest = intent["segment_manifest"]
+        if not isinstance(segment_file, str) or not isinstance(segment_manifest, Mapping):
+            raise ValueError("rotation intent has invalid segment metadata")
+        source = self._intent_state(intent, "source")
+        target = self._intent_state(intent, "target")
+        if (
+            target.terminal_sequence != source.terminal_sequence
+            or target.terminal_hash != source.terminal_hash
+            or target.active_start_sequence != source.terminal_sequence + 1
+            or target.active_prior_hash != source.terminal_hash
+        ):
+            raise ValueError("rotation intent has invalid state transition")
+        segment_path = self._path.with_name(segment_file)
+        if segment_path != self._segment_path(source.active_start_sequence, source.terminal_sequence):
+            raise ValueError("rotation intent names an unexpected segment")
+        manifest = cast(dict[str, object], dict(segment_manifest))
+        body = self._parse_segment_manifest(manifest, segment_path.name)
+        if (
+            body["first_sequence"] != source.active_start_sequence
+            or body["terminal_sequence"] != source.terminal_sequence
+            or body["prior_hash"] != source.active_prior_hash
+            or body["terminal_hash"] != source.terminal_hash
+        ):
+            raise ValueError("rotation intent segment does not match source state")
+        return source, target, segment_path, manifest
+
+    def _intent_state(self, intent: Mapping[str, object], prefix: str) -> _LedgerState:
+        return _LedgerState(
+            _integer(intent[f"{prefix}_terminal_sequence"], f"{prefix} terminal sequence"),
+            self._hash_text(intent[f"{prefix}_terminal_hash"], f"{prefix} terminal hash"),
+            _integer(intent[f"{prefix}_active_start_sequence"], f"{prefix} active start sequence"),
+            self._hash_text(intent[f"{prefix}_active_prior_hash"], f"{prefix} active prior hash"),
+        )
+
+    def _write_rotation_intent(self, intent: Mapping[str, object]) -> None:
+        self._atomic_write_json(self._rotation_path, intent)
+
+    def _remove_rotation_intent(self) -> None:
+        self._rotation_path.unlink(missing_ok=True)
+        self._fsync_directory()
 
     def _read_records(self, path: Path) -> tuple[list[dict[str, object]], int | None]:
         if not path.exists():
@@ -277,6 +420,28 @@ class Ledger:
             self._hash_text(manifest["terminal_hash"], "terminal_hash"),
             _integer(manifest["active_start_sequence"], "active_start_sequence"),
             self._hash_text(manifest["active_prior_hash"], "active_prior_hash"),
+        )
+
+    def _reconcile_checkpoint(self, state: _LedgerState) -> None:
+        checkpoint = self._read_json(self._checkpoint_path)
+        if checkpoint is None:
+            self._write_checkpoint(state)
+            return
+        if set(checkpoint) != {"sequence", "event_hash"}:
+            raise ValueError("audit checkpoint has an invalid schema")
+        sequence = _integer(checkpoint["sequence"], "checkpoint sequence")
+        event_hash = self._hash_text(checkpoint["event_hash"], "checkpoint event_hash")
+        if sequence > state.terminal_sequence:
+            raise ValueError("audit checkpoint is ahead of the verified ledger")
+        if sequence == state.terminal_sequence and event_hash != state.terminal_hash:
+            raise ValueError("audit checkpoint terminal hash mismatch")
+        if sequence < state.terminal_sequence:
+            self._write_checkpoint(state)
+
+    def _write_checkpoint(self, state: _LedgerState) -> None:
+        self._atomic_write_json(
+            self._checkpoint_path,
+            {"sequence": state.terminal_sequence, "event_hash": state.terminal_hash},
         )
 
     def _state_mismatch(self, records: list[dict[str, object]], state: _LedgerState) -> int | None:

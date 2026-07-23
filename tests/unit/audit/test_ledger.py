@@ -63,6 +63,18 @@ def test_restart_reconciles_a_missing_manifest_after_an_append(tmp_path) -> None
     assert Ledger(path).verify() == []
 
 
+def test_restart_rejects_active_tail_and_manifest_deletion(tmp_path) -> None:
+    path = tmp_path / "audit.jsonl"
+    ledger = Ledger(path)
+    ledger.append("one", {"value": 1})
+    ledger.append("two", {"value": 2})
+    path.write_text(path.read_text(encoding="utf-8").splitlines()[0] + "\n", encoding="utf-8")
+    path.with_name(path.name + ".manifest").unlink()
+
+    with pytest.raises(ValueError, match="checkpoint"):
+        Ledger(path)
+
+
 def test_flushes_committed_outbox_once_and_survives_restart(tmp_path) -> None:
     database_path = tmp_path / "state.db"
     ledger = Ledger(tmp_path / "audit.jsonl")
@@ -143,6 +155,32 @@ def test_restart_recovers_a_missing_active_manifest_after_rotation(tmp_path) -> 
     restarted = Ledger(path, signer=_signer, verifier=_verifier)
     assert restarted.verify() == []
     assert restarted.append("three", {"value": 3})["sequence"] == 3
+
+
+@pytest.mark.parametrize(
+    "phase",
+    ["prepared", "segment_manifest_written", "active_renamed", "active_created", "state_written"],
+)
+def test_restart_recovers_each_interrupted_rotation_transition(tmp_path, phase: str) -> None:
+    class InterruptingLedger(Ledger):
+        def __init__(self, path: Path) -> None:
+            self._phase = phase
+            super().__init__(path, signer=_signer, verifier=_verifier)
+
+        def _after_rotation_transition(self, reached: str) -> None:
+            if reached == self._phase:
+                raise RuntimeError(f"interrupted after {reached}")
+
+    path = tmp_path / "audit.jsonl"
+    ledger = InterruptingLedger(path)
+    ledger.append("one", {"value": 1})
+
+    with pytest.raises(RuntimeError, match=phase):
+        ledger.rotate()
+
+    restarted = Ledger(path, signer=_signer, verifier=_verifier)
+    assert restarted.verify() == []
+    assert restarted.append("two", {"value": 2})["sequence"] == 2
 
 
 def test_tampered_signed_segment_is_rejected_on_restart(tmp_path) -> None:
