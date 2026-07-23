@@ -316,6 +316,7 @@ def test_migrations_upgrade_and_bootstrap_with_a_future_schema_change(tmp_path) 
     upgrade = """-- semicolon in this comment ; must not split a statement
 ALTER TABLE tasks ADD COLUMN migration_note TEXT NOT NULL DEFAULT 'contains;a:semicolon';
 CREATE TABLE upgrade_markers (id TEXT PRIMARY KEY, note TEXT NOT NULL DEFAULT 'marker;value');
+CREATE TABLE same_line_one (id TEXT PRIMARY KEY); CREATE TABLE same_line_two (id TEXT PRIMARY KEY);
 """
     upgraded_path = tmp_path / "upgraded.db"
     with SQLiteStore(upgraded_path, schema_dir=migrations) as store:
@@ -332,6 +333,30 @@ CREATE TABLE upgrade_markers (id TEXT PRIMARY KEY, note TEXT NOT NULL DEFAULT 'm
         with sqlite3.connect(path) as connection:
             assert connection.execute("SELECT migration_note FROM tasks LIMIT 1").fetchall() == []
             assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'upgrade_markers'").fetchone()
+            assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'same_line_one'").fetchone()
+            assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'same_line_two'").fetchone()
+
+
+def test_migration_rejects_transaction_control_without_committing_outer_work(tmp_path) -> None:
+    migrations = tmp_path / "migrations"
+    migrations.mkdir()
+    (migrations / "0001_initial.sql").write_text(
+        (sqlite_module._SCHEMA_DIR / "0001_initial.sql").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    (migrations / "0002_bad.sql").write_text(
+        "CREATE TABLE should_rollback (id TEXT PRIMARY KEY); /* comment */ CoMmIt; "
+        "CREATE TABLE never_reached (id TEXT PRIMARY KEY);",
+        encoding="utf-8",
+    )
+    path = tmp_path / "state.db"
+
+    with pytest.raises(ValueError, match="transaction control"):
+        SQLiteStore(path, schema_dir=migrations)
+
+    with sqlite3.connect(path) as connection:
+        assert connection.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0] == 0
+        assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'tasks'").fetchone() is None
+        assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'should_rollback'").fetchone() is None
 
 
 def test_rejects_preexisting_malformed_stage_runs_table(tmp_path) -> None:

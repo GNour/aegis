@@ -318,14 +318,37 @@ class SQLiteStore:
 
     def _execute_migration_script(self, script: str) -> None:
         statement = ""
-        for line in script.splitlines(keepends=True):
-            statement += line
+        for character in script:
+            statement += character
             if sqlite3.complete_statement(statement):
                 if statement.strip():
+                    if self._is_transaction_control(statement):
+                        raise ValueError("migration transaction control statement is not allowed")
                     self._connection.execute(statement)
                 statement = ""
         if statement.strip():
             raise ValueError("incomplete migration statement")
+
+    @staticmethod
+    def _is_transaction_control(statement: str) -> bool:
+        text = statement.lstrip()
+        while text.startswith("--") or text.startswith("/*"):
+            if text.startswith("--"):
+                newline = text.find("\n")
+                text = "" if newline == -1 else text[newline + 1 :].lstrip()
+            else:
+                comment_end = text.find("*/")
+                if comment_end == -1:
+                    return False
+                text = text[comment_end + 2 :].lstrip()
+        keyword = re.match(r"[A-Za-z]+", text)
+        return keyword is not None and keyword.group(0).upper() in {
+            "BEGIN",
+            "COMMIT",
+            "ROLLBACK",
+            "SAVEPOINT",
+            "RELEASE",
+        }
 
     @staticmethod
     def _canonical_json(value: Mapping[str, object]) -> str:
