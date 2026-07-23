@@ -144,6 +144,16 @@ def test_rejects_reconstructed_migration_ledger_without_primary_key(tmp_path) ->
             "('0001_initial', 1, 'now')",
             "constraint mismatch",
         ),
+        (
+            "filename INTEGER PRIMARY KEY, checksum TEXT NOT NULL, applied_at TEXT NOT NULL",
+            "(1, 'sum', 'now')",
+            "constraint mismatch",
+        ),
+        (
+            "filename TEXT NOT NULL, checksum TEXT NOT NULL, applied_at TEXT NOT NULL, PRIMARY KEY(filename, checksum)",
+            "('0001_initial', 'sum', 'now')",
+            "constraint mismatch",
+        ),
     ],
 )
 def test_rejects_populated_malformed_migration_ledger_before_reading_rows(

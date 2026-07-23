@@ -390,9 +390,13 @@ class SQLiteStore:
         expected = {"filename", "checksum", "applied_at"}
         if set(details) != expected:
             raise ValueError("migration schema mismatch: schema_migrations")
-        if details["filename"][2] != 1 or any(
+        if (
+            details["filename"] != ("TEXT", 0, 1)
+            or any(details[column][2] != 0 for column in ("checksum", "applied_at"))
+            or any(
             details[column][0] != "TEXT" or details[column][1] != 1
             for column in ("checksum", "applied_at")
+            )
         ):
             raise ValueError("migration constraint mismatch: schema_migrations")
 
