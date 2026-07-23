@@ -75,6 +75,11 @@ _REAL_COLUMNS: Final[dict[str, frozenset[str]]] = {
     **{table: frozenset() for table in _TABLE_SPECS},
     "attempts": frozenset({"cost_usd"}),
 }
+_UNIQUE_COLUMNS: Final[dict[str, frozenset[frozenset[str]]]] = {
+    **{table: frozenset() for table in _TABLE_SPECS},
+    "audit_outbox": frozenset({frozenset({"event_id"})}),
+    "audit_events": frozenset({frozenset({"sequence"})}),
+}
 
 
 def redact(value: object) -> object:
@@ -315,8 +320,16 @@ class SQLiteStore:
             }
             if foreign_keys != expected_fk_details:
                 raise ValueError(f"migration foreign key mismatch: {table}")
+            unique_shapes = {
+                frozenset(str(column[2]) for column in self._connection.execute(f"PRAGMA index_info({index[1]})"))
+                for index in self._connection.execute(f"PRAGMA index_list({table})")
+                if int(index[2]) == 1
+            }
+            if not _UNIQUE_COLUMNS[table] <= unique_shapes:
+                raise ValueError(f"migration uniqueness mismatch: {table}")
 
     def _execute_migration_script(self, script: str) -> None:
+        script = script.lstrip("\ufeff")
         statement = ""
         for character in script:
             statement += character
@@ -326,12 +339,12 @@ class SQLiteStore:
                         raise ValueError("migration transaction control statement is not allowed")
                     self._connection.execute(statement)
                 statement = ""
-        if statement.strip():
+        if self._has_sql_content(statement):
             raise ValueError("incomplete migration statement")
 
     @staticmethod
     def _is_transaction_control(statement: str) -> bool:
-        text = statement.lstrip()
+        text = statement.lstrip("\ufeff \t\r\n")
         while text.startswith("--") or text.startswith("/*"):
             if text.startswith("--"):
                 newline = text.find("\n")
@@ -350,6 +363,20 @@ class SQLiteStore:
             "SAVEPOINT",
             "RELEASE",
         }
+
+    @staticmethod
+    def _has_sql_content(statement: str) -> bool:
+        text = statement.lstrip("\ufeff \t\r\n")
+        while text.startswith("--") or text.startswith("/*"):
+            if text.startswith("--"):
+                newline = text.find("\n")
+                text = "" if newline == -1 else text[newline + 1 :].lstrip()
+            else:
+                comment_end = text.find("*/")
+                if comment_end == -1:
+                    return True
+                text = text[comment_end + 2 :].lstrip()
+        return bool(text)
 
     @staticmethod
     def _canonical_json(value: Mapping[str, object]) -> str:

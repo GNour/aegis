@@ -317,6 +317,8 @@ def test_migrations_upgrade_and_bootstrap_with_a_future_schema_change(tmp_path) 
 ALTER TABLE tasks ADD COLUMN migration_note TEXT NOT NULL DEFAULT 'contains;a:semicolon';
 CREATE TABLE upgrade_markers (id TEXT PRIMARY KEY, note TEXT NOT NULL DEFAULT 'marker;value');
 CREATE TABLE same_line_one (id TEXT PRIMARY KEY); CREATE TABLE same_line_two (id TEXT PRIMARY KEY);
+-- trailing comment
+/* trailing block comment */
 """
     upgraded_path = tmp_path / "upgraded.db"
     with SQLiteStore(upgraded_path, schema_dir=migrations) as store:
@@ -377,6 +379,53 @@ def test_migration_rejects_standalone_end_without_committing_outer_work(tmp_path
     with sqlite3.connect(path) as connection:
         assert connection.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0] == 0
         assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'end_should_rollback'").fetchone() is None
+
+
+def test_migration_rejects_bom_prefixed_transaction_control(tmp_path) -> None:
+    migrations = tmp_path / "migrations"
+    migrations.mkdir()
+    (migrations / "0001_initial.sql").write_text(
+        (sqlite_module._SCHEMA_DIR / "0001_initial.sql").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    (migrations / "0002_bad.sql").write_text(
+        "\ufeff/* leading */ cOmMiT;", encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="transaction control"):
+        SQLiteStore(tmp_path / "state.db", schema_dir=migrations)
+
+
+def test_rejects_missing_audit_outbox_event_id_uniqueness(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE TABLE tasks (id TEXT PRIMARY KEY, payload_json TEXT NOT NULL, state TEXT NOT NULL, "
+            "version INTEGER NOT NULL, schema_version INTEGER NOT NULL, created_at TEXT NOT NULL)"
+        )
+        connection.execute(
+            "CREATE TABLE audit_outbox (sequence INTEGER PRIMARY KEY, event_id TEXT NOT NULL, "
+            "event_type TEXT NOT NULL, event_version INTEGER NOT NULL, actor_id TEXT NOT NULL, "
+            "principal_type TEXT NOT NULL, correlation_id TEXT NOT NULL, causation_id TEXT, "
+            "idempotency_key TEXT NOT NULL, payload_json TEXT NOT NULL, created_at TEXT NOT NULL, "
+            "task_id TEXT REFERENCES tasks(id))"
+        )
+
+    with pytest.raises(ValueError, match="migration uniqueness mismatch: audit_outbox"):
+        SQLiteStore(path)
+
+
+def test_rejects_missing_audit_event_sequence_uniqueness(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE TABLE audit_events (id TEXT PRIMARY KEY, sequence INTEGER NOT NULL, event_type TEXT NOT NULL, "
+            "event_version INTEGER NOT NULL, actor_id TEXT NOT NULL, correlation_id TEXT NOT NULL, "
+            "payload_json TEXT NOT NULL, prior_hash TEXT NOT NULL, event_hash TEXT NOT NULL, occurred_at TEXT NOT NULL, "
+            "task_id TEXT REFERENCES tasks(id), causation_id TEXT, schema_version INTEGER NOT NULL)"
+        )
+
+    with pytest.raises(ValueError, match="migration uniqueness mismatch: audit_events"):
+        SQLiteStore(path)
 
 
 def test_rejects_preexisting_malformed_stage_runs_table(tmp_path) -> None:
