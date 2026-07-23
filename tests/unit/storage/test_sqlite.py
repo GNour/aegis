@@ -191,6 +191,18 @@ def test_rejects_tasks_table_without_primary_key_or_not_null_constraints(tmp_pat
         SQLiteStore(path)
 
 
+def test_rejects_tasks_table_with_a_text_version(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE TABLE tasks (id TEXT PRIMARY KEY, payload_json TEXT NOT NULL, state TEXT NOT NULL, "
+            "version TEXT NOT NULL, schema_version INTEGER NOT NULL, created_at TEXT NOT NULL)"
+        )
+
+    with pytest.raises(ValueError, match="migration type mismatch: tasks"):
+        SQLiteStore(path)
+
+
 def test_reopening_rejects_a_required_table_dropped_after_migration(tmp_path) -> None:
     path = tmp_path / "state.db"
     with SQLiteStore(path):
@@ -233,6 +245,24 @@ def test_rejects_flow_runs_foreign_key_to_the_wrong_parent_column(tmp_path) -> N
         SQLiteStore(path)
 
 
+def test_rejects_flow_runs_with_an_unexpected_foreign_key(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE TABLE tasks (id TEXT PRIMARY KEY, payload_json TEXT NOT NULL, state TEXT NOT NULL, "
+            "version INTEGER NOT NULL, schema_version INTEGER NOT NULL, created_at TEXT NOT NULL)"
+        )
+        connection.execute(
+            "CREATE TABLE flow_runs (id TEXT PRIMARY KEY, task_id TEXT NOT NULL REFERENCES tasks(id), "
+            "flow_id TEXT NOT NULL REFERENCES tasks(id), flow_version INTEGER NOT NULL, flow_hash TEXT NOT NULL, "
+            "routing_reason TEXT NOT NULL, state TEXT NOT NULL, current_stage_id TEXT NOT NULL, "
+            "schema_version INTEGER NOT NULL)"
+        )
+
+    with pytest.raises(ValueError, match="migration foreign key mismatch: flow_runs"):
+        SQLiteStore(path)
+
+
 def test_replay_rejects_tampered_response_task_id(tmp_path) -> None:
     path = tmp_path / "state.db"
     with SQLiteStore(path) as store:
@@ -241,6 +271,23 @@ def test_replay_rejects_tampered_response_task_id(tmp_path) -> None:
         connection.execute(
             "UPDATE idempotency_records SET response_json = ? WHERE key = ?",
             (f'{{"task_id":"{new_uuid7()}","state":"intake"}}', "key-1"),
+        )
+
+    with SQLiteStore(path) as store:
+        with pytest.raises(ValueError, match="idempotency record integrity error"):
+            create_task(store, "key-1", {"request": "fix bug"})
+
+
+def test_replay_rejects_missing_task_even_when_idempotency_record_matches_it(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    replacement_id = new_uuid7()
+    with SQLiteStore(path) as store:
+        create_task(store, "key-1", {"request": "fix bug"})
+    with sqlite3.connect(path) as connection:
+        connection.execute("PRAGMA foreign_keys=OFF")
+        connection.execute(
+            "UPDATE idempotency_records SET task_id = ?, response_json = ? WHERE key = ?",
+            (replacement_id, f'{{"task_id":"{replacement_id}","state":"intake"}}', "key-1"),
         )
 
     with SQLiteStore(path) as store:

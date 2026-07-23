@@ -55,6 +55,26 @@ _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "cleanup_records": frozenset({"failure_reason"}),
     "audit_events": frozenset({"task_id", "causation_id"}),
 }
+_INTEGER_COLUMNS: Final[dict[str, frozenset[str]]] = {
+    "tasks": frozenset({"version", "schema_version"}),
+    "idempotency_records": frozenset(),
+    "audit_outbox": frozenset({"sequence", "event_version"}),
+    "flow_runs": frozenset({"flow_version", "schema_version"}),
+    "stage_runs": frozenset({"ordinal", "schema_version"}),
+    "attempts": frozenset({"input_tokens", "output_tokens", "tool_tokens", "schema_version"}),
+    "decision_requests": frozenset({"schema_version"}),
+    "approval_requests": frozenset({"schema_version"}),
+    "session_links": frozenset({"schema_version"}),
+    "handoff_packets": frozenset({"schema_version"}),
+    "artifacts": frozenset({"byte_size", "schema_version"}),
+    "knowledge_syncs": frozenset({"ready_for_cleanup", "schema_version"}),
+    "cleanup_records": frozenset({"verified", "schema_version"}),
+    "audit_events": frozenset({"sequence", "event_version", "schema_version"}),
+}
+_REAL_COLUMNS: Final[dict[str, frozenset[str]]] = {
+    **{table: frozenset() for table in _TABLE_SPECS},
+    "attempts": frozenset({"cost_usd"}),
+}
 
 
 def redact(value: object) -> object:
@@ -132,7 +152,13 @@ class SQLiteStore:
                     raise ValueError("idempotency key reused with different payload")
                 if tuple(existing[3:]) != (actor_id, principal_type, correlation_id, causation_id):
                     raise ValueError("idempotency key reused with different metadata")
-                return self._decode_response(str(existing[2]), str(existing[1]))
+                response = self._decode_response(str(existing[2]), str(existing[1]))
+                task = self._connection.execute(
+                    "SELECT id, state FROM tasks WHERE id = ?", (str(existing[1]),)
+                ).fetchone()
+                if task is None or task[0] != response["task_id"] or task[1] != response["state"]:
+                    raise ValueError("idempotency record integrity error")
+                return response
 
             task_id = new_uuid7()
             response = {"task_id": task_id, "state": "intake"}
@@ -251,7 +277,7 @@ class SQLiteStore:
                     raise ValueError(f"migration schema mismatch: missing {table}")
                 continue
             column_details = {
-                str(item[1]): (int(item[3]), int(item[5]))
+                str(item[1]): (str(item[2]).upper(), int(item[3]), int(item[5]))
                 for item in self._connection.execute(f"PRAGMA table_info({table})")
             }
             columns = set(column_details)
@@ -259,10 +285,20 @@ class SQLiteStore:
                 raise ValueError(f"migration schema mismatch: {table}")
             primary_key = _PRIMARY_KEYS[table]
             required_not_null = required_columns - _NULLABLE_COLUMNS[table] - {primary_key}
-            if column_details[primary_key][1] != 1 or any(
-                column_details[column][0] != 1 for column in required_not_null
+            if column_details[primary_key][2] != 1 or any(
+                column_details[column][1] != 1 for column in required_not_null
             ):
                 raise ValueError(f"migration constraint mismatch: {table}")
+            if any(column_details[column][1] != 0 for column in _NULLABLE_COLUMNS[table]):
+                raise ValueError(f"migration constraint mismatch: {table}")
+            expected_types = {
+                column: "INTEGER" if column in _INTEGER_COLUMNS[table]
+                else "REAL" if column in _REAL_COLUMNS[table]
+                else "TEXT"
+                for column in required_columns
+            }
+            if any(column_details[column][0] != expected_type for column, expected_type in expected_types.items()):
+                raise ValueError(f"migration type mismatch: {table}")
             foreign_keys = {
                 str(item[3]): (str(item[2]), str(item[4]), str(item[5]), str(item[6]))
                 for item in self._connection.execute(f"PRAGMA foreign_key_list({table})")
@@ -271,7 +307,7 @@ class SQLiteStore:
                 child: (parent, "id", "NO ACTION", "NO ACTION")
                 for child, parent in expected_foreign_keys.items()
             }
-            if not expected_fk_details.items() <= foreign_keys.items():
+            if foreign_keys != expected_fk_details:
                 raise ValueError(f"migration foreign key mismatch: {table}")
 
     def _execute_migration_script(self, script: str) -> None:
