@@ -321,14 +321,14 @@ CREATE TABLE same_line_one (id TEXT PRIMARY KEY); CREATE TABLE same_line_two (id
 /* trailing block comment */
 """
     upgraded_path = tmp_path / "upgraded.db"
-    with SQLiteStore(upgraded_path, schema_dir=migrations) as store:
+    with SQLiteStore(upgraded_path, schema_dir=migrations, allow_schema_extensions=True) as store:
         assert store.applied_migrations() == ("0001_initial",)
     (migrations / "0002_upgrade.sql").write_text(upgrade, encoding="utf-8")
-    with SQLiteStore(upgraded_path, schema_dir=migrations) as store:
+    with SQLiteStore(upgraded_path, schema_dir=migrations, allow_schema_extensions=True) as store:
         assert store.applied_migrations() == ("0001_initial", "0002_upgrade")
 
     fresh_path = tmp_path / "fresh.db"
-    with SQLiteStore(fresh_path, schema_dir=migrations) as store:
+    with SQLiteStore(fresh_path, schema_dir=migrations, allow_schema_extensions=True) as store:
         assert store.applied_migrations() == ("0001_initial", "0002_upgrade")
 
     for path in (upgraded_path, fresh_path):
@@ -395,6 +395,19 @@ def test_migration_rejects_bom_prefixed_transaction_control(tmp_path) -> None:
         SQLiteStore(tmp_path / "state.db", schema_dir=migrations)
 
 
+@pytest.mark.parametrize("prefix", ["/* leading */ ", "-- leading\n"])
+def test_migration_rejects_bom_after_a_leading_comment(tmp_path, prefix: str) -> None:
+    migrations = tmp_path / "migrations"
+    migrations.mkdir()
+    (migrations / "0001_initial.sql").write_text(
+        (sqlite_module._SCHEMA_DIR / "0001_initial.sql").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    (migrations / "0002_bad.sql").write_text(prefix + "\ufeffCOMMIT;", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="transaction control"):
+        SQLiteStore(tmp_path / "state.db", schema_dir=migrations)
+
+
 def test_rejects_missing_audit_outbox_event_id_uniqueness(tmp_path) -> None:
     path = tmp_path / "state.db"
     with sqlite3.connect(path) as connection:
@@ -433,6 +446,18 @@ def test_rejects_missing_audit_event_sequence_uniqueness(tmp_path) -> None:
         )
 
     with pytest.raises(ValueError, match="migration uniqueness mismatch: audit_events"):
+        SQLiteStore(path)
+
+
+def test_rejects_unknown_task_column_and_unique_constraint(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE TABLE tasks (id TEXT PRIMARY KEY, payload_json TEXT NOT NULL UNIQUE, state TEXT NOT NULL, "
+            "version INTEGER NOT NULL, schema_version INTEGER NOT NULL, created_at TEXT NOT NULL, extra TEXT)"
+        )
+
+    with pytest.raises(ValueError, match="migration schema mismatch: tasks"):
         SQLiteStore(path)
 
 

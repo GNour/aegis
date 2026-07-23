@@ -101,9 +101,12 @@ def redact(value: object) -> object:
 class SQLiteStore:
     """Own a local SQLite control-plane database and its forward migrations."""
 
-    def __init__(self, path: Path, *, schema_dir: Path | None = None) -> None:
+    def __init__(
+        self, path: Path, *, schema_dir: Path | None = None, allow_schema_extensions: bool = False
+    ) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         self._schema_dir = schema_dir or _SCHEMA_DIR
+        self._allow_schema_extensions = allow_schema_extensions
         self._connection = sqlite3.connect(path, isolation_level=None, timeout=30)
         self._connection.execute("PRAGMA busy_timeout=30000")
         self._enable_wal()
@@ -279,6 +282,14 @@ class SQLiteStore:
         self._validate_existing_schema(require_all=True)
 
     def _validate_existing_schema(self, *, require_all: bool = False) -> None:
+        actual_tables = {
+            str(row[0])
+            for row in self._connection.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
+            if not str(row[0]).startswith("sqlite_")
+        }
+        allowed_tables = set(_TABLE_SPECS) | {"schema_migrations"}
+        if not self._allow_schema_extensions and not actual_tables <= allowed_tables:
+            raise ValueError("migration schema mismatch: unexpected table")
         for table, (required_columns, expected_foreign_keys) in _TABLE_SPECS.items():
             row = self._connection.execute(
                 "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (table,)
@@ -292,6 +303,8 @@ class SQLiteStore:
                 for item in self._connection.execute(f"PRAGMA table_info({table})")
             }
             columns = set(column_details)
+            if columns != required_columns and not self._allow_schema_extensions:
+                raise ValueError(f"migration schema mismatch: {table}")
             if not required_columns.issubset(columns):
                 raise ValueError(f"migration schema mismatch: {table}")
             primary_key = _PRIMARY_KEYS[table]
@@ -323,9 +336,9 @@ class SQLiteStore:
             unique_shapes = {
                 frozenset(str(column[2]) for column in self._connection.execute(f"PRAGMA index_info({index[1]})"))
                 for index in self._connection.execute(f"PRAGMA index_list({table})")
-                if int(index[2]) == 1 and (len(index) < 5 or int(index[4]) == 0)
+                if int(index[2]) == 1 and str(index[3]) != "pk" and (len(index) < 5 or int(index[4]) == 0)
             }
-            if not _UNIQUE_COLUMNS[table] <= unique_shapes:
+            if unique_shapes != _UNIQUE_COLUMNS[table]:
                 raise ValueError(f"migration uniqueness mismatch: {table}")
 
     def _execute_migration_script(self, script: str) -> None:
@@ -348,12 +361,12 @@ class SQLiteStore:
         while text.startswith("--") or text.startswith("/*"):
             if text.startswith("--"):
                 newline = text.find("\n")
-                text = "" if newline == -1 else text[newline + 1 :].lstrip()
+                text = "" if newline == -1 else text[newline + 1 :].lstrip("\ufeff \t\r\n")
             else:
                 comment_end = text.find("*/")
                 if comment_end == -1:
                     return False
-                text = text[comment_end + 2 :].lstrip()
+                text = text[comment_end + 2 :].lstrip("\ufeff \t\r\n")
         keyword = re.match(r"[A-Za-z]+", text)
         return keyword is not None and keyword.group(0).upper() in {
             "BEGIN",
