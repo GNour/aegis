@@ -12,4 +12,3 @@ def test_secret_and_raw_request_are_redacted_before_hashing(tmp_path) -> None:
     for value in ("hunter2", "top-secret", secret, "id_ed25519", "never-store-me"):
         assert value not in text
     assert ledger.verify() == []
-
