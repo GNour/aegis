@@ -345,6 +345,7 @@ class SQLiteStore:
         return keyword is not None and keyword.group(0).upper() in {
             "BEGIN",
             "COMMIT",
+            "END",
             "ROLLBACK",
             "SAVEPOINT",
             "RELEASE",

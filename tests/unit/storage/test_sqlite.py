@@ -359,6 +359,26 @@ def test_migration_rejects_transaction_control_without_committing_outer_work(tmp
         assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'should_rollback'").fetchone() is None
 
 
+def test_migration_rejects_standalone_end_without_committing_outer_work(tmp_path) -> None:
+    migrations = tmp_path / "migrations"
+    migrations.mkdir()
+    (migrations / "0001_initial.sql").write_text(
+        (sqlite_module._SCHEMA_DIR / "0001_initial.sql").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    (migrations / "0002_bad.sql").write_text(
+        "CREATE TABLE end_should_rollback (id TEXT PRIMARY KEY); END TRANSACTION; invalid sql;",
+        encoding="utf-8",
+    )
+    path = tmp_path / "state.db"
+
+    with pytest.raises(ValueError, match="transaction control"):
+        SQLiteStore(path, schema_dir=migrations)
+
+    with sqlite3.connect(path) as connection:
+        assert connection.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0] == 0
+        assert connection.execute("SELECT name FROM sqlite_master WHERE name = 'end_should_rollback'").fetchone() is None
+
+
 def test_rejects_preexisting_malformed_stage_runs_table(tmp_path) -> None:
     path = tmp_path / "state.db"
     with sqlite3.connect(path) as connection:
