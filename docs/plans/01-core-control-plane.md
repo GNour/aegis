@@ -357,6 +357,11 @@ git add src/harness/audit src/harness/storage tests/unit/audit tests/unit/storag
 git commit -m "feat(audit): add redacted hash-linked event ledger"
 ```
 
+Before Task 5, execute the
+[companion packages and stage packets plan](01a-companion-packages-and-stage-packets.md).
+Flow compilation must reference its admitted companion lock, compiled role
+catalog, and immutable packet contracts.
+
 ### Task 5: Flow catalog, routing, simulator, and atomic reload
 
 **Files:**

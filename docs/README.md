@@ -22,8 +22,10 @@ This directory is authoritative for the product and implementation. The
    - [Stage packets and companion packages](specs/10-stage-packets-and-companion-packages.md)
    - [Container-first deployment design](superpowers/specs/2026-07-23-container-first-deployment-design.md)
 4. [Implementation roadmap](plans/00-implementation-roadmap.md). Its first four
-   subsystem plans remain executable; the deployment plan is explicitly
-   superseded pending its container-first rewrite.
+   subsystem plans and the
+   [companion-package integration plan](plans/01a-companion-packages-and-stage-packets.md)
+   are executable; the deployment plan is explicitly superseded pending its
+   container-first rewrite.
 5. [ADRs](adrs/README.md) for accepted choices and [RFCs](rfcs/README.md) for
    evaluated dependencies.
 6. [VPS integration contract](integration/vps-refined.md).
