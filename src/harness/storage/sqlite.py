@@ -154,9 +154,9 @@ class SQLiteStore:
                     raise ValueError("idempotency key reused with different metadata")
                 response = self._decode_response(str(existing[2]), str(existing[1]))
                 task = self._connection.execute(
-                    "SELECT id, state FROM tasks WHERE id = ?", (str(existing[1]),)
+                    "SELECT id FROM tasks WHERE id = ?", (str(existing[1]),)
                 ).fetchone()
-                if task is None or task[0] != response["task_id"] or task[1] != response["state"]:
+                if task is None or task[0] != response["task_id"]:
                     raise ValueError("idempotency record integrity error")
                 return response
 

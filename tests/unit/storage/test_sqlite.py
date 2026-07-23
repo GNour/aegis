@@ -295,6 +295,17 @@ def test_replay_rejects_missing_task_even_when_idempotency_record_matches_it(tmp
             create_task(store, "key-1", {"request": "fix bug"})
 
 
+def test_replay_returns_original_intake_response_after_task_transitions(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with SQLiteStore(path) as store:
+        original = create_task(store, "key-1", {"request": "fix bug"})
+    with sqlite3.connect(path) as connection:
+        connection.execute("UPDATE tasks SET state = 'clarify', version = 2 WHERE id = ?", (original["task_id"],))
+
+    with SQLiteStore(path) as store:
+        assert create_task(store, "key-1", {"request": "fix bug"}) == original
+
+
 def test_rejects_preexisting_malformed_stage_runs_table(tmp_path) -> None:
     path = tmp_path / "state.db"
     with sqlite3.connect(path) as connection:
