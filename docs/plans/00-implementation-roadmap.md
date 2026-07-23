@@ -3,6 +3,9 @@
 Status: plans 1–4 ready; required companion-package integration plan and
 container-first replacement plan 5 pending
 
+Implementation progress: core control-plane tasks 1–4 are complete. Tasks 5–6
+and all later subsystem implementation remain pending.
+
 The architecture spans five independently testable subsystems. Execute their
 plans in order; each ends with a working vertical capability and a commit gate.
 
