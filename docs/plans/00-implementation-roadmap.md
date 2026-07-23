@@ -1,6 +1,7 @@
 # Harness implementation roadmap
 
-Status: plans 1–4 ready; plan 5 pending container-first rewrite
+Status: plans 1–4 ready; required companion-package integration plan and
+container-first replacement plan 5 pending
 
 The architecture spans five independently testable subsystems. Execute their
 plans in order; each ends with a working vertical capability and a commit gate.
@@ -17,6 +18,11 @@ Every plan uses TDD and focused commits. No later plan may weaken a security or
 state invariant established by an earlier one. When upstream CLI behavior differs
 from a plan, record the evidence in the relevant RFC and adjust the adapter test
 before changing production code.
+
+The required PromptX/Subagents integration plan executes after core plan 1 task 4
+and before core plan 1 task 5. It establishes the pinned submodules, catalog
+compiler, PromptX contract adapter, and immutable stage-packet records needed by
+flow compilation and later worker dispatch.
 
 ## Release sequence
 

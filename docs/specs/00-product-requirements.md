@@ -99,6 +99,19 @@ secrets, unrestricted host access, or unreviewed external authority.
   source-linked memory; workers cannot write either canonical layer directly.
 - **FR-045:** pin RTK in worker images, send compressed output to models, retain
   complete logs as protected artifacts, and record measured token savings.
+- **FR-046:** compile and persist one immutable `StageExecutionPacket` containing
+  the exact task, flow, stage, role, model, skill, capability, context, budget,
+  companion-package, evidence, and handoff snapshots before worker dispatch.
+- **FR-047:** maintain PromptX and Subagents as required pinned Git submodules
+  under `packages/`, record their commits and artifact digests, and reject
+  missing, dirty, advanced, incompatible, or non-reproducible inputs.
+- **FR-048:** run PromptX only through a typed control-plane adapter using
+  Harness-supplied sanitized facts and brokered model access; PromptX cannot
+  select or grant flows, roles, models, skills, tools, capabilities, approvals,
+  or transitions.
+- **FR-049:** compile Subagents at build time into reviewed role configuration;
+  never place its repository, installer, global catalog, or advisory tool
+  authority in a worker or runtime image.
 
 ### Recovery and completion
 
@@ -168,6 +181,10 @@ secrets, unrestricted host access, or unreviewed external authority.
 - **NFR-008 Reusability:** instance values enter through documented variables;
   product/CLI naming comes from one metadata definition; no usernames, domains,
   IPs, tokens, or project-specific paths are hard-coded.
+- **NFR-009 Companion maintainability:** PromptX and Subagents changes are made
+  and verified in their own repositories before a separate Harness submodule
+  pointer update; clean recursive clones, builds, upgrades, and rollbacks are
+  reproducible from recorded source and artifact digests.
 
 ## 5. Non-goals for the pilot
 

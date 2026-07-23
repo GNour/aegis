@@ -89,6 +89,10 @@ the public network.
 ./
 |-- README.md
 |-- pyproject.toml
+|-- .gitmodules
+|-- packages/
+|   |-- promptx/            # required runtime companion Git submodule
+|   `-- subagents/          # required build-time catalog Git submodule
 |-- src/harness/
 |   |-- api/                 # typed control functions
 |   |-- domain/              # manifests, runs, decisions, events
@@ -312,6 +316,12 @@ builds an ephemeral, read-only skill directory for that worker and stage. There
 is no globally injected skill catalog; the minimal worker contract is rendered
 into the role prompt.
 
+The pinned Subagents submodule is the maintained source catalog for approved role
+metadata, skill references, and advisory handoffs. Release builds validate and
+compile selected catalog entries into Harness role profiles. Subagents tool
+strings never grant authority, and its repository, installer, update scripts, and
+global catalog are absent from runtime and worker images.
+
 Before a stage, a context compiler builds a bounded envelope from:
 
 - request and acceptance criteria;
@@ -324,6 +334,17 @@ Before a stage, a context compiler builds a bounded envelope from:
 
 It deduplicates content, prefers summaries to transcripts, and uses progressive
 disclosure. Full session history is not preloaded into later stages.
+
+PromptX is a required control-plane runtime companion built from its pinned
+submodule. Harness supplies sanitized, digest-recorded facts and calls PromptX
+through a fixed typed adapter. Optional refinement reaches only the loopback
+model broker through a scoped capability. PromptX cannot choose a flow, role,
+model, skill, tool, capability, approval, or stage transition.
+
+A stage packet compiler combines the exact task, flow, stage, role, skill,
+capability, context, budget, companion version, evidence, and handoff snapshots
+into one immutable `StageExecutionPacket`. Harness persists its canonical hash
+before Herdr dispatch and reuses it for restart or native resume.
 
 RTK is pinned in worker images and configured for supported runtimes. Compressed
 command output reaches the model, while full logs remain artifacts retrievable on
@@ -419,13 +440,15 @@ and model manifest do.
    startup integration, management CLI, Compose bundle, and backup paths.
 4. Build the domain model, registry, audit ledger, flow schema, router, policy
    engine, control API, TUI, Hermes plugin, and Hermes skill.
-5. Add Herdr, worktrees, project services, role-scoped skills/tools, RTK, QMD,
+5. Pin the PromptX and Subagents submodules; compile the role catalog; add the
+   PromptX adapter and immutable stage packet before worker dispatch.
+6. Add Herdr, worktrees, project services, role-scoped skills/tools, RTK, QMD,
    context budgets, and resumable handoffs.
-6. Add the Markdown ledger, OpenViking integration, knowledge receipts, and
+7. Add the Markdown ledger, OpenViking integration, knowledge receipts, and
    failure-safe cleanup.
-7. Pilot locally through the TUI, then enable Telegram after the same policy and
+8. Pilot locally through the TUI, then enable Telegram after the same policy and
    audit behavior is proven.
-8. Complete a 14-day soak with at least 25 tasks across two projects before
+9. Complete a 14-day soak with at least 25 tasks across two projects before
    increasing concurrency or enabling broader policy-mediated promotion.
 
 ## 16. Acceptance criteria
@@ -437,6 +460,11 @@ and model manifest do.
   their labeled resources.
 - One writer per worktree is enforced; every role receives only its declared
   skill versions and tool definitions.
+- PromptX and Subagents source commits and artifact digests are pinned and
+  reproducible; their incompatible, dirty, or missing states fail safely.
+- Every worker starts from a persisted immutable `StageExecutionPacket`;
+  PromptX, Subagents source, installers, and the global role/skill catalog are
+  absent from worker images.
 - Path traversal, symlink escape, secret reads, dangerous actions, approval
   replay, unauthorized QMD collections, and prompt-injection escalation fail
   safely.

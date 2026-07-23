@@ -33,6 +33,8 @@ Harness owns:
 - Herdr, worker-runtime, worktree, QMD, OpenViking, and RTK adapters;
 - the Hermes `company-control` plugin and `company-orchestrator` skill;
 - schemas, default flows, role profiles, capability profiles, and model aliases;
+- the Harness integration, compatibility testing, and coordinated release of the
+  maintained PromptX and Subagents companion-package submodules;
 - the container-first installer, rootless Compose bundle, management CLI,
   optional fleet integrations, and operational runbooks;
 - all unit, integration, security, recovery, and soak tests.
