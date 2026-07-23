@@ -21,10 +21,11 @@ worktrees, rootful Docker, runtime credentials, or host commands.
 ## Consequences
 
 Compromise of the conversational gateway does not directly expose agent terminals
-or code workspaces. Secrets and backups gain two owners and Ansible must manage
-additional homes, sockets, service units, and linger. Installation and device
-login flows must be performed through `deploy` with `sudo -u` because the service
-accounts have no direct SSH login.
+or code workspaces. Secrets and backups gain two owners, and the container-first
+bootstrap plus optional fleet automation must manage additional homes, isolated
+rootless contexts, sockets, startup integration, and linger. Installation and
+device-login flows must be performed through `deploy` with `sudo -u` because the
+service accounts have no direct SSH login.
 
 ## Alternatives rejected
 

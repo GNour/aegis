@@ -1,6 +1,6 @@
 # Harness implementation roadmap
 
-Status: ready for execution after operator selection
+Status: plans 1–4 ready; plan 5 pending container-first rewrite
 
 The architecture spans five independently testable subsystems. Execute their
 plans in order; each ends with a working vertical capability and a commit gate.
@@ -11,7 +11,7 @@ plans in order; each ends with a working vertical capability and a commit gate.
 | 2 | [Workers and services](02-workers-herdr-services.md) | worktrees, rootless services, Herdr/runtime adapters, recovery-safe cleanup | plan 1 |
 | 3 | [Context and knowledge](03-context-and-knowledge.md) | exact skill injection, QMD/OpenViking, bounded context, knowledge gate | plans 1–2 |
 | 4 | [TUI and Hermes](04-tui-and-hermes.md) | operator TUI and restricted Telegram/Hermes parity | plans 1–3 |
-| 5 | [Deployment and rollout](05-deployment-and-rollout.md) | reusable Ansible, systemd, backup/restore, security suite, soak | plans 1–4 |
+| 5 | [Deployment and rollout](05-deployment-and-rollout.md) | container-first installer, rootless Compose appliance, management CLI, backup/restore, security suite, soak | plans 1–4 |
 
 Every plan uses TDD and focused commits. No later plan may weaken a security or
 state invariant established by an earlier one. When upstream CLI behavior differs

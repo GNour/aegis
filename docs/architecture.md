@@ -50,7 +50,7 @@ Existing accounts:
 
 | Account | Responsibility | Harness change |
 |---|---|---|
-| `deploy` | Ansible and break-glass administration | No role change |
+| `deploy` | Host bootstrap, optional fleet automation, and break-glass administration | No role change |
 | `dev` | Owner's interactive development environment | No role or group change during pilot |
 | `hermes` | Restricted family gateway | No Harness access |
 
@@ -58,14 +58,16 @@ New accounts:
 
 | Account | Responsibility | Explicit exclusions |
 |---|---|---|
-| `hermesops` | Private ops Telegram gateway and Harness client | No SSH key, sudo, Docker, repos, worktrees, provider keys, or Herdr socket |
+| `hermesops` | Private ops Telegram gateway and Harness client | No SSH key, sudo, agent runtime, repos, worktrees, provider keys, or Herdr socket; its optional rootless context can run only the gateway stack |
 | `agentops` | Harness, Herdr, flow state, worktrees, rootless workers, QMD, OpenViking | No sudo or rootful Docker group |
 
 Both new accounts have locked passwords, private `0700` homes, and no direct SSH
 authorization. `deploy` performs installation and account-scoped setup with
 `sudo -u`. Long-running user services use systemd linger where required.
 
-The control path is:
+The one-command bootstrap creates both identities and their isolated rootless
+contexts. Long-running containers use systemd user startup integration and linger
+where required. The control path is:
 
 ```text
 Telegram
@@ -105,7 +107,10 @@ the public network.
 |-- integrations/hermes/
 |   |-- plugin/              # typed Harness tools
 |   `-- skill/SKILL.md       # conversation and routing behavior
-|-- deploy/ansible/          # reusable account, service, and host integration
+|-- deploy/
+|   |-- compose/             # generated rootless appliance bundles
+|   |-- installer/           # Ubuntu bootstrap and management CLI
+|   `-- ansible/             # optional fleet integration using the same contract
 |-- docs/
 `-- tests/
 ```
@@ -114,6 +119,14 @@ This repository owns Harness code, schemas, integrations, tests, deployment
 automation, specifications, plans, RFCs, ADRs, and runbooks. The VPS
 infrastructure repository consumes the pinned Harness release and supplies
 instance variables; it does not duplicate Harness implementation.
+
+Harness is released as a rootless Docker Compose appliance. A renameable
+host-side management CLI hides Compose contexts, service-account runtime
+variables, and container topology. The bootstrap supports interactive and
+unattended configuration, installs Docker and Compose when absent, and converges
+clean Ubuntu 22.04 and 24.04 hosts idempotently. Images are selected through
+signed stable or opt-in edge manifests and resolved to immutable digests; a
+mutable `latest` tag is never a deployment input.
 
 ## 5. Control interface and Hermes integration
 
@@ -401,8 +414,9 @@ and model manifest do.
    backups, and stale Multica remnants without repurposing `dev`.
 2. Land and accept the Harness, Herdr, OpenViking, OpenCode, and QMD RFCs plus
    pivotal ADRs; update conflicting numbered docs.
-3. Provision `hermesops` and `agentops`, directories, rootless runtime, sockets,
-   systemd units, and backup paths through idempotent Ansible.
+3. Build the idempotent Ubuntu 22.04/24.04 bootstrap, create `hermesops` and
+   `agentops`, install their isolated rootless contexts, directories, sockets,
+   startup integration, management CLI, Compose bundle, and backup paths.
 4. Build the domain model, registry, audit ledger, flow schema, router, policy
    engine, control API, TUI, Hermes plugin, and Hermes skill.
 5. Add Herdr, worktrees, project services, role-scoped skills/tools, RTK, QMD,
@@ -431,5 +445,6 @@ and model manifest do.
 - Required Markdown, decisions, handoffs, sessions, and artifacts exist before
   cleanup.
 - QMD and OpenViking receipts point to the exact committed knowledge source.
-- Ansible lint, syntax, check mode, and second-run idempotency pass; Harness tests
-  and existing Hermes tests remain green.
+- Clean Ubuntu 22.04 and 24.04 install, second-run idempotency, reboot, update,
+  rollback, backup/restore, rename compatibility, and scoped uninstall pass;
+  Harness and existing Hermes tests remain green.

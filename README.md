@@ -33,7 +33,8 @@ Harness owns:
 - Herdr, worker-runtime, worktree, QMD, OpenViking, and RTK adapters;
 - the Hermes `company-control` plugin and `company-orchestrator` skill;
 - schemas, default flows, role profiles, capability profiles, and model aliases;
-- reusable Ansible deployment roles and operational runbooks;
+- the container-first installer, rootless Compose bundle, management CLI,
+  optional fleet integrations, and operational runbooks;
 - all unit, integration, security, recovery, and soak tests.
 
 Harness does not own VPS-wide Coolify configuration, unrelated applications, or

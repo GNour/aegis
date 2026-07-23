@@ -1,5 +1,12 @@
 # Deployment and Rollout Implementation Plan
 
+Status: superseded pending container-first rewrite
+
+> **Do not execute this plan.** The accepted
+> [container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md)
+> replaces its Ansible-first delivery model. A new implementation plan will be
+> written after the accepted design has completed its documentation review gate.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Install Harness reproducibly on Ubuntu 24.04 with isolated service accounts, hardened services, private exposure, encrypted backups, recovery drills, and measured pilot gates.

@@ -19,8 +19,10 @@ This directory is authoritative for the product and implementation. The
    - [Deployment and operations](specs/07-deployment-and-operations.md)
    - [Verification matrix](specs/08-verification-matrix.md)
    - [Requirement traceability](specs/09-traceability.md)
-4. [Implementation roadmap](plans/00-implementation-roadmap.md) and its five
-   executable subsystem plans.
+   - [Container-first deployment design](superpowers/specs/2026-07-23-container-first-deployment-design.md)
+4. [Implementation roadmap](plans/00-implementation-roadmap.md). Its first four
+   subsystem plans remain executable; the deployment plan is explicitly
+   superseded pending its container-first rewrite.
 5. [ADRs](adrs/README.md) for accepted choices and [RFCs](rfcs/README.md) for
    evaluated dependencies.
 6. [VPS integration contract](integration/vps-refined.md).

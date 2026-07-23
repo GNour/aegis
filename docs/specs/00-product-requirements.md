@@ -126,12 +126,26 @@ secrets, unrestricted host access, or unreviewed external authority.
   Telegram is not a terminal.
 - **FR-062:** enforce identical API, authorization, approval, and audit semantics
   for TUI and Telegram.
-- **FR-063:** deploy `hermesops` and `agentops` as locked, non-SSH, non-sudo,
-  non-rootful-Docker service accounts; keep `dev` unchanged during the pilot.
+- **FR-063:** provide an idempotent one-command bootstrap for Ubuntu 22.04 and
+  24.04 that installs rootless Docker and Compose, the container appliance, and
+  its management CLI; deploy `hermesops` and `agentops` as locked, non-SSH,
+  non-sudo, non-rootful-Docker service accounts and keep `dev` unchanged during
+  the pilot.
 - **FR-064:** expose Harness, Herdr, QMD, and OpenViking only on Unix sockets or
   loopback/private interfaces.
 - **FR-065:** keep Coolify public HTTPS access independent of Harness and require
   no public raw `:8000` listener.
+- **FR-066:** support equivalent interactive and unattended configuration through
+  one versioned schema, with validation and safe apply/rollback behavior.
+- **FR-067:** expose routine container status, logs, inspection, shell, exec,
+  restart, diagnosis, backup, restore, and uninstall through a renameable
+  management CLI with permission-aware auditing.
+- **FR-068:** update from signed stable or opt-in edge release manifests using
+  immutable image digests, verified pre-update backups, readiness gates, and safe
+  rollback metadata; never deploy from a mutable `latest` tag.
+- **FR-069:** make installation, configuration, compatibility, migration,
+  upgrade, rollback, backup, restore, troubleshooting, release notes, and known
+  issues mandatory release artifacts.
 
 ## 4. Non-functional requirements
 
@@ -140,8 +154,9 @@ secrets, unrestricted host access, or unreviewed external authority.
   unauthorized collection/tool access.
 - **NFR-002 Durability:** accepted transitions survive process kill and VPS reboot
   without duplicate effects or lost correlation.
-- **NFR-003 Idempotency:** retries, startup reconciliation, cleanup, and Ansible
-  reruns are safe; a second converged Ansible run reports zero changes.
+- **NFR-003 Idempotency:** retries, startup reconciliation, cleanup, installer
+  reruns, configuration apply, and updates are safe; a second converged installer
+  run produces no unintended changes.
 - **NFR-004 Resource control:** pilot concurrency is two workers; admission pauses
   at configured RAM, disk, load, or service ceilings.
 - **NFR-005 Token economy:** context size, input/output/tool tokens, RTK savings,
@@ -151,7 +166,8 @@ secrets, unrestricted host access, or unreviewed external authority.
 - **NFR-007 Traceability:** every acceptance test links to requirement IDs, and
   every release identifies the exact config/schema/code versions used.
 - **NFR-008 Reusability:** instance values enter through documented variables;
-  no usernames, domains, IPs, tokens, or project-specific paths are hard-coded.
+  product/CLI naming comes from one metadata definition; no usernames, domains,
+  IPs, tokens, or project-specific paths are hard-coded.
 
 ## 5. Non-goals for the pilot
 
@@ -166,5 +182,6 @@ secrets, unrestricted host access, or unreviewed external authority.
 ## 6. Release acceptance
 
 The first pilot release requires all FR/NFR mappings in
-`docs/specs/08-verification-matrix.md` to pass, reusable Ansible convergence, a
-restore drill, and a 14-day soak with at least 25 tasks across two projects.
+`docs/specs/08-verification-matrix.md` to pass, container installer convergence
+on Ubuntu 22.04 and 24.04, a clean-host restore drill, complete release
+documentation, and a 14-day soak with at least 25 tasks across two projects.

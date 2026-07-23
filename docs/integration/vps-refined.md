@@ -22,11 +22,16 @@ The infrastructure repository supplies variables for:
 
 ## Harness outputs
 
-The reusable Ansible content under `deploy/ansible/` creates the two service
-accounts, installs the pinned package, configures user services and sockets,
-creates private directories, installs rootless worker prerequisites, and registers
-backup paths. The infrastructure repository invokes that content after base host
-hardening.
+The signed container-first release supplies an idempotent Ubuntu bootstrap, the
+renameable management CLI, rootless Compose bundles, image digests,
+configuration schemas, compatibility metadata, and backup hooks. The bootstrap
+creates the two service accounts, installs rootless Docker and Compose, configures
+startup and sockets, creates private directories, and starts the pinned
+appliance.
+
+The infrastructure repository invokes the unattended installer after base host
+hardening. Optional Ansible content is a thin wrapper over the same installer and
+configuration contract; it must not implement a divergent deployment path.
 
 ## Current-instance invariants
 
@@ -43,9 +48,12 @@ hardening.
 
 ## Release handshake
 
-1. Harness CI publishes an immutable version and checksum.
+1. Harness CI publishes signed immutable images, a release manifest, the Compose
+   bundle, checksums, and required release documentation.
 2. The infrastructure repository updates its pinned version in a branch.
-3. Ansible check mode, lint, and Molecule pass.
-4. A staging installation runs the Harness smoke and recovery suites.
+3. The unattended installer dry-run and configuration validation pass.
+4. A clean supported staging host runs install, idempotency, smoke, upgrade,
+   rollback, backup/restore, and recovery suites.
 5. The operator approves the VPS deployment.
-6. The deployment records the Harness version in the host audit inventory.
+6. The deployment records the Harness version, release-manifest digest, image
+   digests, configuration digest, and backup receipt in the host audit inventory.
