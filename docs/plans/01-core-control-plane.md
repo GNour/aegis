@@ -18,7 +18,7 @@
 - Create: `src/harness/cli.py`
 - Create: `tests/test_cli.py`
 
-- [ ] **Step 1: Write the failing CLI test**
+- [x] **Step 1: Write the failing CLI test**
 
 ```python
 from typer.testing import CliRunner
@@ -32,13 +32,13 @@ def test_version_command() -> None:
     assert result.stdout.strip() == "harness 0.1.0-dev"
 ```
 
-- [ ] **Step 2: Run the test and confirm collection fails**
+- [x] **Step 2: Run the test and confirm collection fails**
 
 Run: `uv run pytest tests/test_cli.py -q`
 
 Expected: FAIL because `harness.cli` does not exist.
 
-- [ ] **Step 3: Add the package metadata and minimal CLI**
+- [x] **Step 3: Add the package metadata and minimal CLI**
 
 ```toml
 [project]
@@ -101,13 +101,13 @@ def version() -> None:
     typer.echo("harness 0.1.0-dev")
 ```
 
-- [ ] **Step 4: Lock and verify the shell**
+- [x] **Step 4: Lock and verify the shell**
 
 Run: `uv lock && uv run pytest tests/test_cli.py -q && uv run ruff check . && uv run mypy src`
 
 Expected: one test passes; Ruff and mypy exit 0.
 
-- [ ] **Step 5: Commit the foundation**
+- [x] **Step 5: Commit the foundation**
 
 ```bash
 git add pyproject.toml uv.lock src/harness tests/test_cli.py
