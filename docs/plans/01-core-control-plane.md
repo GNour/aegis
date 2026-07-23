@@ -122,7 +122,7 @@ git commit -m "build(core): initialize harness python project"
 - Create: `src/harness/domain/state.py`
 - Create: `tests/unit/domain/test_state.py`
 
-- [ ] **Step 1: Write transition tests**
+- [x] **Step 1: Write transition tests**
 
 ```python
 import pytest
@@ -141,13 +141,13 @@ def test_complete_cannot_return_to_execution() -> None:
         assert_transition(TaskState.COMPLETE, TaskState.EXECUTING)
 ```
 
-- [ ] **Step 2: Run the focused test and observe missing modules**
+- [x] **Step 2: Run the focused test and observe missing modules**
 
 Run: `uv run pytest tests/unit/domain/test_state.py -q`
 
 Expected: FAIL during import.
 
-- [ ] **Step 3: Implement strict IDs, records, and transition table**
+- [x] **Step 3: Implement strict IDs, records, and transition table**
 
 ```python
 # src/harness/domain/state.py
@@ -208,13 +208,13 @@ Define `TaskManifest`, `FlowRun`, `StageRun`, `Attempt`, `DecisionRequest`,
 models with `ConfigDict(extra="forbid", frozen=True)` and the exact required
 fields from `docs/specs/01-domain-and-control-api.md`.
 
-- [ ] **Step 4: Verify domain behavior and typing**
+- [x] **Step 4: Verify domain behavior and typing**
 
 Run: `uv run pytest tests/unit/domain -q && uv run mypy src/harness/domain`
 
 Expected: all domain tests pass and mypy exits 0.
 
-- [ ] **Step 5: Commit the domain**
+- [x] **Step 5: Commit the domain**
 
 ```bash
 git add src/harness/domain tests/unit/domain
