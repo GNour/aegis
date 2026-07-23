@@ -485,6 +485,19 @@ def test_rejects_unknown_task_column_and_unique_constraint(tmp_path) -> None:
         SQLiteStore(path)
 
 
+def test_rejects_partial_unique_index_that_changes_task_idempotency(tmp_path) -> None:
+    path = tmp_path / "state.db"
+    with SQLiteStore(path):
+        pass
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            "CREATE UNIQUE INDEX partial_task_payload ON tasks(payload_json) WHERE state = 'intake'"
+        )
+
+    with pytest.raises(ValueError, match="migration uniqueness mismatch: tasks"):
+        SQLiteStore(path)
+
+
 def test_rejects_missing_declared_non_unique_index(tmp_path) -> None:
     path = tmp_path / "state.db"
     with SQLiteStore(path):

@@ -350,7 +350,13 @@ class SQLiteStore:
                 for index in self._connection.execute(f"PRAGMA index_list({table})")
                 if int(index[2]) == 1 and str(index[3]) != "pk" and (len(index) < 5 or int(index[4]) == 0)
             }
-            if unique_shapes != _UNIQUE_COLUMNS[table]:
+            has_partial_unique_index = any(
+                int(index[2]) == 1 and str(index[3]) != "pk" and len(index) >= 5 and int(index[4]) == 1
+                for index in self._connection.execute(f"PRAGMA index_list({table})")
+            )
+            if unique_shapes != _UNIQUE_COLUMNS[table] or (
+                has_partial_unique_index and not self._allow_schema_extensions
+            ):
                 raise ValueError(f"migration uniqueness mismatch: {table}")
             if require_all:
                 non_unique_shapes = {
