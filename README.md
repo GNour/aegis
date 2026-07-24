@@ -26,12 +26,15 @@ is complete: trusted project manifests, contained Git worktrees, rootless
 task-scoped services with exact-label cleanup, a narrow Herdr socket adapter,
 credential-isolated worker sandboxes, and failure classification with native-first
 resume and preservation-gated cleanup.
-[Plan 3 (context and knowledge)](docs/plans/03-context-and-knowledge.md) is now
-complete: exact read-only skill bundles, scoped/bounded QMD retrieval, source-linked
-OpenViking memory, the bounded cited context compiler, RTK dual-output capture, and
-the preservation coordinator that gates cleanup on exact-commit indexing receipts.
-Work continues with
-[Plan 4 (TUI and Hermes)](docs/plans/04-tui-and-hermes.md).
+[Plan 3 (context and knowledge)](docs/plans/03-context-and-knowledge.md) is complete:
+exact read-only skill bundles, scoped/bounded QMD retrieval, source-linked OpenViking
+memory, the bounded cited context compiler, RTK dual-output capture, and the
+preservation coordinator that gates cleanup on exact-commit indexing receipts.
+[Plan 4 (TUI and Hermes)](docs/plans/04-tui-and-hermes.md) is now complete: the typed
+control client, the Textual operator TUI, the restricted Hermes company-control
+plugin and company-orchestrator skill, and idempotent notifications, verified for
+API/audit parity across both interfaces. Work continues with the container-first
+deployment plan (Plan 5).
 
 Start here:
 
