@@ -22,11 +22,16 @@ is also complete: PromptX and Subagents are pinned as digest-verified submodules
 the reviewed role catalog is compiled and embedded, and immutable stage packets are
 compiled and stored exactly once.
 [Plan 2 (workers, Herdr, and project services)](docs/plans/02-workers-herdr-services.md)
-is now complete: trusted project manifests, contained Git worktrees, rootless
+is complete: trusted project manifests, contained Git worktrees, rootless
 task-scoped services with exact-label cleanup, a narrow Herdr socket adapter,
 credential-isolated worker sandboxes, and failure classification with native-first
-resume and preservation-gated cleanup. Work continues with
-[Plan 3 (context and knowledge)](docs/plans/03-context-and-knowledge.md).
+resume and preservation-gated cleanup.
+[Plan 3 (context and knowledge)](docs/plans/03-context-and-knowledge.md) is now
+complete: exact read-only skill bundles, scoped/bounded QMD retrieval, source-linked
+OpenViking memory, the bounded cited context compiler, RTK dual-output capture, and
+the preservation coordinator that gates cleanup on exact-commit indexing receipts.
+Work continues with
+[Plan 4 (TUI and Hermes)](docs/plans/04-tui-and-hermes.md).
 
 Start here:
 

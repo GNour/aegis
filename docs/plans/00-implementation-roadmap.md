@@ -1,12 +1,13 @@
 # Aegis implementation roadmap
 
-Status: plans 1 (core control plane), 1a (companion packages), and 2 (workers,
-Herdr, and project services) are implemented; plans 3–4 ready; container-first
-replacement plan 5 pending
+Status: plans 1 (core control plane), 1a (companion packages), 2 (workers, Herdr,
+and project services), and 3 (context and knowledge) are implemented; plan 4 ready;
+container-first replacement plan 5 pending
 
 Implementation progress: core control-plane tasks 1–6, the entire companion-package
-integration plan (1a), and all six tasks of plan 2 (workers, Herdr, project
-services) are complete. Plans 3–4 and later subsystem implementation remain pending.
+integration plan (1a), all six tasks of plan 2 (workers, Herdr, project services),
+and all six tasks of plan 3 (context and knowledge) are complete. Plan 4 and the
+container-first plan 5 remain pending.
 
 The architecture spans five independently testable subsystems. Execute their
 plans in order; each ends with a working vertical capability and a commit gate.

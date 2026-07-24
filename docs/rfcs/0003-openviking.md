@@ -58,6 +58,18 @@ session summaries. Every indexed record carries project ID, source URI, and Git
 commit. Workers have read-only, role-scoped retrieval. Rebuild the resource index
 from Git during acceptance and before trusting it in recovery.
 
+## 5a. Adapter implementation note (pilot build)
+
+OpenViking is not running in the development environment. Per the roadmap's port/fake
+convention, `aegis.knowledge.openviking.OpenVikingAdapter` is a typed port over a
+`Transport`. `recall` returns only memories whose metadata carries the requesting
+`project_id` plus a `source_commit` and `source_uri`, so every recalled fact traces
+to canonical Git. `HttpTransport` is an authenticated loopback client with bounded
+timeouts, a readiness check, and API-key redaction on every error; it is validated
+via `httpx.MockTransport`, and `MemoryTransport` backs the filter/ingest tests. When
+the service is available, re-verify the search/resource response shapes before
+changing production behavior.
+
 ## 6. Decision & graduation
 
 - ADR: [0004](../adrs/0004-git-qmd-openviking-knowledge.md).
