@@ -1,5 +1,15 @@
 # Workers, Herdr, and Project Services Implementation Plan
 
+Status: implemented — all six tasks complete. Trusted project manifests, contained
+Git worktrees, rootless task-scoped services with exact-label cleanup, the narrow
+Herdr socket adapter (validated against a deterministic fake; live probe gated on
+`HERDR_SOCKET`), task-scoped worker sandboxes with a credential non-exposure canary
+gate, and failure classification with native-first resume and preservation-gated
+cleanup all pass (`uv run ruff check .`, `uv run pytest`, `uv run mypy src/aegis`
+clean except the pre-existing Windows-only `audit/ledger.py` msvcrt errors). Because
+Herdr is not yet installed, the adapter is built against a typed port with a fake
+per docs/rfcs/0002-herdr.md §5a.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Execute one writing worker per isolated Git worktree with rootless project services, durable Herdr/native sessions, classified failure recovery, and exact-label cleanup.

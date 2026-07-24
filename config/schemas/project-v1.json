@@ -1,0 +1,108 @@
+{
+  "$defs": {
+    "Limits": {
+      "additionalProperties": false,
+      "properties": {
+        "cpus": {
+          "exclusiveMinimum": 0,
+          "maximum": 4,
+          "title": "Cpus",
+          "type": "number"
+        },
+        "memory_mb": {
+          "maximum": 8192,
+          "minimum": 64,
+          "title": "Memory Mb",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "memory_mb",
+        "cpus"
+      ],
+      "title": "Limits",
+      "type": "object"
+    },
+    "Service": {
+      "additionalProperties": false,
+      "properties": {
+        "container_port": {
+          "maximum": 65535,
+          "minimum": 1,
+          "title": "Container Port",
+          "type": "integer"
+        },
+        "environment": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Environment",
+          "type": "object"
+        },
+        "healthcheck": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Healthcheck",
+          "type": "array"
+        },
+        "image": {
+          "minLength": 1,
+          "title": "Image",
+          "type": "string"
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits"
+        }
+      },
+      "required": [
+        "image",
+        "healthcheck",
+        "container_port",
+        "limits"
+      ],
+      "title": "Service",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact_globs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Globs",
+      "type": "array"
+    },
+    "commands": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Commands",
+      "type": "object"
+    },
+    "services": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Service"
+      },
+      "title": "Services",
+      "type": "object"
+    },
+    "version": {
+      "maximum": 1,
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version",
+    "commands"
+  ],
+  "title": "ProjectManifest",
+  "type": "object"
+}

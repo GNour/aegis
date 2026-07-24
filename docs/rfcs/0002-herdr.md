@@ -58,6 +58,21 @@ worktree provenance in Aegis. Do not expose its socket to Hermes or workers.
 Pin the release and protocol schema, keep pane-content persistence off initially,
 and retain a documented fallback to handoff-based restart if native resume fails.
 
+## 5a. Adapter implementation note (pilot build)
+
+Herdr is not yet installed in the development environment. Per the roadmap's
+port/fake convention, `aegis.execution.herdr.HerdrClient` is a typed port over a
+newline-delimited JSON request/response protocol on the private Unix socket:
+`{"method", "params"}` → `{"ok", "result"}` / `{"ok": false, "error"}`. Every
+response is validated with Pydantic, bounded to a maximum message size, and an
+unsupported `protocol_version` is refused before dispatch. It is validated against
+a deterministic fake socket server (`tests/contract/conftest.py::FakeHerdr`) and
+the recorded schema in `tests/fixtures/herdr/schema.json`. A live probe
+(`test_live_herdr_is_compatible`) runs only when `HERDR_SOCKET` is set to a real
+instance. When the pinned binary is installed, re-verify the recorded schema
+against `herdr api schema --json` and adjust the fixture and adapter models before
+changing production behavior.
+
 ## 6. Decision & graduation
 
 - ADR: [0001](../adrs/0001-isolate-aegis-service-users.md).
