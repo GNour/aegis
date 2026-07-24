@@ -31,6 +31,10 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/aegis"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/aegis/data/companions/roles.compiled.json" = "aegis/data/companions/roles.compiled.json"
+"src/aegis/data/companions/roles.provenance.json" = "aegis/data/companions/roles.provenance.json"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--strict-markers --strict-config"

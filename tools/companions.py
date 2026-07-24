@@ -79,14 +79,57 @@ def cmd_compile_subagents(check: bool) -> int:
     return 0
 
 
+def cmd_verify_sources() -> int:
+    from aegis.companions.lock import CompanionSourceError, verify_sources
+    from aegis.companions.readiness import load_lock
+
+    try:
+        verify_sources(ROOT, load_lock(ROOT), require_present=True)
+    except CompanionSourceError as error:
+        print(json.dumps({"ok": False, "code": str(error)}), file=sys.stderr)
+        return 1
+    print(json.dumps({"ok": True}))
+    return 0
+
+
+def cmd_check() -> int:
+    from aegis.companions.digests import artifact_sha256
+    from aegis.companions.lock import CompanionSourceError, verify_sources
+    from aegis.companions.readiness import evaluate, load_lock
+
+    lock = load_lock(ROOT)
+    try:
+        verify_sources(ROOT, lock, require_present=True)
+        sources_clean = True
+    except CompanionSourceError:
+        sources_clean = False
+    if cmd_compile_subagents(check=True) != 0:
+        print(json.dumps({"ok": False, "code": "compiled_assets_stale"}), file=sys.stderr)
+        return 1
+    verdict = evaluate(
+        lock,
+        promptx_artifact_digest=artifact_sha256(ROOT / "packages" / "promptx" / "dist"),
+        subagents_artifact_digest=artifact_sha256(ROOT / "packages" / "subagents" / "dist"),
+        sources_clean=sources_clean,
+    )
+    print(json.dumps(verdict, sort_keys=True))
+    return 0 if verdict["ready"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="companions")
     sub = parser.add_subparsers(dest="command", required=True)
     compile_p = sub.add_parser("compile-subagents", help="compile the reviewed catalog")
     compile_p.add_argument("--check", action="store_true")
+    sub.add_parser("verify-sources", help="verify the pinned companion submodules")
+    sub.add_parser("check", help="run the full companion readiness gate")
     args = parser.parse_args(argv)
     if args.command == "compile-subagents":
         return cmd_compile_subagents(args.check)
+    if args.command == "verify-sources":
+        return cmd_verify_sources()
+    if args.command == "check":
+        return cmd_check()
     return 2
 
 
