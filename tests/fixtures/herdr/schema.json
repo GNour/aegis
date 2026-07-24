@@ -1,0 +1,11 @@
+{
+  "protocol_version": "1",
+  "methods": {
+    "schema": {"params": [], "result": ["protocol_version", "methods"]},
+    "agent.start": {"params": ["agent", "cwd", "argv"], "result": ["session_id", "native_session_id", "state"]},
+    "agent.inspect": {"params": ["session_id"], "result": ["session_id", "native_session_id", "state"]},
+    "agent.interrupt": {"params": ["session_id"], "result": ["session_id", "state"]},
+    "agent.resume": {"params": ["session_id"], "result": ["session_id", "native_session_id", "state"]},
+    "agent.remove": {"params": ["session_id"], "result": ["session_id", "removed"]}
+  }
+}
