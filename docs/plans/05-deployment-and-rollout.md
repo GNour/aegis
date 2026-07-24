@@ -1,8 +1,15 @@
 # Container-First Deployment Implementation Plan
 
-Status: ready — written from the accepted
-[container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md),
-replacing the superseded Ansible-first plan.
+Status: implemented — all eight tasks complete, written from the accepted
+[container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md)
+and replacing the superseded Ansible-first plan. The product-metadata source of truth,
+versioned appliance config with secret separation, private Compose bundle, container
+runtime port + management surface, signed releases with digest-pinned updates and
+automatic rollback, portable backup/verify/restore, idempotent installer + doctor/repair
++ scoped uninstall, and the `ae appliance` CLI (+ docs and install.sh wrapper) all pass
+(`uv run ruff check .`, `uv run pytest`, `uv run mypy src/aegis` clean except the
+pre-existing Windows-only `audit/ledger.py` msvcrt errors). Live rootless-Docker/VPS and
+multi-arch CI are built against typed ports with fakes and gated behind `AEGIS_LIVE_*`.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

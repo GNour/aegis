@@ -1,14 +1,14 @@
 # Aegis implementation roadmap
 
-Status: plans 1 (core control plane), 1a (companion packages), 2 (workers, Herdr,
-and project services), 3 (context and knowledge), and 4 (TUI and Hermes) are
-implemented; the container-first replacement plan 5 is pending (must be written from
-the container-first spec, then executed)
+Status: all plans implemented — 1 (core control plane), 1a (companion packages), 2
+(workers, Herdr, and project services), 3 (context and knowledge), 4 (TUI and Hermes),
+and the container-first plan 5 (deployment). Remaining work is the live release-gate
+matrix on provisioned hosts (`AEGIS_LIVE_*`) and the pilot soak.
 
 Implementation progress: core control-plane tasks 1–6, the entire companion-package
-integration plan (1a), all six tasks of plan 2 (workers, Herdr, project services),
-all six tasks of plan 3 (context and knowledge), and all five tasks of plan 4 (TUI
-and Hermes) are complete. Only the container-first plan 5 remains.
+integration plan (1a), all six tasks of plan 2, all six tasks of plan 3, all five tasks
+of plan 4, and all eight tasks of the container-first plan 5 are complete. The
+container-first installer replaces the superseded Ansible-first delivery model.
 
 The architecture spans five independently testable subsystems. Execute their
 plans in order; each ends with a working vertical capability and a commit gate.
@@ -34,9 +34,10 @@ stage-packet records needed by flow compilation and later worker dispatch.
 
 ## Release sequence
 
-1. `0.1.0-dev`: plan 1 complete; API is local and uses fake adapters.
-2. `0.2.0-dev`: plan 2 complete; isolated local tasks resume after process loss.
-3. `0.3.0-dev`: plan 3 complete; preservation blocks cleanup until receipts exist.
-4. `0.4.0-dev`: plan 4 complete; TUI and Hermes pass API-parity tests.
-5. `0.5.0-pilot`: plan 5 complete; installed on the VPS for the two-project soak.
+1. `0.1.0-dev` ✓: plan 1 complete; API is local and uses fake adapters.
+2. `0.2.0-dev` ✓: plan 2 complete; isolated local tasks resume after process loss.
+3. `0.3.0-dev` ✓: plan 3 complete; preservation blocks cleanup until receipts exist.
+4. `0.4.0-dev` ✓: plan 4 complete; TUI and Hermes pass API-parity tests.
+5. `0.5.0-pilot` ✓ (against fakes): plan 5 complete; the live VPS install and
+   two-project soak run through the `AEGIS_LIVE_*` release-gate matrix.
 6. `1.0.0`: soak, restore drill, license gates, and full verification matrix pass.
