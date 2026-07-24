@@ -87,3 +87,27 @@ def assert_transition(current: TaskState, target: TaskState) -> None:
     """Raise when a task lifecycle transition is not allowlisted."""
     if target not in _ALLOWED_TRANSITIONS[current]:
         raise ValueError(f"illegal task transition: {current.value} -> {target.value}")
+
+
+_RESUMABLE_STATES: Final[frozenset[TaskState]] = frozenset(
+    {
+        TaskState.WAITING_HUMAN,
+        TaskState.WAITING_QUOTA,
+        TaskState.WAITING_PROVIDER,
+        TaskState.RETRY_SCHEDULED,
+        TaskState.BLOCKED,
+        TaskState.RECOVERY_REQUIRED,
+    }
+)
+
+
+def resume_target(current: TaskState) -> TaskState:
+    """Return the state a resume dispatches to, or raise if not currently resumable."""
+    if current not in _RESUMABLE_STATES:
+        raise ValueError(f"task is not in a resumable state: {current.value}")
+    return TaskState.EXECUTING
+
+
+def can_cancel(current: TaskState) -> bool:
+    """Return whether cancellation is a legal direct transition from ``current``."""
+    return TaskState.CANCELLED in _ALLOWED_TRANSITIONS[current]

@@ -5,13 +5,14 @@ import json
 import re
 import sqlite3
 import time
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Final, Self, cast
 
 from aegis.domain.ids import ensure_uuid7, new_uuid7
 from aegis.domain.stage_packet import StageExecutionPacket, canonical_packet_hash
+from aegis.domain.state import TaskState, assert_transition
 
 _SCHEMA_DIR: Final = Path(__file__).with_name("schema")
 _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {
@@ -31,6 +32,10 @@ _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {
     "cleanup_records": (frozenset({"id", "task_id", "target_labels_json", "preconditions_json", "actions_json", "verified", "state", "failure_reason", "schema_version"}), {"task_id": "tasks"}),
     "audit_events": (frozenset({"id", "sequence", "event_type", "event_version", "actor_id", "correlation_id", "payload_json", "prior_hash", "event_hash", "occurred_at", "task_id", "causation_id", "schema_version"}), {"task_id": "tasks"}),
     "stage_execution_packets": (frozenset({"id", "task_id", "flow_run_id", "stage_run_id", "schema_version", "packet_json", "packet_hash", "created_at"}), {"task_id": "tasks", "flow_run_id": "flow_runs", "stage_run_id": "stage_runs"}),
+    "request_idempotency": (frozenset({"key", "operation", "request_hash", "response_json", "created_at"}), {}),
+    "principal_nonces": (frozenset({"nonce", "expires_at"}), {}),
+    "note_proposals": (frozenset({"id", "project_id", "task_id", "markdown_text", "source_metadata_json", "schema_version", "created_at"}), {"task_id": "tasks"}),
+    "reminders": (frozenset({"id", "message", "schedule", "timezone", "schema_version", "created_at"}), {}),
 }
 _PRIMARY_KEYS: Final[dict[str, str]] = {
     "schema_migrations": "filename",
@@ -38,6 +43,8 @@ _PRIMARY_KEYS: Final[dict[str, str]] = {
     "stage_runs": "id", "attempts": "id", "decision_requests": "id", "approval_requests": "id",
     "session_links": "id", "handoff_packets": "id", "artifacts": "id", "knowledge_syncs": "id",
     "cleanup_records": "id", "audit_events": "id", "stage_execution_packets": "id",
+    "request_idempotency": "key", "principal_nonces": "nonce",
+    "note_proposals": "id", "reminders": "id",
 }
 _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "schema_migrations": frozenset(),
@@ -56,6 +63,10 @@ _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "cleanup_records": frozenset({"failure_reason"}),
     "audit_events": frozenset({"task_id", "causation_id"}),
     "stage_execution_packets": frozenset(),
+    "request_idempotency": frozenset(),
+    "principal_nonces": frozenset(),
+    "note_proposals": frozenset({"project_id", "task_id"}),
+    "reminders": frozenset(),
 }
 _INTEGER_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "schema_migrations": frozenset(),
@@ -74,6 +85,10 @@ _INTEGER_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "cleanup_records": frozenset({"verified", "schema_version"}),
     "audit_events": frozenset({"sequence", "event_version", "schema_version"}),
     "stage_execution_packets": frozenset({"schema_version"}),
+    "request_idempotency": frozenset(),
+    "principal_nonces": frozenset(),
+    "note_proposals": frozenset({"schema_version"}),
+    "reminders": frozenset({"schema_version"}),
 }
 _REAL_COLUMNS: Final[dict[str, frozenset[str]]] = {
     **{table: frozenset() for table in _TABLE_SPECS},
@@ -92,6 +107,7 @@ _NON_UNIQUE_INDEXES: Final[dict[str, frozenset[tuple[str, ...]]]] = {
     "stage_runs": frozenset({("flow_run_id",)}),
     "attempts": frozenset({("stage_run_id",)}),
     "stage_execution_packets": frozenset({("task_id",), ("flow_run_id",)}),
+    "note_proposals": frozenset({("task_id",)}),
 }
 
 
@@ -115,7 +131,13 @@ class SQLiteStore:
         path.parent.mkdir(parents=True, exist_ok=True)
         self._schema_dir = schema_dir or _SCHEMA_DIR
         self._allow_schema_extensions = allow_schema_extensions
-        self._connection = sqlite3.connect(path, isolation_level=None, timeout=30)
+        # check_same_thread=False: a served API process shares one long-lived store
+        # across the request-handling thread the ASGI server dispatches onto. Every
+        # mutation already serializes itself with an explicit BEGIN IMMEDIATE, so
+        # cross-thread use of this single connection remains transactionally safe.
+        self._connection = sqlite3.connect(
+            path, isolation_level=None, timeout=30, check_same_thread=False
+        )
         self._connection.execute("PRAGMA busy_timeout=30000")
         self._enable_wal()
         self._connection.execute("PRAGMA foreign_keys=ON")
@@ -261,6 +283,251 @@ class SQLiteStore:
     def get_stage_packet_for_resume(self, stage_run_id: str) -> StageExecutionPacket | None:
         """Resume seam: return the stored packet only. Recompilation is unavailable here."""
         return self.get_stage_packet(stage_run_id)
+
+    def get_task(self, task_id: str) -> dict[str, object] | None:
+        """Return the current task row, or None if absent."""
+        task_id = ensure_uuid7(task_id)
+        row = self._connection.execute(
+            "SELECT id, payload_json, state, version, created_at FROM tasks WHERE id = ?",
+            (task_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return {
+            "task_id": str(row[0]),
+            "payload": json.loads(str(row[1])),
+            "state": str(row[2]),
+            "version": int(row[3]),
+            "created_at": str(row[4]),
+        }
+
+    def update_task_state(
+        self,
+        task_id: str,
+        *,
+        expected_state: str,
+        expected_version: int,
+        new_state: str,
+        event_type: str,
+        reason: str,
+        actor_id: str,
+        principal_type: str,
+        correlation_id: str,
+        causation_id: str,
+        idempotency_key: str,
+    ) -> dict[str, object]:
+        """Transition a task's state in its own transaction (direct/unit-test use)."""
+        with self._connection:
+            self._connection.execute("BEGIN IMMEDIATE")
+            return self.update_task_state_in_transaction(
+                task_id,
+                expected_state=expected_state,
+                expected_version=expected_version,
+                new_state=new_state,
+                event_type=event_type,
+                reason=reason,
+                actor_id=actor_id,
+                principal_type=principal_type,
+                correlation_id=correlation_id,
+                causation_id=causation_id,
+                idempotency_key=idempotency_key,
+            )
+
+    def update_task_state_in_transaction(
+        self,
+        task_id: str,
+        *,
+        expected_state: str,
+        expected_version: int,
+        new_state: str,
+        event_type: str,
+        reason: str,
+        actor_id: str,
+        principal_type: str,
+        correlation_id: str,
+        causation_id: str,
+        idempotency_key: str,
+    ) -> dict[str, object]:
+        """Transition a task's state assuming the caller already holds a transaction.
+
+        Used directly by ``run_idempotent`` callbacks, which own the surrounding
+        ``BEGIN IMMEDIATE``; calling this while none is open still works because a bare
+        ``execute`` runs under SQLite's implicit transaction.
+        """
+        task_id = ensure_uuid7(task_id)
+        actor_id = ensure_uuid7(actor_id)
+        correlation_id = ensure_uuid7(correlation_id)
+        causation_id = ensure_uuid7(causation_id)
+        assert_transition(TaskState(expected_state), TaskState(new_state))
+        row = self._connection.execute(
+            "SELECT state, version FROM tasks WHERE id = ?", (task_id,)
+        ).fetchone()
+        if row is None:
+            raise LookupError(f"unknown task: {task_id}")
+        if str(row[0]) != expected_state or int(row[1]) != expected_version:
+            raise ValueError("state_conflict")
+        occurred_at = datetime.now(UTC).isoformat()
+        self._connection.execute(
+            "UPDATE tasks SET state = ?, version = version + 1 WHERE id = ?",
+            (new_state, task_id),
+        )
+        payload = self._canonical_json(
+            {
+                "task_id": task_id,
+                "from_state": expected_state,
+                "to_state": new_state,
+                "reason": reason,
+            }
+        )
+        self._connection.execute(
+            "INSERT INTO audit_outbox "
+            "(event_id, event_type, event_version, actor_id, principal_type, correlation_id, "
+            "causation_id, idempotency_key, payload_json, created_at, task_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                new_uuid7(), event_type, 1, actor_id, principal_type,
+                correlation_id, causation_id, idempotency_key, payload, occurred_at, task_id,
+            ),
+        )
+        return {"task_id": task_id, "state": new_state, "version": expected_version + 1}
+
+    def create_approval_request(
+        self,
+        *,
+        task_id: str,
+        action_payload_hash: str,
+        scope: str,
+        risk: str,
+        reason: str,
+        expires_at: str,
+        nonce: str,
+    ) -> str:
+        """Insert a new approval request and return its ID."""
+        task_id = ensure_uuid7(task_id)
+        approval_id = new_uuid7()
+        self._connection.execute(
+            "INSERT INTO approval_requests "
+            "(id, task_id, action_payload_hash, scope, risk, reason, expires_at, nonce, schema_version) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (approval_id, task_id, action_payload_hash, scope, risk, reason, expires_at, nonce, 1),
+        )
+        return approval_id
+
+    def get_approval_request(self, approval_id: str) -> dict[str, object] | None:
+        """Return the approval request row, or None if absent."""
+        approval_id = ensure_uuid7(approval_id)
+        row = self._connection.execute(
+            "SELECT id, task_id, action_payload_hash, scope, risk, reason, expires_at, nonce, "
+            "signer_id, used_at, use_event_id FROM approval_requests WHERE id = ?",
+            (approval_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return {
+            "id": str(row[0]),
+            "task_id": str(row[1]),
+            "action_payload_hash": str(row[2]),
+            "scope": str(row[3]),
+            "risk": str(row[4]),
+            "reason": str(row[5]),
+            "expires_at": str(row[6]),
+            "nonce": str(row[7]),
+            "signer_id": row[8],
+            "used_at": row[9],
+            "use_event_id": row[10],
+        }
+
+    def use_approval_request(
+        self, approval_id: str, *, use_event_id: str, signer_id: str, used_at: str
+    ) -> bool:
+        """Atomically claim an approval request exactly once. False if already used."""
+        approval_id = ensure_uuid7(approval_id)
+        use_event_id = ensure_uuid7(use_event_id)
+        signer_id = ensure_uuid7(signer_id)
+        with self._connection:
+            self._connection.execute("BEGIN IMMEDIATE")
+            updated = self._connection.execute(
+                "UPDATE approval_requests SET used_at = ?, use_event_id = ?, signer_id = ? "
+                "WHERE id = ? AND used_at IS NULL",
+                (used_at, use_event_id, signer_id, approval_id),
+            ).rowcount
+            return updated == 1
+
+    def claim_nonce(self, nonce: str, expires_at: str) -> bool:
+        """Atomically claim a nonce exactly once. False if already claimed."""
+        with self._connection:
+            self._connection.execute("BEGIN IMMEDIATE")
+            try:
+                self._connection.execute(
+                    "INSERT INTO principal_nonces (nonce, expires_at) VALUES (?, ?)",
+                    (nonce, expires_at),
+                )
+            except sqlite3.IntegrityError:
+                return False
+            return True
+
+    def run_idempotent(
+        self,
+        key: str,
+        operation: str,
+        request_hash: str,
+        build_response: Callable[[], Mapping[str, object]],
+    ) -> dict[str, object]:
+        """Return a prior response for a repeated key+operation+hash, or build and store one.
+
+        A repeated key with a different operation or request hash raises
+        ``ValueError("idempotency_conflict")``. ``build_response`` performs its own writes
+        within this same transaction; it must not open a nested transaction.
+        """
+        with self._connection:
+            self._connection.execute("BEGIN IMMEDIATE")
+            existing = self._connection.execute(
+                "SELECT operation, request_hash, response_json FROM request_idempotency WHERE key = ?",
+                (key,),
+            ).fetchone()
+            if existing is not None:
+                if str(existing[0]) != operation or str(existing[1]) != request_hash:
+                    raise ValueError("idempotency_conflict")
+                return cast(dict[str, object], json.loads(str(existing[2])))
+            response = build_response()
+            response_json = self._canonical_json(response)
+            self._connection.execute(
+                "INSERT INTO request_idempotency (key, operation, request_hash, response_json, created_at) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (key, operation, request_hash, response_json, datetime.now(UTC).isoformat()),
+            )
+            return dict(response)
+
+    def create_note_proposal(
+        self,
+        *,
+        project_id: str | None,
+        task_id: str | None,
+        markdown_text: str,
+        source_metadata: Mapping[str, object],
+    ) -> str:
+        """Insert a canonical inbox note proposal and return its ID."""
+        note_id = new_uuid7()
+        self._connection.execute(
+            "INSERT INTO note_proposals "
+            "(id, project_id, task_id, markdown_text, source_metadata_json, schema_version, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                note_id, project_id, task_id, markdown_text,
+                self._canonical_json(source_metadata), 1, datetime.now(UTC).isoformat(),
+            ),
+        )
+        return note_id
+
+    def create_reminder(self, *, message: str, schedule: str, timezone: str) -> str:
+        """Insert a normalized reminder and return its ID."""
+        reminder_id = new_uuid7()
+        self._connection.execute(
+            "INSERT INTO reminders (id, message, schedule, timezone, schema_version, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (reminder_id, message, schedule, timezone, 1, datetime.now(UTC).isoformat()),
+        )
+        return reminder_id
 
     def count_tasks(self) -> int:
         """Return the number of persisted tasks."""
