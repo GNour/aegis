@@ -38,7 +38,7 @@ packages = ["src/aegis"]
 "src/aegis/data/companions/roles.provenance.json" = "aegis/data/companions/roles.provenance.json"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "integrations"]
 addopts = "--strict-markers --strict-config"
 asyncio_mode = "auto"
 

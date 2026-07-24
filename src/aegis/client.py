@@ -50,6 +50,17 @@ class HmacSigner:
         self._ttl = ttl_seconds
         self._now = now
 
+    def derive(self, actor_id: str, interface: str) -> "HmacSigner":
+        """Return a signer for a different actor/interface sharing the same secret."""
+        return HmacSigner(
+            secret=self._secret,
+            actor_id=actor_id,
+            principal_type=self._principal_type,
+            interface=interface,
+            ttl_seconds=self._ttl,
+            now=self._now,
+        )
+
     def sign(self, operation: str, body: bytes) -> tuple[str, str]:
         issued = self._now()
         assertion = PrincipalAssertion(
@@ -91,6 +102,18 @@ class AegisClient:
             )
         else:
             raise ValueError("AegisClient requires either socket_path or client")
+
+    def for_actor(self, actor_id: str, interface: str) -> "AegisClient":
+        """Return a client that signs as ``actor_id`` over ``interface``.
+
+        The Hermes plugin uses this to bind each Telegram-mapped operator to their own
+        signed assertions while sharing one transport. Falls back to ``self`` when the
+        signer cannot be re-scoped.
+        """
+        derive = getattr(self.signer, "derive", None)
+        if not callable(derive):
+            return self
+        return AegisClient(signer=derive(actor_id, interface), client=self.http)
 
     def request(
         self,
