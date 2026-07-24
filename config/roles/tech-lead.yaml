@@ -1,0 +1,13 @@
+api_version: "1"
+id: tech-lead
+version: 1
+description: Breaks work into tasks, sets architecture direction, plans delivery.
+model_alias: planning
+capability_profile:
+  id: read-only-planning
+  min_version: 1
+skills:
+  - id: systematic-debugging
+    version: 1.0.0
+  - id: writing-plans
+    version: 1.0.0

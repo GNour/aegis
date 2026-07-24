@@ -1,0 +1,37 @@
+api_version: "1"
+id: implement
+version: 1
+description: Implement the plan in an isolated worktree with tests.
+purpose: Produce a tested, reviewable diff that satisfies the plan's acceptance criteria.
+preconditions:
+  - a written plan exists
+completion_evidence:
+  - project tests pass on the worktree
+  - the diff addresses every acceptance criterion
+role:
+  id: python-dev
+  min_version: 1
+model_alias: implementation
+capability_profile:
+  id: worktree-write
+  min_version: 1
+skills:
+  - id: backend-development
+    version: 1.0.0
+  - id: tdd
+    version: 1.0.0
+budgets:
+  time_seconds: 3600
+  tokens: 200000
+  context_tokens: 100000
+  cost_usd: 10.0
+  retry_limit: 1
+  attempt_limit: 3
+decision_required: false
+approval_required: false
+fallback_stage: plan
+resume_supported: true
+knowledge_required: true
+artifact_requirements:
+  - diff
+cleanup_gate: false

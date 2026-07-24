@@ -1,0 +1,13 @@
+api_version: "1"
+id: qa-engineer
+version: 1
+description: Verifies acceptance criteria and test coverage before handoff.
+model_alias: verification
+capability_profile:
+  id: read-only-verification
+  min_version: 1
+skills:
+  - id: systematic-debugging
+    version: 1.0.0
+  - id: verification-before-completion
+    version: 1.0.0

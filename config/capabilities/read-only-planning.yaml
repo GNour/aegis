@@ -1,0 +1,7 @@
+api_version: "1"
+id: read-only-planning
+version: 1
+description: Read-only research and planning tools; no write or execution access.
+tools:
+  - qmd_search
+  - qmd_get
