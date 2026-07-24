@@ -10,6 +10,8 @@ config_app = typer.Typer(no_args_is_help=True, help="Flow/routing configuration 
 app.add_typer(config_app, name="config")
 flow_app = typer.Typer(no_args_is_help=True, help="Flow simulation commands.")
 app.add_typer(flow_app, name="flow")
+execution_app = typer.Typer(no_args_is_help=True, help="Execution/worker commands.")
+app.add_typer(execution_app, name="execution")
 
 _ROOT = Path(__file__).resolve().parents[2]
 
@@ -113,3 +115,25 @@ def flow_simulate(
             sort_keys=True,
         )
     )
+
+
+@execution_app.command("manifest-schema")
+def execution_manifest_schema(
+    check: bool = typer.Option(
+        False, "--check", help="Exit nonzero if the committed schema is stale."
+    ),
+) -> None:
+    """Emit (or check) the canonical project-manifest JSON schema."""
+    from aegis.execution.project_manifest import manifest_json_schema
+
+    schema_path = _ROOT / "config" / "schemas" / "project-v1.json"
+    rendered = json.dumps(manifest_json_schema(), indent=2, sort_keys=True) + "\n"
+    if check:
+        current = schema_path.read_text(encoding="utf-8") if schema_path.exists() else ""
+        if current != rendered:
+            typer.echo("project-v1.json is stale; run 'ae execution manifest-schema'", err=True)
+            raise typer.Exit(code=1)
+        typer.echo("project-v1.json is up to date")
+        return
+    schema_path.write_text(rendered, encoding="utf-8")
+    typer.echo(f"wrote {schema_path}")
