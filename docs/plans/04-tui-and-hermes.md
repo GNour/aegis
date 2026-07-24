@@ -1,5 +1,17 @@
 # TUI and Hermes Implementation Plan
 
+Status: implemented — all five tasks complete. The typed Unix-socket control client
+(nine FR-001 operations, signed assertions, stable errors), the Textual operator TUI
+(task list/create/detail plus decisions, approvals, and audit views), the Hermes
+company-control plugin (exactly nine allowlisted typed tools with bounded inputs), the
+company-orchestrator skill, and idempotent notification delivery all pass
+(`uv run ruff check .`, `uv run pytest`, `uv run mypy src/aegis` clean except the
+pre-existing Windows-only `audit/ledger.py` msvcrt errors). An end-to-end parity test
+drives the real control plane from both the TUI-signed client and the Telegram plugin
+and asserts equivalent audit events. Adaptations (this Textual version has no
+Pilot.type()/SVG-snapshot tooling; text entry uses key presses and UI states are
+asserted functionally) are noted in the commits.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Give the operator a complete local TUI and a restricted Hermes/Telegram interface that share the same API, policy, approval, and audit behavior.

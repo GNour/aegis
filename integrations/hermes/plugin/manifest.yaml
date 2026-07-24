@@ -1,0 +1,32 @@
+name: company-control
+version: 0.1.0
+description: >-
+  Restricted Aegis control surface for Hermes/Telegram. Exposes exactly the nine
+  FR-001 control operations as typed tools. Carries no host capabilities: it cannot
+  run shells, processes, or arbitrary commands. Every call is authenticated as an
+  allowlisted operator and dispatched through the local Aegis control API.
+entrypoint: company_control:CompanyControlPlugin
+capabilities: []
+interface: telegram
+tools:
+  - name: list_flows
+    description: List available flows and their accepted intents.
+  - name: create_task
+    description: Create a supervised task (project_id, request, flow_id=auto).
+  - name: get_task_status
+    description: Get a task's state and timeline summary by id.
+  - name: approve_action
+    description: Approve a pending one-use approval by id with its exact action payload.
+  - name: reject_action
+    description: Reject a pending approval by id with a reason.
+  - name: cancel_task
+    description: Request cancellation of a task with a reason.
+  - name: resume_task
+    description: Resume a task from an expected state and version.
+  - name: capture_note
+    description: Capture a Markdown note proposal for a project or task.
+  - name: schedule_reminder
+    description: Schedule a reminder message.
+config:
+  allowed_users_file: /etc/aegis/hermes/allowed_users.json
+  control_socket: /run/aegis/control.sock
