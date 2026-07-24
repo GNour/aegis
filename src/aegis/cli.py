@@ -13,6 +13,10 @@ app.add_typer(flow_app, name="flow")
 execution_app = typer.Typer(no_args_is_help=True, help="Execution/worker commands.")
 app.add_typer(execution_app, name="execution")
 
+from aegis.deploy.cli import appliance_app  # noqa: E402
+
+app.add_typer(appliance_app, name="appliance")
+
 _ROOT = Path(__file__).resolve().parents[2]
 
 
