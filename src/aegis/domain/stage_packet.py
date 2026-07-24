@@ -8,6 +8,9 @@ key, raw credential, advisory upstream tool field, or repository path.
 
 from __future__ import annotations
 
+import hashlib
+import json
+
 from pydantic import Field
 
 from aegis.domain.models import (
@@ -92,3 +95,17 @@ class StagePacketInput(StagePacketBody):
 
 class StageExecutionPacket(StagePacketInput):
     canonical_hash: str = Field(pattern=_SHA256)
+
+
+def canonical_packet_hash(packet: StageExecutionPacket) -> str:
+    """Recompute the canonical SHA-256 of a packet with its hash field blanked.
+
+    Shared by the compiler (to sign) and storage (to verify integrity on read), so both
+    use exactly the same bytes.
+    """
+    payload = packet.model_dump(mode="json")
+    payload["canonical_hash"] = ""
+    canonical = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    ).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
