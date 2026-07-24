@@ -43,6 +43,8 @@ asyncio_mode = "auto"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# Companion submodules carry their own lint/CI; Aegis lints only its own sources.
+extend-exclude = ["packages"]
 
 [tool.mypy]
 python_version = "3.12"
