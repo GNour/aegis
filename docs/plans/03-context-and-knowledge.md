@@ -1,5 +1,14 @@
 # Context and Knowledge Implementation Plan
 
+Status: implemented — all six tasks complete. Exact digest-verified read-only skill
+bundles, scoped/bounded QMD retrieval, source-linked OpenViking memory, the bounded
+cited context compiler, RTK dual-output capture with full-log retention, and the
+preservation coordinator that gates cleanup on exact-commit QMD/OpenViking receipts
+all pass (`uv run ruff check .`, `uv run pytest`, `uv run mypy src/aegis` clean
+except the pre-existing Windows-only `audit/ledger.py` msvcrt errors). QMD and
+OpenViking are not installed here, so their adapters are built against typed ports
+with fakes per docs/rfcs/0005-qmd.md §5a and docs/rfcs/0003-openviking.md §5a.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Deliver role-isolated skills, project-scoped QMD retrieval, source-linked OpenViking memory, bounded context compilation, RTK evidence, and a knowledge transaction that blocks cleanup until indexing receipts exist.
