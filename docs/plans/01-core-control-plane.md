@@ -1,5 +1,10 @@
 # Core Control Plane Implementation Plan
 
+Status: implemented — all six tasks complete. The typed domain, transactional SQLite
+state, redacted hash-linked audit ledger, versioned flow/routing catalog, policy engine,
+one-use approvals, and the Unix-socket-servable FastAPI API all pass
+(`uv run pytest`, `ruff`, `mypy`, `ae config validate`, `ae flow simulate`).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a tested local Aegis service with typed records, transactional state, tamper-evident audit, versioned flows, policy decisions, approvals, and a Unix-socket API.

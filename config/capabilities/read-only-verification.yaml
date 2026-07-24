@@ -1,0 +1,8 @@
+api_version: "1"
+id: read-only-verification
+version: 1
+description: Read-only verification tools plus project test execution.
+tools:
+  - qmd_search
+  - qmd_get
+  - project_test

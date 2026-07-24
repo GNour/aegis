@@ -1,0 +1,23 @@
+api_version: "1"
+id: feature-delivery
+version: 1
+description: Plan, implement, and independently verify a feature request end-to-end.
+allowed_callers:
+  - tui
+  - hermes
+accepted_intents:
+  - feature-delivery
+input_schema: feature-request
+stages:
+  - id: plan
+    min_version: 1
+  - id: implement
+    min_version: 1
+  - id: verify
+    min_version: 1
+gates:
+  - qa-verification
+retry_policy:
+  max_retries: 1
+  backoff_seconds: 30
+completion_policy: all_stages_complete

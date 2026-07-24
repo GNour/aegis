@@ -6,8 +6,23 @@ import typer
 app = typer.Typer(no_args_is_help=True)
 companions_app = typer.Typer(no_args_is_help=True, help="Companion package commands.")
 app.add_typer(companions_app, name="companions")
+config_app = typer.Typer(no_args_is_help=True, help="Flow/routing configuration commands.")
+app.add_typer(config_app, name="config")
+flow_app = typer.Typer(no_args_is_help=True, help="Flow simulation commands.")
+app.add_typer(flow_app, name="flow")
 
 _ROOT = Path(__file__).resolve().parents[2]
+
+
+def _json_safe(value: object) -> object:
+    """Recursively unwrap FrozenJsonMapping's MappingProxyType/tuple into JSON-safe types."""
+    from collections.abc import Mapping
+
+    if isinstance(value, Mapping):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    return value
 
 
 @app.callback()
@@ -42,3 +57,59 @@ def companions_verify() -> None:
     )
     typer.echo(json.dumps(payload, sort_keys=True))
     raise typer.Exit(code=0 if payload["ready"] else 1)
+
+
+@config_app.command("validate")
+def config_validate(
+    root: str = typer.Option("config", help="Configuration catalog root directory"),
+) -> None:
+    """Parse, cross-validate, and report the compiled catalog's canonical hash."""
+    from aegis.config.catalog import CatalogError, build_catalog
+
+    try:
+        catalog = build_catalog(Path(root))
+    except CatalogError as error:
+        typer.echo(json.dumps({"ok": False, "error": str(error)}, sort_keys=True), err=True)
+        raise typer.Exit(code=1) from error
+    typer.echo(
+        json.dumps(
+            {
+                "ok": True,
+                "catalog_hash": catalog.canonical_hash,
+                "flows": sorted(catalog.flows),
+            },
+            sort_keys=True,
+        )
+    )
+
+
+@flow_app.command("simulate")
+def flow_simulate(
+    root: str = typer.Option("config", help="Configuration catalog root directory"),
+    fixture: str = typer.Option(..., help="Path to a JSON fixture request"),
+) -> None:
+    """Simulate flow selection for a fixture request. Creates no state."""
+    from aegis.config.catalog import CatalogError, build_catalog
+    from aegis.config.simulate import SimulationError, simulate
+
+    try:
+        catalog = build_catalog(Path(root))
+        request = json.loads(Path(fixture).read_text(encoding="utf-8"))
+        result = simulate(catalog, request)
+    except (CatalogError, SimulationError) as error:
+        typer.echo(json.dumps({"ok": False, "error": str(error)}, sort_keys=True), err=True)
+        raise typer.Exit(code=1) from error
+    typer.echo(
+        json.dumps(
+            {
+                "ok": True,
+                "flow_id": result.flow.doc.id,
+                "evaluated_rule_ids": list(result.evaluated_rule_ids),
+                "matched_rule_id": result.matched_rule_id,
+                "added_risk": result.added_risk,
+                "added_gates": list(result.added_gates),
+                "snapshot": _json_safe(result.flow.snapshot()),
+            },
+            sort_keys=True,
+        )
+    )

@@ -1,0 +1,13 @@
+api_version: "1"
+id: python-dev
+version: 1
+description: Implements typed, tested Python changes in an isolated worktree.
+model_alias: implementation
+capability_profile:
+  id: worktree-write
+  min_version: 1
+skills:
+  - id: backend-development
+    version: 1.0.0
+  - id: tdd
+    version: 1.0.0

@@ -1,0 +1,11 @@
+api_version: "1"
+id: routing
+version: 1
+description: Default deterministic routing rules.
+rules:
+  - id: feature-delivery-default
+    priority: 10
+    terminal: true
+    when:
+      intent: feature-delivery
+    select_flow: feature-delivery

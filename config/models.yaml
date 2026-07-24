@@ -1,0 +1,14 @@
+api_version: "1"
+id: model-aliases
+version: 1
+description: Approved model alias definitions consumed by roles and stages.
+aliases:
+  planning:
+    provider: anthropic
+    model: claude-opus
+  implementation:
+    provider: anthropic
+    model: claude-sonnet
+  verification:
+    provider: anthropic
+    model: claude-sonnet

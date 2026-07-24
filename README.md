@@ -13,14 +13,15 @@ release and supplies instance-specific variables.
 
 ## Current status
 
-The architecture is approved and implementation is underway through the reviewed
-plans under [`docs/plans/`](docs/plans/). Core control-plane tasks 1–4 are
-complete: the Python shell, domain records and lifecycle, transactional SQLite
-state, and redacted hash-linked audit ledger. The
+The architecture is approved and [Plan 1 (core control plane)](docs/plans/01-core-control-plane.md)
+is complete: the Python shell, domain records and lifecycle, transactional SQLite
+state, redacted hash-linked audit ledger, versioned flow/routing catalog, policy
+engine, one-use approvals, and the local FastAPI control-plane API. The
 [companion-package integration plan](docs/plans/01a-companion-packages-and-stage-packets.md)
 is also complete: PromptX and Subagents are pinned as digest-verified submodules,
 the reviewed role catalog is compiled and embedded, and immutable stage packets are
-compiled and stored exactly once. Flow/routing and API work begin with core tasks 5–6.
+compiled and stored exactly once. Work continues with
+[Plan 2 (workers, Herdr, and project services)](docs/plans/02-workers-herdr-services.md).
 
 Start here:
 
