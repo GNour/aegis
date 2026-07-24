@@ -1,0 +1,22 @@
+# Single source of truth for product naming, paths, and labels.
+# Installers, Compose templates, release workflows, and docs derive from this file
+# rather than embedding the product name or CLI command independently.
+schema_version = 1
+
+display_name = "Aegis"
+cli_command = "ae"
+package_name = "aegis"
+registry_namespace = "ghcr.io/gnour/aegis"
+compose_project = "aegis"
+label_prefix = "dev.aegis"
+
+# Persistent internal identifier. Never change this: renaming it would orphan volumes
+# and break upgrades. The display name and CLI command may change; this may not.
+stable_instance_id = "aegis"
+
+config_dir = "/etc/aegis"
+data_dir = "/var/lib/aegis"
+backup_dir = "/var/backups/aegis"
+secret_dir = "/etc/aegis/secrets"
+
+docs_base_url = "https://docs.example.invalid/aegis"

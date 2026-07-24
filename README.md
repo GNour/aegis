@@ -33,8 +33,15 @@ preservation coordinator that gates cleanup on exact-commit indexing receipts.
 [Plan 4 (TUI and Hermes)](docs/plans/04-tui-and-hermes.md) is now complete: the typed
 control client, the Textual operator TUI, the restricted Hermes company-control
 plugin and company-orchestrator skill, and idempotent notifications, verified for
-API/audit parity across both interfaces. Work continues with the container-first
-deployment plan (Plan 5).
+API/audit parity across both interfaces.
+[Plan 5 (container-first deployment)](docs/plans/05-deployment-and-rollout.md) is now
+complete: the product-metadata source of truth, versioned appliance config with secret
+separation, the private-network Compose bundle, the container runtime port and
+`ae appliance` management surface, signed digest-pinned releases with automatic
+rollback, portable backup/restore, and an idempotent installer with doctor/repair and
+scoped uninstall — see the [deployment guide](docs/deployment/README.md). All five
+subsystems are implemented; the remaining work is the live `AEGIS_LIVE_*` release-gate
+matrix on provisioned hosts and the pilot soak.
 
 Start here:
 

@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "Exposure": {
+      "additionalProperties": false,
+      "properties": {
+        "bind_address": {
+          "default": "127.0.0.1",
+          "title": "Bind Address",
+          "type": "string"
+        }
+      },
+      "title": "Exposure",
+      "type": "object"
+    },
+    "SecretRef": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "minLength": 1,
+          "title": "Ref",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "file",
+            "env",
+            "provider"
+          ],
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "ref"
+      ],
+      "title": "SecretRef",
+      "type": "object"
+    },
+    "ServiceToggles": {
+      "additionalProperties": false,
+      "properties": {
+        "hermes_gateway": {
+          "default": false,
+          "title": "Hermes Gateway",
+          "type": "boolean"
+        },
+        "openviking": {
+          "default": true,
+          "title": "Openviking",
+          "type": "boolean"
+        },
+        "qmd": {
+          "default": true,
+          "title": "Qmd",
+          "type": "boolean"
+        }
+      },
+      "title": "ServiceToggles",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "channel": {
+      "default": "stable",
+      "enum": [
+        "stable",
+        "edge"
+      ],
+      "title": "Channel",
+      "type": "string"
+    },
+    "exposure": {
+      "$ref": "#/$defs/Exposure"
+    },
+    "secrets": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SecretRef"
+      },
+      "title": "Secrets",
+      "type": "object"
+    },
+    "services": {
+      "$ref": "#/$defs/ServiceToggles"
+    },
+    "version": {
+      "maximum": 1,
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version"
+  ],
+  "title": "ApplianceConfig",
+  "type": "object"
+}

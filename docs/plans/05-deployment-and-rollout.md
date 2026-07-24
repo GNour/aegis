@@ -1,469 +1,222 @@
-# Deployment and Rollout Implementation Plan
+# Container-First Deployment Implementation Plan
 
-Status: superseded pending container-first rewrite
-
-> **Do not execute this plan.** The accepted
-> [container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md)
-> replaces its Ansible-first delivery model. A new implementation plan will be
-> written after the accepted design has completed its documentation review gate.
+Status: implemented — all eight tasks complete, written from the accepted
+[container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md)
+and replacing the superseded Ansible-first plan. The product-metadata source of truth,
+versioned appliance config with secret separation, private Compose bundle, container
+runtime port + management surface, signed releases with digest-pinned updates and
+automatic rollback, portable backup/verify/restore, idempotent installer + doctor/repair
++ scoped uninstall, and the `ae appliance` CLI (+ docs and install.sh wrapper) all pass
+(`uv run ruff check .`, `uv run pytest`, `uv run mypy src/aegis` clean except the
+pre-existing Windows-only `audit/ledger.py` msvcrt errors). Live rootless-Docker/VPS and
+multi-arch CI are built against typed ports with fakes and gated behind `AEGIS_LIVE_*`.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Install Aegis reproducibly on Ubuntu 24.04 with isolated service accounts, hardened services, private exposure, encrypted backups, recovery drills, and measured pilot gates.
+**Goal:** Ship Aegis as a rootless Docker Compose appliance an operator installs,
+configures, runs, inspects, upgrades, backs up, restores, and removes through one
+management command — with the design's security and state invariants enforced and
+tested.
 
-**Architecture:** A reusable Ansible collection in this repository owns Aegis-specific accounts, packages, configuration, systemd, rootless runtime, and backup hooks. The VPS repo imports a pinned release and instance variables. Molecule proves convergence and security properties before a staged VPS rollout.
+**Architecture:** A single product-metadata file is the source of truth for names,
+paths, labels, and namespaces. A versioned, schema-validated appliance configuration
+renders a private-network Compose bundle. All container operations go through a typed
+`ContainerRuntime` port (argument arrays, exact Compose project, never a global prune)
+with a deterministic fake for tests and a rootless-Docker adapter for production. Update,
+backup/restore, doctor/repair, install, and uninstall are orchestrated in Python against
+typed host/runtime/registry ports; the host `install.sh` and CI multi-arch/live-VPS
+matrix are thin wrappers over the same contracts and run only in a real environment.
 
-**Tech Stack:** Ansible, Molecule with Docker, systemd user/system units, rootless Docker, restic hooks, pytest security/recovery suites, GitHub Actions
+**Environment reality (adaptation):** This build environment has no rootless Docker
+daemon, registry, or VPS. Following the roadmap's port/fake convention (as used for
+Herdr/QMD/OpenViking in plans 2–3), every subsystem is built against a typed port with
+deterministic fakes and full unit/security coverage; live tests are marked and skipped
+unless the corresponding environment (`AEGIS_LIVE_DOCKER`, `AEGIS_LIVE_VPS`) is present.
+The appliance management surface lives under the `ae appliance …` command group to
+coexist with the existing control-plane `ae config`/`ae flow` groups; a unified
+top-level surface and the published `install.sh`/CI matrix are release-time packaging.
+
+**Tech Stack:** Python 3.12, Pydantic v2, PyYAML, tarfile, hashlib/hmac, rootless
+Docker + Compose (adapter only), pytest.
 
 ---
 
-### Task 1: Reusable Ansible aegis role and Molecule scenario
+### Task 1: Product metadata single source of truth
 
 **Files:**
-- Create: `deploy/ansible/requirements.yml`
-- Create: `deploy/ansible/Makefile`
-- Create: `deploy/ansible/roles/aegis/defaults/main.yml`
-- Create: `deploy/ansible/roles/aegis/tasks/main.yml`
-- Create: `deploy/ansible/molecule/default/molecule.yml`
-- Create: `deploy/ansible/molecule/default/converge.yml`
-- Create: `deploy/ansible/molecule/default/verify.yml`
+- Create: `config/product.toml`
+- Create: `src/aegis/deploy/product.py`
+- Create: `tests/unit/deploy/test_product.py`
 
-- [ ] **Step 1: Write Molecule account assertions before role tasks**
+Define one versioned product-metadata record (display name, CLI command, package name,
+image registry namespace, Compose project name, config/data/backup directories, service
+labels, documentation variables). Installers, Compose templates, and docs derive from it.
+Persistent internal identifiers stay stable across a rename; a renamed CLI ships a
+deprecation alias for a documented window.
 
-```yaml
-- name: Verify aegis accounts
-  hosts: all
-  gather_facts: false
-  tasks:
-    - ansible.builtin.getent:
-        database: passwd
-        key: "{{ item }}"
-      loop:
-        - hermesops
-        - agentops
-    - ansible.builtin.command: "id -nG {{ item }}"
-      loop:
-        - hermesops
-        - agentops
-      register: aegis_groups
-      changed_when: false
-    - ansible.builtin.assert:
-        that:
-          - "'sudo' not in item.stdout.split()"
-          - "'docker' not in item.stdout.split()"
-      loop: "{{ aegis_groups.results }}"
-```
+- [ ] Write tests: metadata loads from the committed file; derived values (compose
+  project, image ref for a service+digest, label set, directories) are deterministic; a
+  rename preserves stable internal identifiers and yields a legacy alias.
+- [ ] Confirm failure, implement `ProductMetadata`, confirm green, commit
+  `feat(deploy): define product metadata source of truth`.
 
-- [ ] **Step 2: Run Molecule and confirm role absence**
-
-Run: `cd deploy/ansible && make molecule`
-
-Expected: FAIL because the role/defaults do not exist.
-
-- [ ] **Step 3: Add variables and idempotent account/directories tasks**
-
-```yaml
-# roles/aegis/defaults/main.yml
-aegis_gateway_user: hermesops
-aegis_orchestrator_user: agentops
-aegis_operator_group: aegis-operators
-aegis_version: "0.5.0-pilot"
-aegis_state_dir: /var/lib/aegis
-aegis_worktree_dir: /var/lib/aegis-worktrees
-aegis_artifact_dir: /var/lib/aegis-artifacts
-aegis_runtime_dir: /run/aegis
-aegis_openviking_bind: 127.0.0.1
-aegis_openviking_port: 1933
-aegis_worker_concurrency: 2
-```
-
-```yaml
-# roles/aegis/tasks/main.yml
-- name: Create Aegis operator group
-  ansible.builtin.group:
-    name: "{{ aegis_operator_group }}"
-    system: true
-
-- name: Create locked Aegis service accounts
-  ansible.builtin.user:
-    name: "{{ item.name }}"
-    system: true
-    create_home: true
-    password_lock: true
-    shell: /usr/sbin/nologin
-    groups: "{{ item.groups }}"
-    append: false
-  loop:
-    - { name: "{{ aegis_gateway_user }}", groups: "{{ aegis_operator_group }}" }
-    - { name: "{{ aegis_orchestrator_user }}", groups: "" }
-
-- name: Create private Aegis directories
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    state: directory
-    owner: "{{ aegis_orchestrator_user }}"
-    group: "{{ aegis_orchestrator_user }}"
-    mode: "{{ item.mode }}"
-  loop:
-    - { path: "{{ aegis_state_dir }}", mode: "0700" }
-    - { path: "{{ aegis_worktree_dir }}", mode: "0700" }
-    - { path: "{{ aegis_artifact_dir }}", mode: "0700" }
-```
-
-- [ ] **Step 4: Run lint, converge, and idempotency**
-
-Run: `cd deploy/ansible && make lint && make molecule`
-
-Expected: lint exits 0; Molecule's second convergence reports zero changes and account assertions pass.
-
-- [ ] **Step 5: Commit the deployment role skeleton**
-
-```bash
-git add deploy/ansible
-git commit -m "feat(deploy): provision isolated aegis accounts"
-```
-
-### Task 2: Pinned installation and hardened systemd services
+### Task 2: Versioned appliance configuration and secret separation
 
 **Files:**
-- Create: `deploy/ansible/roles/aegis/tasks/install.yml`
-- Create: `deploy/ansible/roles/aegis/tasks/services.yml`
-- Create: `deploy/ansible/roles/aegis/templates/aegis.service.j2`
-- Create: `deploy/ansible/roles/aegis/templates/herdr.service.j2`
-- Create: `deploy/ansible/roles/aegis/templates/hermes-ops.service.j2`
-- Create: `deploy/ansible/roles/aegis/templates/openviking.service.j2`
+- Create: `src/aegis/deploy/config.py`
+- Create: `config/schemas/appliance-v1.json`
+- Create: `tests/unit/deploy/test_appliance_config.py`
+- Create: `tests/security/test_config_secret_separation.py`
 
-- [ ] **Step 1: Add service-hardening assertions to Molecule**
+A versioned, `extra="forbid"` `ApplianceConfig` (channel, network exposure, service
+toggles, resource limits, secret **references** — never secret values). Support
+`init`/`validate`/`diff`, a stable nonsecret digest, and environment overrides as inputs
+only. Secrets live in a separate least-readable store; a validator rejects inline secret
+values and any public port on the private services.
 
-```yaml
-- name: Read Aegis unit security score
-  ansible.builtin.command: systemd-analyze security aegis.service --no-pager
-  register: aegis_security
-  changed_when: false
-- ansible.builtin.assert:
-    that:
-      - "'NoNewPrivileges=yes' in aegis_security.stdout"
-      - "'ProtectSystem=strict' in aegis_security.stdout"
-```
+- [ ] Write tests: dangerous configs (inline secret, public bind of a private service,
+  unknown key, unsupported version) are rejected; the sanitized config validates; the
+  nonsecret digest is stable and excludes secret references' values; diff reports changes;
+  the committed JSON schema matches the generated one.
+- [ ] Implement, confirm green, commit `feat(deploy): validate appliance configuration`.
 
-- [ ] **Step 2: Run Molecule and confirm units are missing**
-
-Run: `cd deploy/ansible && make molecule`
-
-Expected: FAIL because `aegis.service` is not installed.
-
-- [ ] **Step 3: Install checksum-pinned artifacts and units**
-
-```ini
-# templates/aegis.service.j2
-[Unit]
-Description=Aegis agent control plane
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-User={{ aegis_orchestrator_user }}
-Group={{ aegis_orchestrator_user }}
-UMask=0077
-ExecStart=/opt/aegis/{{ aegis_version }}/bin/aegis serve --socket {{ aegis_runtime_dir }}/control.sock
-Restart=on-failure
-RestartSec=10s
-StartLimitIntervalSec=300
-StartLimitBurst=5
-NoNewPrivileges=yes
-PrivateTmp=yes
-PrivateDevices=yes
-ProtectSystem=strict
-ProtectHome=read-only
-ReadWritePaths={{ aegis_state_dir }} {{ aegis_worktree_dir }} {{ aegis_artifact_dir }} {{ aegis_runtime_dir }}
-RestrictSUIDSGID=yes
-LockPersonality=yes
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Download the immutable Aegis artifact to a versioned path, verify
-`aegis_release_sha256`, install its locked environment, and atomically update
-`/opt/aegis/current`. Preflight `hermes gateway start --help` and render only
-supported flags; the unit must not include `--foreground` unless the installed
-version documents it.
-
-- [ ] **Step 4: Run service and restart-loop tests**
-
-Run: `cd deploy/ansible && make molecule`
-
-Expected: all units become active, use intended users, pass readiness, stay below the restart-burst threshold, and meet hardening assertions.
-
-- [ ] **Step 5: Commit services**
-
-```bash
-git add deploy/ansible/roles/aegis deploy/ansible/molecule
-git commit -m "feat(deploy): install pinned hardened aegis services"
-```
-
-### Task 3: Rootless runtime, sockets, and exposure assertions
+### Task 3: Private-network Compose bundle rendering
 
 **Files:**
-- Create: `deploy/ansible/roles/aegis/tasks/rootless.yml`
-- Create: `deploy/ansible/roles/aegis/tasks/sockets.yml`
-- Create: `deploy/ansible/molecule/default/verify_exposure.yml`
+- Create: `src/aegis/deploy/compose.py`
+- Create: `tests/security/test_compose_bundle.py`
 
-- [ ] **Step 1: Write negative socket/listener checks**
+Render the Compose project from product metadata + config: Aegis/Herdr/QMD/OpenViking on
+private networks with **no** published public ports; loopback/Unix endpoints only where a
+host boundary is required; the two-account trust boundary (`agentops`/`hermesops`); the
+control-plane adapter is the only service granted the rootless runtime API — worker,
+gateway, and knowledge containers never receive a Docker socket; every service carries the
+product labels; images pinned by immutable digest.
 
-```yaml
-- name: Capture listening sockets
-  ansible.builtin.command: ss -lntup
-  register: sockets
-  changed_when: false
-- ansible.builtin.assert:
-    that:
-      - "'0.0.0.0:1933' not in sockets.stdout"
-      - "'[::]:1933' not in sockets.stdout"
-      - "'0.0.0.0:8181' not in sockets.stdout"
-      - "'[::]:8181' not in sockets.stdout"
+- [ ] Write security tests: no service publishes a public port; no worker/gateway/knowledge
+  service mounts a Docker socket; no privileged/host-network/device/host-path options;
+  every image is digest-pinned; labels present; gateway can reach only the control socket.
+- [ ] Implement, confirm green, commit `feat(deploy): render private compose bundle`.
 
-- name: Confirm gateway cannot read Herdr socket
-  ansible.builtin.command: "sudo -u {{ aegis_gateway_user }} test ! -r {{ aegis_runtime_dir }}/herdr.sock"
-  changed_when: false
-```
-
-- [ ] **Step 2: Run checks and observe missing runtime/socket configuration**
-
-Run: `cd deploy/ansible && make molecule`
-
-Expected: FAIL before rootless runtime and socket permissions converge.
-
-- [ ] **Step 3: Configure rootless ownership and socket modes**
-
-Enable subordinate UID/GID ranges and linger for `agentops`, install the pinned
-rootless runtime, create a named `aegis-rootless` context, and verify a rootless
-container reports a non-host root UID mapping. Create `/run/aegis` through
-`RuntimeDirectory` and set control socket group/mode `0660`; keep Herdr socket
-`0600 agentops:agentops`. Bind OpenViking to `127.0.0.1:1933` and QMD HTTP, when
-enabled, to `127.0.0.1:8181`.
-
-- [ ] **Step 4: Run exposure and rootless checks**
-
-Run: `cd deploy/ansible && make molecule`
-
-Expected: no Aegis component listens publicly; `hermesops` can reach only the control socket; worker runtime has no rootful Docker socket.
-
-- [ ] **Step 5: Commit isolation wiring**
-
-```bash
-git add deploy/ansible/roles/aegis deploy/ansible/molecule
-git commit -m "feat(deploy): configure private rootless aegis runtime"
-```
-
-### Task 4: Secret materialization and encrypted backup/restore
+### Task 4: Container runtime port and management surface
 
 **Files:**
-- Create: `deploy/ansible/roles/aegis/tasks/secrets.yml`
-- Create: `deploy/ansible/roles/aegis/tasks/backup.yml`
-- Create: `deploy/ansible/roles/aegis/templates/backup-paths.conf.j2`
-- Create: `scripts/restore-drill.sh`
-- Create: `tests/security/test_repository_secrets.py`
+- Create: `src/aegis/deploy/runtime.py`
+- Create: `src/aegis/deploy/manager.py`
+- Create: `tests/unit/deploy/test_manager.py`
+- Create: `tests/security/test_runtime_scope.py`
 
-- [ ] **Step 1: Write repository and deployment secret tests**
+A typed `ContainerRuntime` (up/down/ps/logs/exec/restart/inspect) built on argument arrays
+against the exact Compose project — never a global prune, never unlabeled resources — with
+a `FakeContainerRuntime` and a rootless-Docker adapter. The manager exposes
+status/ps/logs/shell/exec/inspect/restart with authorization tiers (read-only delegable;
+shell/exec/config/secret/update/backup/restore/destructive require elevated authorization
+and emit audit events).
 
-```python
-import subprocess
-from pathlib import Path
+- [ ] Write tests: read-only ops need only operator group; privileged ops require elevated
+  authorization and produce audit events; teardown targets the exact project and never
+  prunes; unknown service is rejected.
+- [ ] Implement, confirm green, commit `feat(deploy): manage appliance containers`.
 
-
-FORBIDDEN = ("BEGIN" + " PRIVATE KEY", "Bear" + "er ", "gh" + "p_", "sk-" + "proj-", "TELEGRAM_BOT" + "_TOKEN=")
-
-
-def test_repository_contains_no_secret_material() -> None:
-    tracked = subprocess.run(["git", "ls-files", "-z"], check=True, capture_output=True).stdout.split(b"\0")
-    for raw_path in filter(None, tracked):
-        path = Path(raw_path.decode())
-        text = path.read_text(errors="ignore")
-        assert not any(marker in text for marker in FORBIDDEN), path
-```
-
-- [ ] **Step 2: Run test and backup scenario before implementation**
-
-Run: `uv run pytest tests/security/test_repository_secrets.py -q && cd deploy/ansible && make molecule`
-
-Expected: repository scan passes; Molecule backup/restore assertions fail because hooks are absent.
-
-- [ ] **Step 3: Add per-service secret files and backup paths**
-
-```yaml
-- name: Materialize Aegis service secrets
-  ansible.builtin.copy:
-    content: "{{ item.value }}"
-    dest: "{{ item.path }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.owner }}"
-    mode: "0600"
-  loop: "{{ aegis_secret_files }}"
-  no_log: true
-```
-
-Generate backup configuration for SQLite plus WAL-safe snapshot, audit segments,
-config snapshots, Herdr metadata, company brain, sanitized archives, and
-non-rebuildable OpenViking state. Exclude QMD indexes, rootless image layers,
-worktrees, and disposable services. `restore-drill.sh` restores to a temporary
-root, runs the audit verifier, database integrity/migrations, Git fsck, inventory
-comparison, and OpenViking rebuild without contacting production services.
-
-- [ ] **Step 4: Run repository, backup, and restore tests**
-
-Run: `uv run pytest tests/security/test_repository_secrets.py -q && cd deploy/ansible && make molecule && cd ../.. && bash scripts/restore-drill.sh --fixture tests/fixtures/backup/pilot`
-
-Expected: no secret markers; backup manifest matches the spec; clean restore passes integrity and inventory comparisons.
-
-- [ ] **Step 5: Commit backup and secret controls**
-
-```bash
-git add deploy/ansible scripts/restore-drill.sh tests/security/test_repository_secrets.py tests/fixtures/backup
-git commit -m "feat(ops): add encrypted state backup and restore drill"
-```
-
-### Task 5: CI release gates and signed manifest
+### Task 5: Signed releases, digest-pinned updates, and automatic rollback
 
 **Files:**
-- Create: `.github/workflows/ci.yml`
-- Create: `.github/workflows/release.yml`
-- Create: `scripts/build-release-manifest.py`
-- Create: `tests/release/test_manifest.py`
+- Create: `src/aegis/deploy/release.py`
+- Create: `src/aegis/deploy/update.py`
+- Create: `tests/unit/deploy/test_release.py`
+- Create: `tests/unit/deploy/test_update.py`
 
-- [ ] **Step 1: Write release manifest test**
+A signed release manifest (channel, version, per-service image digests, migration and
+rollback metadata, doc/notes/SBOM references). `verify` rejects a bad signature, a mutable
+`latest` tag, or a missing digest. The publication gate refuses when docs, release notes,
+migrations, rollback metadata, signatures, or release-required tests are absent. The update
+orchestrator: verify manifest → compatibility checks → pre-upgrade backup → pull by digest
+→ validate candidate Compose → replace in dependency order → migrate + readiness → record
+installed manifest → auto-rollback when the manifest declares rollback safe and readiness
+fails.
 
-```python
-def test_release_manifest_captures_reproducible_inputs(manifest) -> None:
-    assert manifest["git_commit"]
-    assert manifest["uv_lock_sha256"]
-    assert manifest["config_catalog_sha256"]
-    assert manifest["schema_versions"] == {"api": "v1", "database": 1, "flow": 1, "project": 1}
-    assert manifest["artifacts"][0]["sha256"]
-```
+- [ ] Write tests: bad signature/`latest`/missing digest rejected; publication gate blocks
+  incomplete releases; a failed readiness check triggers automatic rollback to the prior
+  manifest; a success records the new manifest; downgrade blocked unless allowed.
+- [ ] Implement, confirm green, commit
+  `feat(deploy): verify signed releases and roll back failed updates`.
 
-- [ ] **Step 2: Run and confirm release tooling absence**
-
-Run: `uv run pytest tests/release/test_manifest.py -q`
-
-Expected: FAIL because the manifest builder is absent.
-
-- [ ] **Step 3: Implement CI and manifest generation**
-
-CI jobs run Ruff, mypy, unit/contract/integration/security/recovery/TUI/Hermes
-tests, Ansible lint, and Molecule. Release builds from `uv.lock`, generates wheel
-and config bundle digests, records schemas/dependency versions/licenses, and signs
-the JSON manifest with the repository's configured release identity. It refuses a
-dirty tree, non-tag commit, failing license gate, or skipped release-required test.
-
-- [ ] **Step 4: Run the local release gate**
-
-Run: `uv run ruff check . && uv run mypy src && uv run pytest && cd deploy/ansible && make lint && make molecule && cd ../.. && uv run python scripts/build-release-manifest.py --check`
-
-Expected: all checks pass and manifest `--check` reports no drift.
-
-- [ ] **Step 5: Commit CI and release evidence**
-
-```bash
-git add .github scripts/build-release-manifest.py tests/release
-git commit -m "ci(release): gate and describe aegis artifacts"
-```
-
-### Task 6: VPS stabilization, staged install, and soak ledger
+### Task 6: Portable backup, verify, and restore
 
 **Files:**
-- Create: `docs/runbooks/01-preflight-and-stabilization.md`
-- Create: `docs/runbooks/02-install-upgrade-rollback.md`
-- Create: `docs/runbooks/03-backup-restore.md`
-- Create: `docs/runbooks/04-incident-recovery.md`
-- Create: `docs/runbooks/05-pilot-soak.md`
-- Create: `config/soak/pilot.yaml`
+- Create: `src/aegis/deploy/backup.py`
+- Create: `tests/unit/deploy/test_backup.py`
+- Create: `tests/security/test_backup_contents.py`
 
-- [ ] **Step 1: Write the machine-readable soak gate**
+Backups include operational state, audit segments, config/flow snapshots, Herdr metadata,
+canonical knowledge, required artifacts, sanitized archives, and non-rebuildable OpenViking
+state; they exclude rebuildable QMD indexes, images, worktrees, and disposable services.
+Secret backup requires an explicitly configured encrypted destination. `create` produces a
+portable archive + manifest; `verify` checks integrity; `restore` rehydrates onto a clean
+host.
 
-```yaml
-version: 1
-minimum_days: 14
-minimum_tasks: 25
-minimum_projects: 2
-maximum_concurrent_workers: 2
-required_zero_counts:
-  lost_correlations: 0
-  unauthorized_state_changes: 0
-  secret_exposures: 0
-  cleanup_cross_task_deletions: 0
-required_drills:
-  - aegis_process_kill
-  - herdr_process_kill
-  - vps_reboot
-  - provider_outage
-  - credit_exhaustion
-  - native_resume
-  - handoff_resume
-  - encrypted_restore
-```
+- [ ] Write tests: excluded classes never appear; included classes round-trip;
+  create→verify→restore reproduces state on a fresh dir; secret backup without an encrypted
+  destination is refused; a tampered archive fails verify.
+- [ ] Implement, confirm green, commit `feat(deploy): portable backup and restore`.
 
-- [ ] **Step 2: Validate the config before runbooks exist**
-
-Run: `uv run ae config validate-soak config/soak/pilot.yaml`
-
-Expected: FAIL because the soak validator is not registered.
-
-- [ ] **Step 3: Add validator and exact operational procedures**
-
-Each runbook lists prerequisites, read-only preflight, command, expected output,
-rollback trigger, rollback command, evidence location, and operator approval point.
-Stabilization covers Hermes CLI/unit mismatch, firewall drift, `dev` permission
-repair after dependency inspection, backup baseline, public Coolify HTTPS versus
-raw `:8000`, and scoped stale Multica cleanup. Installation enables the TUI first;
-Telegram remains disabled until local security/recovery gates pass.
-
-- [ ] **Step 4: Execute the pre-deployment verification set**
-
-Run: `uv run ae config validate-soak config/soak/pilot.yaml && uv run pytest && cd deploy/ansible && make lint && make molecule`
-
-Expected: validator and full automated suite pass. Live VPS commands remain operator-gated and record their evidence in the pilot ledger.
-
-- [ ] **Step 5: Commit operational rollout documentation**
-
-```bash
-git add docs/runbooks config/soak src/aegis/cli.py tests
-git commit -m "docs(ops): define staged vps rollout and soak gate"
-```
-
-### Task 7: Pilot completion and `1.0.0` decision
+### Task 7: Installer preflight, idempotent reconcile, doctor/repair, uninstall
 
 **Files:**
-- Create: `docs/releases/pilot-evidence.md`
-- Create: `docs/releases/1.0.0-readiness.md`
+- Create: `src/aegis/deploy/installer.py`
+- Create: `src/aegis/deploy/doctor.py`
+- Create: `src/aegis/deploy/uninstall.py`
+- Create: `tests/unit/deploy/test_installer.py`
+- Create: `tests/unit/deploy/test_doctor.py`
+- Create: `tests/security/test_uninstall_scope.py`
 
-- [ ] **Step 1: Generate evidence from the task registry**
+Preflight verifies distro/release/arch/kernel/storage/network and its own release metadata
+before changes. Reconcile is idempotent: it adopts existing identities/directories/services
+without duplication. `doctor` checks rootless Docker, user namespaces, disk, permissions,
+config, images, networking, volumes, sockets, readiness, and DB integrity; `repair` performs
+only bounded, documented remediations and reports each. Uninstall removes only labeled
+appliance resources, preserves durable data by default, and requires resolved-path
+validation + explicit confirmation for `--purge-data`; no lifecycle command runs a global
+prune.
 
-Run: `uv run ae report soak --config config/soak/pilot.yaml --output docs/releases/pilot-evidence.md`
+- [ ] Write tests: preflight fails closed on an unsupported host; a second install is
+  idempotent (no duplicates); doctor classifies a broken environment and repair reports
+  bounded fixes; uninstall preserves data by default; `--purge-data` requires confirmation
+  and validated paths; no command touches unrelated resources.
+- [ ] Implement, confirm green, commit
+  `feat(deploy): idempotent install, doctor, and scoped uninstall`.
 
-Expected: the report states pass/fail for every numeric gate and drill using task/audit/artifact references.
+### Task 8: `ae appliance` CLI, release docs, and live-gated integration
 
-- [ ] **Step 2: Run final verification and restore drill**
+**Files:**
+- Modify: `src/aegis/cli.py`
+- Create: `deploy/install.sh`
+- Create: `docs/deployment/README.md`
+- Create: `tests/integration/deploy/test_cli_surface.py`
+- Create: `tests/integration/deploy/test_live_appliance.py`
 
-Run: `uv run ruff check . && uv run mypy src && uv run pytest && cd deploy/ansible && make lint && make molecule && cd ../.. && bash scripts/restore-drill.sh --latest-encrypted-backup`
+Wire the `ae appliance` command group (status/ps/logs/shell/exec/inspect/restart, config
+init/validate/diff/apply, update/rollback/version, doctor/repair, backup create/verify,
+restore, support-bundle, uninstall) over the Python orchestrators with a fake runtime for
+tests. Add the host `install.sh` wrapper (checksum/signature inspection + local-exec
+alternative) and deployment docs. Add live integration tests skipped unless
+`AEGIS_LIVE_DOCKER`/`AEGIS_LIVE_VPS` are set.
 
-Expected: every automated check and clean restore passes on the release candidate commit.
+- [ ] Write tests: the CLI surface exposes every documented command against the fake
+  runtime; live tests are collected-but-skipped without the env; docs links/commands exist.
+- [ ] Implement, confirm green, commit
+  `feat(deploy): appliance management cli and release docs`.
 
-- [ ] **Step 3: Record the release decision**
+---
 
-Write `1.0.0-readiness.md` with the exact commit, release manifest digest, test
-counts, Ansible convergence result, restore inventory comparison, soak metrics,
-license decisions for Herdr/OpenViking distribution, unresolved risks, and an
-explicit operator approve/reject decision.
+## Release-required verification (design §9)
 
-- [ ] **Step 4: Tag only an approved candidate**
-
-Run: `git tag -s v1.0.0 -m "Aegis 1.0.0"`
-
-Expected: the signed tag is created only when `1.0.0-readiness.md` records approval and all evidence links resolve.
-
-- [ ] **Step 5: Publish the immutable release**
-
-Run: `git push origin v1.0.0`
-
-Expected: the release workflow publishes checksum-verified artifacts and the VPS repository can pin `v1.0.0` plus its manifest digest.
+The design's release matrix (clean 22.04/24.04 install, interactive/unattended,
+interrupted/idempotent install, runtime/account/socket/network/mount/secret boundaries,
+config apply/rollback, operator authorization, stable/edge/pinned updates, interrupted
+downloads/upgrades, migrations, auto-rollback, backup/verify/clean-host restore/cross-host
+migration, reboot recovery, rename/alias, uninstall preserve/purge, untouched unrelated
+resources, no public listeners, valid docs) is encoded as: (a) unit/security tests against
+fakes that run in the normal gate, and (b) `AEGIS_LIVE_*`-gated integration tests that run
+on a provisioned host. Multi-architecture publication marks an architecture unsupported
+rather than shipping an unverified image.
