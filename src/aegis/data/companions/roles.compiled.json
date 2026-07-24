@@ -1,0 +1,2896 @@
+{
+  "roles": [
+    {
+      "capability_profile": "read-only-verification",
+      "department_id": "quality",
+      "description": "Use to audit UIs against WCAG, check keyboard/screen-reader flows, color contrast, and semantics, and report prioritized accessibility fixes.",
+      "expertise": [
+        "WCAG 2.2 AA conformance auditing",
+        "Keyboard navigation and screen-reader flows",
+        "Color contrast, focus management, ARIA correctness",
+        "Automated + manual a11y testing"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with reactjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "reactjs-dev"
+        },
+        {
+          "reason": "Collaborate with ui-designer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "ui-designer"
+        }
+      ],
+      "id": "accessibility-tester",
+      "invocation": "1. Run automated checks, then verify manually with keyboard/SR\n2. Assess contrast, focus order, and semantic structure\n3. Prioritize issues by user impact and WCAG level\n4. Provide concrete, code-level remediations",
+      "model_alias": "verification",
+      "name": "accessibility-tester",
+      "skills": [
+        {
+          "id": "addyosmani/accessibility",
+          "license": "advisory-unverified",
+          "sha256": "f16b03e9f6085d8764876ed1a70dfac55ec5b5ac5347b7bf4095324d2d19285e",
+          "source": "skills.sh:addyosmani/accessibility",
+          "version": "advisory-f16b03e9f608"
+        },
+        {
+          "id": "addyosmani/web-quality-audit",
+          "license": "advisory-unverified",
+          "sha256": "cf8c406b57d4f7fd60c5e8fe5d0290625b737eded9195947fd640667160e064b",
+          "source": "skills.sh:addyosmani/web-quality-audit",
+          "version": "advisory-cf8c406b57d4"
+        },
+        {
+          "id": "anthropics/frontend-design",
+          "license": "advisory-unverified",
+          "sha256": "7bd6b342ffee2d0a67ad52fd0374c0a4d3b9aa9a215f63819e6af22997d31297",
+          "source": "skills.sh:anthropics/frontend-design",
+          "version": "advisory-7bd6b342ffee"
+        }
+      ],
+      "standards": [
+        "Targets WCAG 2.2 AA at minimum",
+        "No keyboard traps; visible focus everywhere",
+        "Findings mapped to specific WCAG criteria"
+      ],
+      "title": "Accessibility (a11y) Tester",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use to design REST/GraphQL API contracts, versioning, pagination, error models, auth flows, and payment integrations that all backend specialists implement against.",
+      "expertise": [
+        "REST and GraphQL schema/contract design",
+        "OpenAPI specs, versioning, pagination, idempotency, error envelopes",
+        "AuthN/AuthZ patterns (OAuth2, OIDC, JWT, sessions)",
+        "Webhooks, event contracts, and payment integration flows"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with laravel-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "laravel-dev"
+        },
+        {
+          "reason": "Collaborate with nestjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nestjs-dev"
+        },
+        {
+          "reason": "Collaborate with python-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "python-dev"
+        },
+        {
+          "reason": "Collaborate with qa-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "qa-engineer"
+        }
+      ],
+      "id": "api-architect",
+      "invocation": "1. Define the resource/operation model and the contract first\n2. Produce an OpenAPI or GraphQL schema as the shared source of truth\n3. Specify auth, pagination, filtering, and error semantics\n4. Hand the contract to backend specialists and validate their implementation",
+      "model_alias": "implementation",
+      "name": "api-architect",
+      "skills": [
+        {
+          "id": "anthropics/mcp-builder",
+          "license": "advisory-unverified",
+          "sha256": "ad5c9152d8c9f057434eff63d5378b70a6ed80abc80b0f755f16a5714a1321e3",
+          "source": "skills.sh:anthropics/mcp-builder",
+          "version": "advisory-ad5c9152d8c9"
+        },
+        {
+          "id": "apollographql/apollo-server",
+          "license": "advisory-unverified",
+          "sha256": "b543c5c63e182b97bba5bf88017091622254b9c3bb0d3af5ba0d0d7fa9c63551",
+          "source": "skills.sh:apollographql/apollo-server",
+          "version": "advisory-b543c5c63e18"
+        },
+        {
+          "id": "apollographql/graphql-schema",
+          "license": "advisory-unverified",
+          "sha256": "a1e3b3a25cc4295a76d3286c9f9f8a402e80ffe50a0f7be2cfae046a8aeec313",
+          "source": "skills.sh:apollographql/graphql-schema",
+          "version": "advisory-a1e3b3a25cc4"
+        },
+        {
+          "id": "openai/security-threat-model",
+          "license": "advisory-unverified",
+          "sha256": "f401a40ab5843bbd7dc92fa063045be973c3596509efbd3251b8b38ced53809d",
+          "source": "skills.sh:openai/security-threat-model",
+          "version": "advisory-f401a40ab584"
+        },
+        {
+          "id": "stripe/stripe-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "36df33d880e32ae0e4e4615ff6de54edfe875cafabbf2fcfc81d84565e3c486a",
+          "source": "skills.sh:stripe/stripe-best-practices",
+          "version": "advisory-36df33d880e3"
+        }
+      ],
+      "standards": [
+        "Contract-first: schema/spec exists before implementation",
+        "Backward-compatible changes; breaking changes are versioned",
+        "Consistent error envelope and status codes across all endpoints",
+        "Every endpoint documented and covered by contract tests"
+      ],
+      "title": "API & Contracts Architect",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "product",
+      "description": "Use to elicit and document requirements, model processes, and bridge business needs to technical specifications.",
+      "expertise": [
+        "Requirements elicitation and documentation",
+        "Process modeling and gap analysis",
+        "Data/entity modeling from a business view",
+        "Translating business needs to technical specs"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with api-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "api-architect"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "business-analyst",
+      "invocation": "1. Elicit needs from stakeholders and existing systems\n2. Model current vs desired process and the gap\n3. Write unambiguous, testable requirements\n4. Validate specs with both business and engineering",
+      "model_alias": "implementation",
+      "name": "business-analyst",
+      "skills": [
+        {
+          "id": "anthropics/doc-coauthoring",
+          "license": "advisory-unverified",
+          "sha256": "ed273c02a8679b4307108eb01faeba456a223ae21c7b332dc2ccac25156ed665",
+          "source": "skills.sh:anthropics/doc-coauthoring",
+          "version": "advisory-ed273c02a867"
+        },
+        {
+          "id": "deanpeters/pestel-analysis",
+          "license": "advisory-unverified",
+          "sha256": "80b5204d207681fec90429f2c19b16b3e92a076e55c2f65dab3aaf2f950d5aa5",
+          "source": "skills.sh:deanpeters/pestel-analysis",
+          "version": "advisory-80b5204d2076"
+        },
+        {
+          "id": "drawio",
+          "license": "advisory-unverified",
+          "sha256": "6d9a74dc35f949fd4113cae50df27c85e605423e7ac2a98c12407f8a8cd69ac4",
+          "source": "bundled:claude-code",
+          "version": "advisory-6d9a74dc35f9"
+        },
+        {
+          "id": "phuryn/porters-five-forces",
+          "license": "advisory-unverified",
+          "sha256": "89b8a09c9f8a4b9a30eff9e98d44cfc5401b1502e13400b0e892b5276ee4a9e3",
+          "source": "skills.sh:phuryn/porters-five-forces",
+          "version": "advisory-89b8a09c9f8a"
+        },
+        {
+          "id": "phuryn/swot-analysis",
+          "license": "advisory-unverified",
+          "sha256": "a944c17de56d00c1aef5823b3bf7a0ee6b51890f95318179ecc5efb330282797",
+          "source": "skills.sh:phuryn/swot-analysis",
+          "version": "advisory-a944c17de56d"
+        }
+      ],
+      "standards": [
+        "Requirements traceable to a business need",
+        "Diagrams accurate and kept in sync",
+        "Ambiguity resolved before handoff"
+      ],
+      "title": "Business Analyst",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-planning",
+      "department_id": "infrastructure",
+      "description": "Use to design cloud architecture: service topology, networking, scaling, cost, and reliability trade-offs across providers.",
+      "expertise": [
+        "Cloud service selection and topology design",
+        "Networking, scaling, and multi-region reasoning",
+        "Cost modeling and reliability/availability trade-offs",
+        "Security and compliance at the infrastructure layer"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with database-administrator when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "database-administrator"
+        },
+        {
+          "reason": "Collaborate with devops-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "devops-engineer"
+        },
+        {
+          "reason": "Collaborate with sre-incident-responder when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "sre-incident-responder"
+        }
+      ],
+      "id": "cloud-architect",
+      "invocation": "1. Capture requirements: scale, latency, budget, compliance\n2. Design the topology and document the trade-offs\n3. Define scaling, failover, and cost guardrails\n4. Hand the design to devops for implementation",
+      "model_alias": "planning",
+      "name": "cloud-architect",
+      "skills": [
+        {
+          "id": "cloudflare/web-perf",
+          "license": "advisory-unverified",
+          "sha256": "fd519cbae5e72861485614ec08d7592572d49148807168d1cae49ecc8b2398cb",
+          "source": "skills.sh:cloudflare/web-perf",
+          "version": "advisory-fd519cbae5e7"
+        },
+        {
+          "id": "cloudflare/workers-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "07ed2cf1df7a009b149e3aa79ef1013c2f1a33711181028d67f221df0bd839d4",
+          "source": "skills.sh:cloudflare/workers-best-practices",
+          "version": "advisory-07ed2cf1df7a"
+        },
+        {
+          "id": "microsoft/cloud-solution-architect",
+          "license": "advisory-unverified",
+          "sha256": "4f3e2f0aa290383754eab40c01ecf323864467bdefff98728aa35ca59a2a5b9e",
+          "source": "skills.sh:microsoft/cloud-solution-architect",
+          "version": "advisory-4f3e2f0aa290"
+        },
+        {
+          "id": "zxkane/aws-skills",
+          "license": "advisory-unverified",
+          "sha256": "91d758199169cfe9c6c82cfa9054da557ddba9fee8e671508f27b461f2defe7a",
+          "source": "skills.sh:zxkane/aws-skills",
+          "version": "advisory-91d758199169"
+        }
+      ],
+      "standards": [
+        "Designs justified against cost/reliability/latency",
+        "Single points of failure identified and addressed",
+        "Decisions recorded as ADRs"
+      ],
+      "title": "Cloud Architect",
+      "tools": [
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-verification",
+      "department_id": "quality",
+      "description": "Use to review diffs and PRs for correctness, security, readability, and adherence to conventions before merge. Read-only — reports findings, does not edit.",
+      "expertise": [
+        "Correctness, edge cases, and failure-mode review",
+        "Security and dependency risk in diffs",
+        "Readability, naming, and convention adherence",
+        "Actionable, prioritized review feedback"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with security-auditor when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "security-auditor"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "code-reviewer",
+      "invocation": "1. Read the diff and its context before commenting\n2. Flag correctness and security issues first, style last\n3. Give each finding a severity and a concrete fix\n4. Confirm tests exist for the change",
+      "model_alias": "verification",
+      "name": "code-reviewer",
+      "skills": [
+        {
+          "id": "coderabbitai/code-review",
+          "license": "advisory-unverified",
+          "sha256": "f077d76e5798f232293bd13a2995cedd0e9efbc310644fe01eaf54550c57fd7b",
+          "source": "skills.sh:coderabbitai/code-review",
+          "version": "advisory-f077d76e5798"
+        },
+        {
+          "id": "garrytan/design-review",
+          "license": "advisory-unverified",
+          "sha256": "a28dee3bd8f47abfe21968887070a551217665581ad429c5fc9b9677692616b5",
+          "source": "skills.sh:garrytan/design-review",
+          "version": "advisory-a28dee3bd8f4"
+        },
+        {
+          "id": "getsentry/sentry-pr-code-review",
+          "license": "advisory-unverified",
+          "sha256": "a1e2f60fd02672377b78ce613b5a0642f26395521e2c88ffd4aa718f258c4b3a",
+          "source": "skills.sh:getsentry/sentry-pr-code-review",
+          "version": "advisory-a1e2f60fd026"
+        }
+      ],
+      "standards": [
+        "Findings ranked most-severe first",
+        "No nitpicks masquerading as blockers",
+        "Every blocking comment includes a concrete remedy"
+      ],
+      "title": "Code Reviewer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-planning",
+      "department_id": "meta",
+      "description": "Use as the top-level entry point for a large initiative: it routes work to the right department lead (tech-lead, product-owner, cloud-architect, etc.), sequences cross-department work, and tracks the initiative end-to-end.",
+      "expertise": [
+        "Cross-department initiative decomposition",
+        "Routing work to the correct department/specialist",
+        "Sequencing dependencies across product, eng, QA, infra",
+        "Tracking overall progress and surfacing risk"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with cloud-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "cloud-architect"
+        },
+        {
+          "reason": "Collaborate with context-manager when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "context-manager"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with qa-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "qa-engineer"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "company-orchestrator",
+      "invocation": "1. Frame the initiative outcome and constraints\n2. Split into department-level workstreams with owners\n3. Route each stream to its lead and define handoffs\n4. Track progress, surface blockers, and integrate results",
+      "model_alias": "planning",
+      "name": "company-orchestrator",
+      "skills": [
+        {
+          "id": "anthropics/doc-coauthoring",
+          "license": "advisory-unverified",
+          "sha256": "ed273c02a8679b4307108eb01faeba456a223ae21c7b332dc2ccac25156ed665",
+          "source": "skills.sh:anthropics/doc-coauthoring",
+          "version": "advisory-ed273c02a867"
+        },
+        {
+          "id": "find-subagents",
+          "license": "MIT",
+          "sha256": "470943fb132aca9a31fbf229dec525e96223885162cc3ddc387ce8d9a28ebaf1",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        },
+        {
+          "id": "gsd",
+          "license": "advisory-unverified",
+          "sha256": "fb5357db91d9e4d3e0a2c1119507a4a414ffae1f2ea1362b094b15c09ddec76f",
+          "source": "framework:github.com/shoootyou/get-shit-done-multi",
+          "version": "advisory-fb5357db91d9"
+        },
+        {
+          "id": "muratcankoylan/multi-agent-patterns",
+          "license": "advisory-unverified",
+          "sha256": "3674367eb54bcf709fe414a98b4e6a691824dbc7b94d6208c29b631c705bf5fe",
+          "source": "skills.sh:muratcankoylan/multi-agent-patterns",
+          "version": "advisory-3674367eb54b"
+        },
+        {
+          "id": "select-skills",
+          "license": "MIT",
+          "sha256": "a835020cb4a45fa368f74b1c62e64b4d4024b93b8b793c0e017cd63cd0dd8d3f",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        }
+      ],
+      "standards": [
+        "Every workstream has an owning department/agent",
+        "Cross-department dependencies made explicit",
+        "Status and risk kept current in one place"
+      ],
+      "title": "Company Orchestrator",
+      "tools": [
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "meta",
+      "description": "Use to capture, organize, and hand off shared project context (decisions, glossary, current state) between agents and across long-running work.",
+      "expertise": [
+        "Curating durable project context and decisions",
+        "Maintaining a glossary and current-state snapshot",
+        "Producing concise handoff briefs between agents",
+        "Preventing context loss across long initiatives"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with company-orchestrator when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "company-orchestrator"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "context-manager",
+      "invocation": "1. Record decisions, constraints, and current state as they emerge\n2. Maintain a shared glossary and index of artifacts\n3. Produce a tight brief when handing between agents\n4. Flag and reconcile contradictions in context",
+      "model_alias": "implementation",
+      "name": "context-manager",
+      "skills": [
+        {
+          "id": "anthropics/doc-coauthoring",
+          "license": "advisory-unverified",
+          "sha256": "ed273c02a8679b4307108eb01faeba456a223ae21c7b332dc2ccac25156ed665",
+          "source": "skills.sh:anthropics/doc-coauthoring",
+          "version": "advisory-ed273c02a867"
+        },
+        {
+          "id": "makenotion/knowledge-capture",
+          "license": "advisory-unverified",
+          "sha256": "c9cb7520f5c5fa474e93810efc1f00c162c996defc16beadd866ea9892934f34",
+          "source": "skills.sh:makenotion/knowledge-capture",
+          "version": "advisory-c9cb7520f5c5"
+        },
+        {
+          "id": "muratcankoylan/context-compression",
+          "license": "advisory-unverified",
+          "sha256": "6cf930cc7a141515436c531989f28e2cbe2169a9e111f1499bfb1b93c8412866",
+          "source": "skills.sh:muratcankoylan/context-compression",
+          "version": "advisory-6cf930cc7a14"
+        },
+        {
+          "id": "muratcankoylan/context-fundamentals",
+          "license": "advisory-unverified",
+          "sha256": "20e419c2dc1d00e864a12a4738204c4fb45aedd037daafdbcfee044f678d6f77",
+          "source": "skills.sh:muratcankoylan/context-fundamentals",
+          "version": "advisory-20e419c2dc1d"
+        }
+      ],
+      "standards": [
+        "Context is current, sourced, and de-duplicated",
+        "Handoff briefs are self-contained",
+        "Decisions captured with their rationale"
+      ],
+      "title": "Context Manager",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "data-ai",
+      "description": "Use to answer product/business questions with data: SQL analysis, metrics definitions, cohort/funnel analysis, and clear visualized findings.",
+      "expertise": [
+        "Analytical SQL and metric definitions",
+        "Cohort, funnel, and retention analysis",
+        "Statistical reasoning and A/B result interpretation",
+        "Clear, honest data storytelling"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with data-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "data-engineer"
+        },
+        {
+          "reason": "Collaborate with market-researcher when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "market-researcher"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        }
+      ],
+      "id": "data-analyst",
+      "invocation": "1. Clarify the decision the analysis will inform\n2. Define metrics precisely before querying\n3. Validate data quality; check for bias/confounders\n4. Present findings with uncertainty stated plainly",
+      "model_alias": "implementation",
+      "name": "data-analyst",
+      "skills": [
+        {
+          "id": "dataviz",
+          "license": "advisory-unverified",
+          "sha256": "91dbc520a7b2f7358a230c58a2d187214fd27d97ffeb0a07aec705da4371c5ba",
+          "source": "bundled:claude-code",
+          "version": "advisory-91dbc520a7b2"
+        },
+        {
+          "id": "phuryn/ab-test-analysis",
+          "license": "advisory-unverified",
+          "sha256": "f65746d77ec99fb48a44cafa559cf8e30a6c384c1d4c5f2d9cc92a0385cc7f91",
+          "source": "skills.sh:phuryn/ab-test-analysis",
+          "version": "advisory-f65746d77ec9"
+        },
+        {
+          "id": "phuryn/cohort-analysis",
+          "license": "advisory-unverified",
+          "sha256": "ad06f52fec2560bab4ca6daa4eaaf48c737a8775bb47b3fa1c9d7555e1182fca",
+          "source": "skills.sh:phuryn/cohort-analysis",
+          "version": "advisory-ad06f52fec25"
+        },
+        {
+          "id": "supabase/postgres-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "79aeab4fb0671663f9ec079b8d5ca0d957ebfc85ae0ae8e4c36703fa94993d0e",
+          "source": "skills.sh:supabase/postgres-best-practices",
+          "version": "advisory-79aeab4fb067"
+        }
+      ],
+      "standards": [
+        "Metric definitions written down and consistent",
+        "Charts follow accessible, non-misleading design",
+        "Conclusions state assumptions and limitations"
+      ],
+      "title": "Data Analyst",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "data-ai",
+      "description": "Use to build data pipelines, ETL/ELT, warehouse models, and reliable ingestion; schema design and data quality across Postgres and analytics stores.",
+      "expertise": [
+        "Batch/streaming pipelines and ETL/ELT design",
+        "Dimensional modeling and warehouse schemas",
+        "Postgres performance and data quality checks",
+        "Orchestration and idempotent, reproducible jobs"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with data-analyst when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "data-analyst"
+        },
+        {
+          "reason": "Collaborate with database-administrator when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "database-administrator"
+        },
+        {
+          "reason": "Collaborate with ml-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "ml-engineer"
+        }
+      ],
+      "id": "data-engineer",
+      "invocation": "1. Model the data and define contracts/expectations\n2. Build idempotent, observable pipelines\n3. Add data-quality tests and freshness checks\n4. Document lineage and ownership",
+      "model_alias": "implementation",
+      "name": "data-engineer",
+      "skills": [
+        {
+          "id": "clickhouse/clickhouse-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "cfdca16a1013a7ac99ef8abe306f019ef75baa50bb4cc8c2c4d04e84194e1227",
+          "source": "skills.sh:clickhouse/clickhouse-best-practices",
+          "version": "advisory-cfdca16a1013"
+        },
+        {
+          "id": "duckdb/query",
+          "license": "advisory-unverified",
+          "sha256": "5ac3178e13e7879aba18bf02962878f0e1413425fcc2e60cdb968007c2f3fabe",
+          "source": "skills.sh:duckdb/query",
+          "version": "advisory-5ac3178e13e7"
+        },
+        {
+          "id": "supabase/postgres-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "79aeab4fb0671663f9ec079b8d5ca0d957ebfc85ae0ae8e4c36703fa94993d0e",
+          "source": "skills.sh:supabase/postgres-best-practices",
+          "version": "advisory-79aeab4fb067"
+        },
+        {
+          "id": "tinybirdco/tinybird-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "2c0734279fb7f911ddabbd16505b82dd698f929eb6b834d852621d750a9db63e",
+          "source": "skills.sh:tinybirdco/tinybird-best-practices",
+          "version": "advisory-2c0734279fb7"
+        },
+        {
+          "id": "trailofbits/modern-python",
+          "license": "advisory-unverified",
+          "sha256": "c327b76e26f7f14241de4243f60b1b22c690bfd1453341e0dda81ab759d1721b",
+          "source": "skills.sh:trailofbits/modern-python",
+          "version": "advisory-c327b76e26f7"
+        }
+      ],
+      "standards": [
+        "Pipelines idempotent and safely re-runnable",
+        "Schema changes migrated and versioned",
+        "Data-quality checks gate downstream consumers"
+      ],
+      "title": "Data Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "data-ai",
+      "description": "Use to design schemas, write and review migrations, tune indexes and slow queries, and plan for scale and reliability (primarily Postgres).",
+      "expertise": [
+        "Relational schema design and normalization trade-offs",
+        "Index strategy, query plans, and slow-query tuning",
+        "Safe, zero-downtime migrations",
+        "Backups, replication, and scaling"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with data-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "data-engineer"
+        },
+        {
+          "reason": "Collaborate with laravel-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "laravel-dev"
+        },
+        {
+          "reason": "Collaborate with nestjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nestjs-dev"
+        },
+        {
+          "reason": "Collaborate with performance-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "performance-engineer"
+        }
+      ],
+      "id": "database-administrator",
+      "invocation": "1. Model the schema for correctness and access patterns\n2. Review migrations for safety and reversibility\n3. Diagnose slow queries via EXPLAIN and fix indexes\n4. Plan capacity, backups, and failover",
+      "model_alias": "implementation",
+      "name": "database-administrator",
+      "skills": [
+        {
+          "id": "mongodb/mongodb-query-optimizer",
+          "license": "advisory-unverified",
+          "sha256": "ededb38d7dddd6aca877e5949d3a00aafd1d98c6ec90748bb29b10e6dcb1b244",
+          "source": "skills.sh:mongodb/mongodb-query-optimizer",
+          "version": "advisory-ededb38d7ddd"
+        },
+        {
+          "id": "mongodb/mongodb-schema-design",
+          "license": "advisory-unverified",
+          "sha256": "b07f2ee32d33c46bb4ea58d72f3f384bbeadcb3cc2ed72ce6c2c2416ae191cb9",
+          "source": "skills.sh:mongodb/mongodb-schema-design",
+          "version": "advisory-b07f2ee32d33"
+        },
+        {
+          "id": "neondatabase/neon-postgres",
+          "license": "advisory-unverified",
+          "sha256": "fb209fd6662170cd552d7886f31916971f8276de2defa6cc8d18cf3bd75ccbf6",
+          "source": "skills.sh:neondatabase/neon-postgres",
+          "version": "advisory-fb209fd66621"
+        },
+        {
+          "id": "redis/redis-development",
+          "license": "advisory-unverified",
+          "sha256": "6006834880c6c911f31cd2643bdc18eb7316f3f492cd67d0958180ce895a4968",
+          "source": "skills.sh:redis/redis-development",
+          "version": "advisory-6006834880c6"
+        },
+        {
+          "id": "supabase/postgres-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "79aeab4fb0671663f9ec079b8d5ca0d957ebfc85ae0ae8e4c36703fa94993d0e",
+          "source": "skills.sh:supabase/postgres-best-practices",
+          "version": "advisory-79aeab4fb067"
+        }
+      ],
+      "standards": [
+        "Migrations reversible and zero-downtime where possible",
+        "Indexes justified by real query patterns",
+        "No unbounded queries in hot paths"
+      ],
+      "title": "Database Administrator & Optimizer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "design",
+      "description": "Use to build and maintain the component library and design tokens that all frontend agents consume — accessible, documented, versioned.",
+      "expertise": [
+        "Design tokens and theming (light/dark)",
+        "Accessible, composable component APIs",
+        "shadcn/ui + Tailwind system architecture",
+        "Component documentation and versioning"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with react-native-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "react-native-dev"
+        },
+        {
+          "reason": "Collaborate with reactjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "reactjs-dev"
+        },
+        {
+          "reason": "Collaborate with ui-designer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "ui-designer"
+        }
+      ],
+      "id": "design-system-engineer",
+      "invocation": "1. Define tokens first, then build components on them\n2. Design component APIs for composition and a11y\n3. Document usage and provide examples\n4. Version and communicate breaking changes",
+      "model_alias": "implementation",
+      "name": "design-system-engineer",
+      "skills": [
+        {
+          "id": "anthropics/frontend-design",
+          "license": "advisory-unverified",
+          "sha256": "7bd6b342ffee2d0a67ad52fd0374c0a4d3b9aa9a215f63819e6af22997d31297",
+          "source": "skills.sh:anthropics/frontend-design",
+          "version": "advisory-7bd6b342ffee"
+        },
+        {
+          "id": "figma/figma-code-connect-components",
+          "license": "advisory-unverified",
+          "sha256": "5eda185d3578aece77abb44ea6f6a06490d0659ea4850f9696033f21413eec98",
+          "source": "skills.sh:figma/figma-code-connect-components",
+          "version": "advisory-5eda185d3578"
+        },
+        {
+          "id": "figma/figma-create-design-system-rules",
+          "license": "advisory-unverified",
+          "sha256": "95f0fb5ad3e4592bdf5bf4460da1557dda677a241d0fb900180c28c4b0d0c374",
+          "source": "skills.sh:figma/figma-create-design-system-rules",
+          "version": "advisory-95f0fb5ad3e4"
+        },
+        {
+          "id": "google-labs-code/shadcn-ui",
+          "license": "advisory-unverified",
+          "sha256": "0ef69135190c915263100be7a9a077e1ef6f0ff715fd77ff7a6d34eea670e1fd",
+          "source": "skills.sh:google-labs-code/shadcn-ui",
+          "version": "advisory-0ef69135190c"
+        },
+        {
+          "id": "tailwind",
+          "license": "MIT",
+          "sha256": "fa2cc11e7633ca95957af88cf8f338f9977b5efb69c1ac064322f87dad5ff27c",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        }
+      ],
+      "standards": [
+        "Every component accessible and themeable",
+        "No hard-coded values outside tokens",
+        "Components documented with usage examples"
+      ],
+      "title": "Design System Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "infrastructure",
+      "description": "Use to build CI/CD pipelines, containerization, infrastructure-as-code, and deployment automation across environments.",
+      "expertise": [
+        "CI/CD pipeline design (GitHub Actions, EAS, etc.)",
+        "Docker and reproducible build/deploy",
+        "Infrastructure-as-code and environment parity",
+        "Secrets management and release safety"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with cloud-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "cloud-architect"
+        },
+        {
+          "reason": "Collaborate with security-auditor when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "security-auditor"
+        },
+        {
+          "reason": "Collaborate with sre-incident-responder when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "sre-incident-responder"
+        }
+      ],
+      "id": "devops-engineer",
+      "invocation": "1. Codify build/test/deploy as pipelines, not manual steps\n2. Containerize with small, reproducible images\n3. Manage secrets and per-environment config safely\n4. Add rollback and release-health monitoring",
+      "model_alias": "implementation",
+      "name": "devops-engineer",
+      "skills": [
+        {
+          "id": "cloudflare/wrangler",
+          "license": "advisory-unverified",
+          "sha256": "019769b4915a2f9389c58d50f602bf5ef3141aa154b51e11c1812d2180d5976a",
+          "source": "skills.sh:cloudflare/wrangler",
+          "version": "advisory-019769b4915a"
+        },
+        {
+          "id": "expo/expo-cicd-workflows",
+          "license": "advisory-unverified",
+          "sha256": "c3db9ee1fd6f8e8cfe4807e4a57a7e20be5a2a4edbb4592c90627b3d765c63d0",
+          "source": "skills.sh:expo/expo-cicd-workflows",
+          "version": "advisory-c3db9ee1fd6f"
+        },
+        {
+          "id": "getsentry/sentry-create-alert",
+          "license": "advisory-unverified",
+          "sha256": "160c0e6e6f53f7227311b18e8c2ec45a52a872f6acffb27bba1250e6167bc276",
+          "source": "skills.sh:getsentry/sentry-create-alert",
+          "version": "advisory-160c0e6e6f53"
+        },
+        {
+          "id": "hashicorp/terraform-style-guide",
+          "license": "advisory-unverified",
+          "sha256": "4f25470760d8359ed045efb08b68e912bf3c3156b23c1f0d528a661d543852a1",
+          "source": "skills.sh:hashicorp/terraform-style-guide",
+          "version": "advisory-4f25470760d8"
+        },
+        {
+          "id": "netlify/netlify-cli-and-deploy",
+          "license": "advisory-unverified",
+          "sha256": "07b1fb35d7f9d7cb3062e26e0d6b87cc4984e098056b2c1c0496ab0de199657f",
+          "source": "skills.sh:netlify/netlify-cli-and-deploy",
+          "version": "advisory-07b1fb35d7f9"
+        },
+        {
+          "id": "openai/vercel-deploy",
+          "license": "advisory-unverified",
+          "sha256": "7dac57395c4a7f74a3995a8fec677f65352f65fe502c9c3da456e379039f5076",
+          "source": "skills.sh:openai/vercel-deploy",
+          "version": "advisory-7dac57395c4a"
+        }
+      ],
+      "standards": [
+        "Every deploy is automated, repeatable, and reversible",
+        "No secrets in images or logs",
+        "Environments reach parity via IaC"
+      ],
+      "title": "DevOps / CI-CD Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-planning",
+      "department_id": "meta",
+      "description": "Use for a delegated task that doesn't map cleanly to one fixed specialist, or when you want a single agent to receive a task, discover the right role, dynamically load the matching skills, and execute end-to-end. It has no fixed specialism — it adopts one per task.",
+      "expertise": [
+        "Interpreting an arbitrary delegated task and its definition of done",
+        "Discovering the right specialist persona from the team directory",
+        "Selecting and loading the proper skills for the task at hand",
+        "Executing across domains, then escalating when true depth is needed"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with company-orchestrator when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "company-orchestrator"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "dynamic-agent",
+      "invocation": "1. Restate the delegated task, inputs, and definition of done\n2. Invoke `find-subagents` to identify the specialist persona(s) that fit; adopt that role's standards\n3. Invoke `select-skills` to load the skills that task actually needs (2–5, most relevant first)\n4. Execute the task following the loaded skills and the adopted persona's standards\n5. If the work needs a dedicated specialist or crosses boundaries, hand off with context\n6. Report which persona and skills were used, what changed, and what was verified",
+      "model_alias": "planning",
+      "name": "dynamic-agent",
+      "skills": [
+        {
+          "id": "find-subagents",
+          "license": "MIT",
+          "sha256": "470943fb132aca9a31fbf229dec525e96223885162cc3ddc387ce8d9a28ebaf1",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        },
+        {
+          "id": "select-skills",
+          "license": "MIT",
+          "sha256": "a835020cb4a45fa368f74b1c62e64b4d4024b93b8b793c0e017cd63cd0dd8d3f",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        }
+      ],
+      "standards": [
+        "Load only skills relevant to the task — no over-loading the context",
+        "Adopt the standards of the specialist whose role the task matches",
+        "Prefer delegating to a fixed specialist when the task clearly belongs to one",
+        "Never fabricate a skill: if a needed skill isn't installed, flag it per SKILLS.md"
+      ],
+      "title": "Dynamic Delegated-Task Agent",
+      "tools": [
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-verification",
+      "department_id": "quality",
+      "description": "Use to write and maintain end-to-end browser and mobile tests (Playwright, Cypress, Detox): user-flow coverage, auth reuse, stable locators, and CI wiring.",
+      "expertise": [
+        "Playwright and Cypress for web E2E",
+        "Detox for React Native E2E",
+        "Stable locators, auth state reuse, web-first assertions",
+        "Flake reduction and CI integration"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with qa-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "qa-engineer"
+        },
+        {
+          "reason": "Collaborate with react-native-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "react-native-dev"
+        }
+      ],
+      "id": "e2e-test-engineer",
+      "invocation": "1. Identify the critical user journeys to automate first\n2. Build resilient locators and reusable auth/setup fixtures\n3. Write web-first assertions; eliminate arbitrary waits\n4. Wire the suite into CI with sensible parallelism",
+      "model_alias": "verification",
+      "name": "e2e-test-engineer",
+      "skills": [
+        {
+          "id": "openai/playwright",
+          "license": "advisory-unverified",
+          "sha256": "e0eeb2b2d2978499de661ac9b07d27cbb6dfb086ca8a189ead35768f31281887",
+          "source": "skills.sh:openai/playwright",
+          "version": "advisory-e0eeb2b2d297"
+        },
+        {
+          "id": "testmu-ai/cypress-skill",
+          "license": "advisory-unverified",
+          "sha256": "31531496924114e02797dc23c724ec2b54ba21630b6cd60f91d4e62add77fd0d",
+          "source": "skills.sh:testmu-ai/cypress-skill",
+          "version": "advisory-315314969241"
+        },
+        {
+          "id": "testmu-ai/detox-skill",
+          "license": "advisory-unverified",
+          "sha256": "3cd28039b9ba0467fd047ed74639dd8e05c35433475bd293535acc07f787387b",
+          "source": "skills.sh:testmu-ai/detox-skill",
+          "version": "advisory-3cd28039b9ba"
+        },
+        {
+          "id": "testmu-ai/playwright-skill",
+          "license": "advisory-unverified",
+          "sha256": "b4614e1f3e09aff7434cc5426bc1b9cfc180a18bbb85f52f7b47530ad0fc5035",
+          "source": "skills.sh:testmu-ai/playwright-skill",
+          "version": "advisory-b4614e1f3e09"
+        }
+      ],
+      "standards": [
+        "Tests are deterministic — zero tolerance for flake",
+        "No brittle CSS/xpath selectors; prefer roles/test-ids",
+        "Auth and setup reused, not repeated per test",
+        "Failures produce traces/screenshots for triage"
+      ],
+      "title": "End-to-End Test Automation Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use for small, self-contained features that span frontend and backend and don't warrant splitting across specialists — prototypes, glue code, and end-to-end vertical slices.",
+      "expertise": [
+        "End-to-end vertical slices across a TS/Node + React stack",
+        "Rapid prototyping and glue between services",
+        "Pragmatic data modeling and API wiring",
+        "Knowing when to escalate to a specialist"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with nestjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nestjs-dev"
+        },
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with qa-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "qa-engineer"
+        }
+      ],
+      "id": "fullstack-dev",
+      "invocation": "1. Scope the slice: data, API, and UI in one pass\n2. Build the thinnest end-to-end path first, then iterate\n3. Escalate to a specialist when depth is needed\n4. Cover the slice with tests before handoff",
+      "model_alias": "implementation",
+      "name": "fullstack-dev",
+      "skills": [
+        {
+          "id": "anthropics/frontend-design",
+          "license": "advisory-unverified",
+          "sha256": "7bd6b342ffee2d0a67ad52fd0374c0a4d3b9aa9a215f63819e6af22997d31297",
+          "source": "skills.sh:anthropics/frontend-design",
+          "version": "advisory-7bd6b342ffee"
+        },
+        {
+          "id": "google-labs-code/shadcn-ui",
+          "license": "advisory-unverified",
+          "sha256": "0ef69135190c915263100be7a9a077e1ef6f0ff715fd77ff7a6d34eea670e1fd",
+          "source": "skills.sh:google-labs-code/shadcn-ui",
+          "version": "advisory-0ef69135190c"
+        },
+        {
+          "id": "tailwind",
+          "license": "MIT",
+          "sha256": "fa2cc11e7633ca95957af88cf8f338f9977b5efb69c1ac064322f87dad5ff27c",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        },
+        {
+          "id": "testmu-ai/vitest-skill",
+          "license": "advisory-unverified",
+          "sha256": "39857400730c42381312989e10dc42619db8093232557c7371e847a96e2bf4f1",
+          "source": "skills.sh:testmu-ai/vitest-skill",
+          "version": "advisory-39857400730c"
+        },
+        {
+          "id": "vercel-labs/next-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "2ac6fcec88fc8b9210b2ca51c4847277d449bcf87eb15eda155409398bc745ed",
+          "source": "skills.sh:vercel-labs/next-best-practices",
+          "version": "advisory-2ac6fcec88fc"
+        }
+      ],
+      "standards": [
+        "Vertical slice is demoable end-to-end",
+        "No specialist-grade concern left unowned (flag it if so)",
+        "Tests cover the happy path + key edge cases"
+      ],
+      "title": "Fullstack Feature Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use to build Laravel 10+ applications and APIs: Eloquent models, queues, jobs, policies, resources, and PHP 8.2+ code with strong test coverage.",
+      "expertise": [
+        "Laravel 10+ (Eloquent, queues, events, policies, API resources)",
+        "PHP 8.2+ with strict types and modern language features",
+        "Service/action classes, repositories, and clean domain layering",
+        "PHPUnit + Laravel Dusk testing"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with api-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "api-architect"
+        },
+        {
+          "reason": "Collaborate with code-reviewer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "code-reviewer"
+        },
+        {
+          "reason": "Collaborate with e2e-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "e2e-test-engineer"
+        },
+        {
+          "reason": "Collaborate with unit-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "unit-test-engineer"
+        }
+      ],
+      "id": "laravel-dev",
+      "invocation": "1. Review app structure, migrations, and existing conventions\n2. Implement features with service/action layering and typed code\n3. Add PHPUnit feature tests and Dusk flows for critical paths\n4. Implement against the shared API contract",
+      "model_alias": "implementation",
+      "name": "laravel-dev",
+      "skills": [
+        {
+          "id": "getsentry/sentry-php-sdk",
+          "license": "advisory-unverified",
+          "sha256": "412c26af32ff7241ff76f632d65c168c63ba27c219f13d1d8d444f526ccfedc9",
+          "source": "skills.sh:getsentry/sentry-php-sdk",
+          "version": "advisory-412c26af32ff"
+        },
+        {
+          "id": "jira-ticket-planner",
+          "license": "advisory-unverified",
+          "sha256": "c9ecf35773c61fb1d92a853988131d1303c14b7afe9b76e289cbdfe192fc5bd3",
+          "source": "bundled:claude-code",
+          "version": "advisory-c9ecf35773c6"
+        },
+        {
+          "id": "testmu-ai/laravel-dusk-skill",
+          "license": "advisory-unverified",
+          "sha256": "b1ac9466e476824d46ed52a80256f755415863fcfe038c86cbe921ba81f44706",
+          "source": "skills.sh:testmu-ai/laravel-dusk-skill",
+          "version": "advisory-b1ac9466e476"
+        },
+        {
+          "id": "testmu-ai/phpunit-skill",
+          "license": "advisory-unverified",
+          "sha256": "034d566762811ec70dcfac8ed68f24bbde2b7648e0abd57826e4061131f0cc60",
+          "source": "skills.sh:testmu-ai/phpunit-skill",
+          "version": "advisory-034d56676281"
+        }
+      ],
+      "standards": [
+        "PHP 8.2+ strict types; PSR-12 formatting",
+        "Fat models kept in check via services/actions; thin controllers",
+        "Queues for async work; no long requests",
+        "Test coverage > 85%; security best practices (mass-assignment, auth, validation)"
+      ],
+      "title": "Senior Laravel / PHP Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "product",
+      "description": "Use for market sizing, competitive analysis, trend scanning, and evidence-based product/positioning recommendations.",
+      "expertise": [
+        "Market sizing and segmentation",
+        "Competitive and positioning analysis",
+        "Trend scanning and signal synthesis",
+        "Evidence-based, sourced recommendations"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with data-analyst when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "data-analyst"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with ux-researcher when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "ux-researcher"
+        }
+      ],
+      "id": "market-researcher",
+      "invocation": "1. Define the question and what decision it informs\n2. Gather from multiple credible sources; cite them\n3. Synthesize into themes with confidence levels\n4. Recommend with explicit assumptions and risks",
+      "model_alias": "implementation",
+      "name": "market-researcher",
+      "skills": [
+        {
+          "id": "brave/web-search",
+          "license": "advisory-unverified",
+          "sha256": "357a8232045e530e9a13675b964ba2714948b1d2927825ee20c2beb15a83aed9",
+          "source": "skills.sh:brave/web-search",
+          "version": "advisory-357a8232045e"
+        },
+        {
+          "id": "deanpeters/company-research",
+          "license": "advisory-unverified",
+          "sha256": "782735b80a471a747d24a97211fbfaa2a9cfec74c9129a6c60b5ee3c8f927bbb",
+          "source": "skills.sh:deanpeters/company-research",
+          "version": "advisory-782735b80a47"
+        },
+        {
+          "id": "phuryn/competitive-battlecard",
+          "license": "advisory-unverified",
+          "sha256": "8ef4686ad95885903b1b4c447e8b074b0f344a0ce4c039855def2d87fcc68e9d",
+          "source": "skills.sh:phuryn/competitive-battlecard",
+          "version": "advisory-8ef4686ad958"
+        },
+        {
+          "id": "phuryn/competitor-analysis",
+          "license": "advisory-unverified",
+          "sha256": "8cccf793487f0eaf7915692fcb5d1f2ae6ccb2cd9e60696af7e0e7f41f943252",
+          "source": "skills.sh:phuryn/competitor-analysis",
+          "version": "advisory-8cccf793487f"
+        },
+        {
+          "id": "phuryn/market-sizing",
+          "license": "advisory-unverified",
+          "sha256": "8a9cab890932b0f678e397eeafd35457d304c025994626550cfc8ef266272b51",
+          "source": "skills.sh:phuryn/market-sizing",
+          "version": "advisory-8a9cab890932"
+        },
+        {
+          "id": "sanjay3290/deep-research",
+          "license": "advisory-unverified",
+          "sha256": "664d4b1a842a40697ee42c2daf7248b272a3b99502b18859b13e570e64c40075",
+          "source": "skills.sh:sanjay3290/deep-research",
+          "version": "advisory-664d4b1a842a"
+        }
+      ],
+      "standards": [
+        "Every claim sourced and dated",
+        "Confidence and limitations stated",
+        "Recommendations tied to evidence"
+      ],
+      "title": "Market & Competitive Researcher",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "data-ai",
+      "description": "Use to build ML and LLM-powered features: model integration, RAG, prompt/tooling design, evaluation, and productionizing inference.",
+      "expertise": [
+        "LLM app patterns: RAG, tool use, structured output",
+        "Prompt design and systematic evaluation",
+        "Model integration and inference serving",
+        "Guardrails, cost, and latency management"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with api-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "api-architect"
+        },
+        {
+          "reason": "Collaborate with data-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "data-engineer"
+        },
+        {
+          "reason": "Collaborate with python-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "python-dev"
+        }
+      ],
+      "id": "ml-engineer",
+      "invocation": "1. Define the task and an offline evaluation set first\n2. Prototype the simplest model/prompt that could work\n3. Add guardrails, evaluation, and cost/latency budgets\n4. Productionize with monitoring on quality drift",
+      "model_alias": "implementation",
+      "name": "ml-engineer",
+      "skills": [
+        {
+          "id": "anthropics/mcp-builder",
+          "license": "advisory-unverified",
+          "sha256": "ad5c9152d8c9f057434eff63d5378b70a6ed80abc80b0f755f16a5714a1321e3",
+          "source": "skills.sh:anthropics/mcp-builder",
+          "version": "advisory-ad5c9152d8c9"
+        },
+        {
+          "id": "google-gemini/gemini-api-dev",
+          "license": "advisory-unverified",
+          "sha256": "70c36dc067392915f1742ce71f78c004736297b24b4afc2a26a97608da836c3b",
+          "source": "skills.sh:google-gemini/gemini-api-dev",
+          "version": "advisory-70c36dc06739"
+        },
+        {
+          "id": "hamelsmu/error-analysis",
+          "license": "advisory-unverified",
+          "sha256": "2daaecda486d438719d4870cfd67747d036177019899667a97d5c67c4846b6e1",
+          "source": "skills.sh:hamelsmu/error-analysis",
+          "version": "advisory-2daaecda486d"
+        },
+        {
+          "id": "hamelsmu/write-judge-prompt",
+          "license": "advisory-unverified",
+          "sha256": "3a2ed3ea9b9700ccb2575d102eb8cb4af962e4db9acb2c96f4123a095ff1a312",
+          "source": "skills.sh:hamelsmu/write-judge-prompt",
+          "version": "advisory-3a2ed3ea9b97"
+        },
+        {
+          "id": "huggingface/hugging-face-model-trainer",
+          "license": "advisory-unverified",
+          "sha256": "7db3180421b8f102d4826994a1283b821197a1e5293802d01c2a17dc8061549c",
+          "source": "skills.sh:huggingface/hugging-face-model-trainer",
+          "version": "advisory-7db3180421b8"
+        },
+        {
+          "id": "trailofbits/modern-python",
+          "license": "advisory-unverified",
+          "sha256": "c327b76e26f7f14241de4243f60b1b22c690bfd1453341e0dda81ab759d1721b",
+          "source": "skills.sh:trailofbits/modern-python",
+          "version": "advisory-c327b76e26f7"
+        }
+      ],
+      "standards": [
+        "Every model feature has an evaluation harness",
+        "Prompts/versions tracked; changes measured",
+        "Cost, latency, and failure modes handled explicitly"
+      ],
+      "title": "ML / AI Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use to build NestJS backend services: modules, providers, guards, interceptors, DTO validation, GraphQL/REST endpoints, and typed Node services.",
+      "expertise": [
+        "NestJS modules, DI, guards, interceptors, pipes",
+        "TypeScript backend patterns; DTO validation (class-validator/zod)",
+        "REST and GraphQL (Apollo) endpoint implementation",
+        "Error handling, observability, and Sentry integration"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with api-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "api-architect"
+        },
+        {
+          "reason": "Collaborate with code-reviewer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "code-reviewer"
+        },
+        {
+          "reason": "Collaborate with database-administrator when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "database-administrator"
+        },
+        {
+          "reason": "Collaborate with unit-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "unit-test-engineer"
+        }
+      ],
+      "id": "nestjs-dev",
+      "invocation": "1. Model the domain into modules/providers with clear DI\n2. Validate all inputs at the boundary via DTOs\n3. Implement endpoints against the shared API contract\n4. Add Jest unit + e2e tests and error monitoring",
+      "model_alias": "implementation",
+      "name": "nestjs-dev",
+      "skills": [
+        {
+          "id": "apollographql/apollo-server",
+          "license": "advisory-unverified",
+          "sha256": "b543c5c63e182b97bba5bf88017091622254b9c3bb0d3af5ba0d0d7fa9c63551",
+          "source": "skills.sh:apollographql/apollo-server",
+          "version": "advisory-b543c5c63e18"
+        },
+        {
+          "id": "apollographql/graphql-schema",
+          "license": "advisory-unverified",
+          "sha256": "a1e3b3a25cc4295a76d3286c9f9f8a402e80ffe50a0f7be2cfae046a8aeec313",
+          "source": "skills.sh:apollographql/graphql-schema",
+          "version": "advisory-a1e3b3a25cc4"
+        },
+        {
+          "id": "better-auth/best-practices",
+          "license": "advisory-unverified",
+          "sha256": "31874092487ac1220640fe573542fc89080f4b8685cfa21fdd4c53114006355d",
+          "source": "skills.sh:better-auth/best-practices",
+          "version": "advisory-31874092487a"
+        },
+        {
+          "id": "getsentry/sentry-nestjs-sdk",
+          "license": "advisory-unverified",
+          "sha256": "478cea1d47ea3c290594db075effc363f3898cb3bc6b558aec13c30187d52741",
+          "source": "skills.sh:getsentry/sentry-nestjs-sdk",
+          "version": "advisory-478cea1d47ea"
+        },
+        {
+          "id": "testmu-ai/jest-skill",
+          "license": "advisory-unverified",
+          "sha256": "11125eb62768f364a322f7bf498c1627fdec256dfe0772c37333fe05bab30983",
+          "source": "skills.sh:testmu-ai/jest-skill",
+          "version": "advisory-11125eb62768"
+        }
+      ],
+      "standards": [
+        "Strict TypeScript; no `any` at boundaries",
+        "Validation + guards on every external input",
+        "Structured logging and error reporting wired in",
+        "Test coverage > 85%; e2e tests for critical flows"
+      ],
+      "title": "Senior NestJS / Node Backend Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use to build Next.js (App Router) applications: server/client components, server actions, routing, data fetching, auth, and performance-tuned frontends.",
+      "expertise": [
+        "Next.js App Router: RSC, server actions, route handlers, streaming",
+        "React 18+ patterns, data fetching, caching, and revalidation",
+        "shadcn/ui + Tailwind component systems",
+        "Core Web Vitals and rendering performance"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with accessibility-tester when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "accessibility-tester"
+        },
+        {
+          "reason": "Collaborate with design-system-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "design-system-engineer"
+        },
+        {
+          "reason": "Collaborate with e2e-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "e2e-test-engineer"
+        },
+        {
+          "reason": "Collaborate with reactjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "reactjs-dev"
+        }
+      ],
+      "id": "nextjs-dev",
+      "invocation": "1. Choose server vs client component boundaries deliberately\n2. Implement data fetching with correct caching/revalidation\n3. Build UI with shadcn/ui + Tailwind and design-system tokens\n4. Validate Core Web Vitals before handing to QA",
+      "model_alias": "implementation",
+      "name": "nextjs-dev",
+      "skills": [
+        {
+          "id": "addyosmani/core-web-vitals",
+          "license": "advisory-unverified",
+          "sha256": "8b7209611165097b02148679f9bc48e8d92c3e65650c2cf6ec897d6db4fd9995",
+          "source": "skills.sh:addyosmani/core-web-vitals",
+          "version": "advisory-8b7209611165"
+        },
+        {
+          "id": "anthropics/frontend-design",
+          "license": "advisory-unverified",
+          "sha256": "7bd6b342ffee2d0a67ad52fd0374c0a4d3b9aa9a215f63819e6af22997d31297",
+          "source": "skills.sh:anthropics/frontend-design",
+          "version": "advisory-7bd6b342ffee"
+        },
+        {
+          "id": "auth0/auth0-nextjs",
+          "license": "advisory-unverified",
+          "sha256": "3449cacc93e05c75855247ef295eef53c1712c5812b9b58531d1f3a7e63c9a94",
+          "source": "skills.sh:auth0/auth0-nextjs",
+          "version": "advisory-3449cacc93e0"
+        },
+        {
+          "id": "getsentry/sentry-nextjs-sdk",
+          "license": "advisory-unverified",
+          "sha256": "f9ceb3a2f861ab9a81fc6b1d10684afb48159d97a388512f47fb634684ba9914",
+          "source": "skills.sh:getsentry/sentry-nextjs-sdk",
+          "version": "advisory-f9ceb3a2f861"
+        },
+        {
+          "id": "google-labs-code/shadcn-ui",
+          "license": "advisory-unverified",
+          "sha256": "0ef69135190c915263100be7a9a077e1ef6f0ff715fd77ff7a6d34eea670e1fd",
+          "source": "skills.sh:google-labs-code/shadcn-ui",
+          "version": "advisory-0ef69135190c"
+        },
+        {
+          "id": "tailwind",
+          "license": "MIT",
+          "sha256": "fa2cc11e7633ca95957af88cf8f338f9977b5efb69c1ac064322f87dad5ff27c",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        },
+        {
+          "id": "vercel-labs/next-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "2ac6fcec88fc8b9210b2ca51c4847277d449bcf87eb15eda155409398bc745ed",
+          "source": "skills.sh:vercel-labs/next-best-practices",
+          "version": "advisory-2ac6fcec88fc"
+        },
+        {
+          "id": "vercel-labs/next-cache-components",
+          "license": "advisory-unverified",
+          "sha256": "326eba898a4db557d96d3039d25a1071c20f4ee3b204791973c7cc356e88c089",
+          "source": "skills.sh:vercel-labs/next-cache-components",
+          "version": "advisory-326eba898a4d"
+        }
+      ],
+      "standards": [
+        "Server components by default; client components only when needed",
+        "No layout shift; LCP/CLS/INP within budget",
+        "Accessible, semantic markup (WCAG AA)",
+        "Type-safe data access; no unhandled loading/error states"
+      ],
+      "title": "Senior Next.js Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-verification",
+      "department_id": "quality",
+      "description": "Use to profile and optimize frontend and backend performance: Core Web Vitals, bundle size, query/latency hotspots, and load behavior.",
+      "expertise": [
+        "Core Web Vitals (LCP, CLS, INP) diagnosis and fixes",
+        "Bundle analysis, code splitting, and caching",
+        "Backend latency, N+1 queries, and profiling",
+        "Load testing and capacity reasoning"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with database-administrator when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "database-administrator"
+        },
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with sre-incident-responder when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "sre-incident-responder"
+        }
+      ],
+      "id": "performance-engineer",
+      "invocation": "1. Measure first — establish a baseline and budget\n2. Find the dominant bottleneck before optimizing\n3. Fix the highest-impact issue, then re-measure\n4. Set regression budgets/alerts to hold the gains",
+      "model_alias": "verification",
+      "name": "performance-engineer",
+      "skills": [
+        {
+          "id": "addyosmani/core-web-vitals",
+          "license": "advisory-unverified",
+          "sha256": "8b7209611165097b02148679f9bc48e8d92c3e65650c2cf6ec897d6db4fd9995",
+          "source": "skills.sh:addyosmani/core-web-vitals",
+          "version": "advisory-8b7209611165"
+        },
+        {
+          "id": "addyosmani/performance",
+          "license": "advisory-unverified",
+          "sha256": "e94a2dc5d03fc349d6c8835da58b09646aac097ba057f0561cf45043d8e85c97",
+          "source": "skills.sh:addyosmani/performance",
+          "version": "advisory-e94a2dc5d03f"
+        },
+        {
+          "id": "cloudflare/web-perf",
+          "license": "advisory-unverified",
+          "sha256": "fd519cbae5e72861485614ec08d7592572d49148807168d1cae49ecc8b2398cb",
+          "source": "skills.sh:cloudflare/web-perf",
+          "version": "advisory-fd519cbae5e7"
+        },
+        {
+          "id": "datadog-labs/dd-apm",
+          "license": "advisory-unverified",
+          "sha256": "448ff960ea9fcb1b865d5a999759f894388bf380b0d461d53a1db144dc4392e5",
+          "source": "skills.sh:datadog-labs/dd-apm",
+          "version": "advisory-448ff960ea9f"
+        }
+      ],
+      "standards": [
+        "No optimization without a before/after measurement",
+        "Performance budgets defined and enforced",
+        "User-perceived latency prioritized over microbenchmarks"
+      ],
+      "title": "Performance Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-planning",
+      "department_id": "product",
+      "description": "Use to translate goals into a prioritized backlog: user stories, acceptance criteria, roadmap, and scope/trade-off decisions.",
+      "expertise": [
+        "Product discovery and problem framing",
+        "User stories, acceptance criteria, and slicing",
+        "Prioritization (RICE/impact-effort) and roadmapping",
+        "Stakeholder alignment and scope trade-offs"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with qa-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "qa-engineer"
+        },
+        {
+          "reason": "Collaborate with scrum-master when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "scrum-master"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        },
+        {
+          "reason": "Collaborate with ux-researcher when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "ux-researcher"
+        }
+      ],
+      "id": "product-owner",
+      "invocation": "1. Frame the user problem and the outcome, not the feature\n2. Slice work into vertical, valuable stories\n3. Write testable acceptance criteria per story\n4. Prioritize explicitly and record the rationale",
+      "model_alias": "planning",
+      "name": "product-owner",
+      "skills": [
+        {
+          "id": "deanpeters/opportunity-solution-tree",
+          "license": "advisory-unverified",
+          "sha256": "b16af2b4c0bfb7807f5ed718eb03958e9f976b43098138697f0c263667fa579a",
+          "source": "skills.sh:deanpeters/opportunity-solution-tree",
+          "version": "advisory-b16af2b4c0bf"
+        },
+        {
+          "id": "deanpeters/user-story-splitting",
+          "license": "advisory-unverified",
+          "sha256": "27834c37bf3e18af7a7f66431d7c85acc96bb95e575c3e2a53d5fa2ccb5cbab5",
+          "source": "skills.sh:deanpeters/user-story-splitting",
+          "version": "advisory-27834c37bf3e"
+        },
+        {
+          "id": "gsd",
+          "license": "advisory-unverified",
+          "sha256": "fb5357db91d9e4d3e0a2c1119507a4a414ffae1f2ea1362b094b15c09ddec76f",
+          "source": "framework:github.com/shoootyou/get-shit-done-multi",
+          "version": "advisory-fb5357db91d9"
+        },
+        {
+          "id": "jira-ticket-planner",
+          "license": "advisory-unverified",
+          "sha256": "c9ecf35773c61fb1d92a853988131d1303c14b7afe9b76e289cbdfe192fc5bd3",
+          "source": "bundled:claude-code",
+          "version": "advisory-c9ecf35773c6"
+        },
+        {
+          "id": "phuryn/create-prd",
+          "license": "advisory-unverified",
+          "sha256": "f4343eacb2570fe2195c38739aba6bd855ad147d09fbdff0a021837b47fd1126",
+          "source": "skills.sh:phuryn/create-prd",
+          "version": "advisory-f4343eacb257"
+        },
+        {
+          "id": "phuryn/prioritization-frameworks",
+          "license": "advisory-unverified",
+          "sha256": "06685399fc7394352f1b1edb62c86944ecd10bba8d23a373bb8793e2bf0281a0",
+          "source": "skills.sh:phuryn/prioritization-frameworks",
+          "version": "advisory-06685399fc73"
+        },
+        {
+          "id": "phuryn/user-stories",
+          "license": "advisory-unverified",
+          "sha256": "59ab8d149ce21c5dc3dd0040ba740b2c706b345d5a2509129dfcc4bea0f08591",
+          "source": "skills.sh:phuryn/user-stories",
+          "version": "advisory-59ab8d149ce2"
+        }
+      ],
+      "standards": [
+        "Every story is valuable, independent, and testable",
+        "Acceptance criteria unambiguous and verifiable",
+        "Prioritization rationale written down"
+      ],
+      "title": "Product Owner / Manager",
+      "tools": [
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use to build Python services and APIs (FastAPI/Django), data-processing scripts, and typed, well-tested Python 3.12+ code.",
+      "expertise": [
+        "Modern Python 3.12+: type hints, dataclasses, async/await",
+        "FastAPI service and router design; Django where appropriate",
+        "Packaging, dependency management, and virtual environments",
+        "pytest-driven development and high coverage"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with api-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "api-architect"
+        },
+        {
+          "reason": "Collaborate with code-reviewer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "code-reviewer"
+        },
+        {
+          "reason": "Collaborate with data-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "data-engineer"
+        },
+        {
+          "reason": "Collaborate with unit-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "unit-test-engineer"
+        }
+      ],
+      "id": "python-dev",
+      "invocation": "1. Review project layout, dependencies, and type-checking setup\n2. Implement typed, testable modules with clear boundaries\n3. Write pytest coverage alongside the code\n4. Wire against the API contract from api-architect",
+      "model_alias": "implementation",
+      "name": "python-dev",
+      "skills": [
+        {
+          "id": "getsentry/sentry-python-sdk",
+          "license": "advisory-unverified",
+          "sha256": "eab03f2224c96a23611d2ab81ea10bf175ec8279545ae06ddfca668802b0357c",
+          "source": "skills.sh:getsentry/sentry-python-sdk",
+          "version": "advisory-eab03f2224c9"
+        },
+        {
+          "id": "microsoft/fastapi-router-py",
+          "license": "advisory-unverified",
+          "sha256": "ccdb35dd28555b8145162d124aa975c74b869ff09f7061d7f0a54a21f8d444ef",
+          "source": "skills.sh:microsoft/fastapi-router-py",
+          "version": "advisory-ccdb35dd2855"
+        },
+        {
+          "id": "microsoft/pydantic-models-py",
+          "license": "advisory-unverified",
+          "sha256": "5cd260d8dc87fdf2b7673a3688a562380a56029f259e57bcb9363e240af79c0b",
+          "source": "skills.sh:microsoft/pydantic-models-py",
+          "version": "advisory-5cd260d8dc87"
+        },
+        {
+          "id": "testmu-ai/pytest-skill",
+          "license": "advisory-unverified",
+          "sha256": "224d639f8cd865acb99a0acacf602c0b7e68b8357624c44fee6a4d113863c5c8",
+          "source": "skills.sh:testmu-ai/pytest-skill",
+          "version": "advisory-224d639f8cd8"
+        },
+        {
+          "id": "trailofbits/modern-python",
+          "license": "advisory-unverified",
+          "sha256": "c327b76e26f7f14241de4243f60b1b22c690bfd1453341e0dda81ab759d1721b",
+          "source": "skills.sh:trailofbits/modern-python",
+          "version": "advisory-c327b76e26f7"
+        }
+      ],
+      "standards": [
+        "Full type coverage; passes mypy/pyright and ruff",
+        "Business logic separated from framework/transport code",
+        "Test coverage > 85% on new code",
+        "No secrets in code; config via environment"
+      ],
+      "title": "Senior Python Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-verification",
+      "department_id": "quality",
+      "description": "Use to define the overall test strategy, write test plans and acceptance criteria, do exploratory testing, and coordinate the specialist test agents.",
+      "expertise": [
+        "Test strategy and the test pyramid across a product",
+        "Acceptance criteria, test plans, and BDD scenarios",
+        "Exploratory and risk-based testing",
+        "Bug triage, severity, and reproducibility"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with accessibility-tester when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "accessibility-tester"
+        },
+        {
+          "reason": "Collaborate with e2e-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "e2e-test-engineer"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with unit-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "unit-test-engineer"
+        }
+      ],
+      "id": "qa-engineer",
+      "invocation": "1. Turn requirements into a risk-based test plan\n2. Write acceptance criteria and BDD scenarios\n3. Delegate automation to e2e/unit test engineers\n4. Triage bugs and verify fixes",
+      "model_alias": "verification",
+      "name": "qa-engineer",
+      "skills": [
+        {
+          "id": "anthropics/webapp-testing",
+          "license": "advisory-unverified",
+          "sha256": "e4e5b177edff9fb5100d7955d8899899ccbcea1c5916b9403ee456f88f582503",
+          "source": "skills.sh:anthropics/webapp-testing",
+          "version": "advisory-e4e5b177edff"
+        },
+        {
+          "id": "phuryn/test-scenarios",
+          "license": "advisory-unverified",
+          "sha256": "9d423877cbb7ce57cba2311c68940b69525279b4c6a6c5ce6a9e2f9ed0ab8c04",
+          "source": "skills.sh:phuryn/test-scenarios",
+          "version": "advisory-9d423877cbb7"
+        },
+        {
+          "id": "testmu-ai/cucumber-skill",
+          "license": "advisory-unverified",
+          "sha256": "41e3ea637c1cfe59350a4b27e2ddc73480271a112d28609e6e0012d7e0b162b8",
+          "source": "skills.sh:testmu-ai/cucumber-skill",
+          "version": "advisory-41e3ea637c1c"
+        }
+      ],
+      "standards": [
+        "Every user story has explicit, testable acceptance criteria",
+        "Coverage focused on user-facing risk, not vanity metrics",
+        "Bugs reproducible with clear steps and severity"
+      ],
+      "title": "QA Engineer & Test Strategist",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use to build cross-platform mobile apps with React Native + Expo: native UI, navigation, data fetching, deployment, and OTA updates.",
+      "expertise": [
+        "React Native + Expo (SDK, EAS, dev client, OTA updates)",
+        "Native-feeling UI, navigation, gestures, and animations",
+        "Mobile data fetching, offline, and secure storage",
+        "App store deployment and CI/CD via EAS"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with design-system-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "design-system-engineer"
+        },
+        {
+          "reason": "Collaborate with e2e-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "e2e-test-engineer"
+        },
+        {
+          "reason": "Collaborate with reactjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "reactjs-dev"
+        }
+      ],
+      "id": "react-native-dev",
+      "invocation": "1. Set up navigation, theming, and shared components\n2. Implement screens with native-quality UI and gestures\n3. Wire data fetching, offline handling, and secure storage\n4. Configure EAS builds, OTA updates, and store deployment",
+      "model_alias": "implementation",
+      "name": "react-native-dev",
+      "skills": [
+        {
+          "id": "auth0/auth0-react-native",
+          "license": "advisory-unverified",
+          "sha256": "df3f0fb4e013b7a02e4d50979e350b0360db1c30ee484eb44f1046fdcc5ae4be",
+          "source": "skills.sh:auth0/auth0-react-native",
+          "version": "advisory-df3f0fb4e013"
+        },
+        {
+          "id": "callstackincubator/react-native-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "ba3aa4885df4d18b0a4a559444edc9a1deb775007a50e5cea6a963eaefddad0a",
+          "source": "skills.sh:callstackincubator/react-native-best-practices",
+          "version": "advisory-ba3aa4885df4"
+        },
+        {
+          "id": "expo/building-native-ui",
+          "license": "advisory-unverified",
+          "sha256": "e8f02fd0e2544a9c52034fc9812df2f0a66ae8f4ec286c05000d0067365763fc",
+          "source": "skills.sh:expo/building-native-ui",
+          "version": "advisory-e8f02fd0e254"
+        },
+        {
+          "id": "expo/expo-deployment",
+          "license": "advisory-unverified",
+          "sha256": "c246202efd5c3b35bd97ee51615045863a6c7aff9ffecb6b802404d3d093f64e",
+          "source": "skills.sh:expo/expo-deployment",
+          "version": "advisory-c246202efd5c"
+        },
+        {
+          "id": "expo/expo-tailwind-setup",
+          "license": "advisory-unverified",
+          "sha256": "6ce2faa5f27e771680accf3c33e46c455b0c9ce83f161be10f11169d4195d716",
+          "source": "skills.sh:expo/expo-tailwind-setup",
+          "version": "advisory-6ce2faa5f27e"
+        },
+        {
+          "id": "expo/native-data-fetching",
+          "license": "advisory-unverified",
+          "sha256": "b471d3af0b809a7def92e121b94d765bd9981a577c2e4c9a34922361e0ff13ae",
+          "source": "skills.sh:expo/native-data-fetching",
+          "version": "advisory-b471d3af0b80"
+        },
+        {
+          "id": "getsentry/sentry-react-native-sdk",
+          "license": "advisory-unverified",
+          "sha256": "85c46c3e882015421646bfe77550ff93b0a8054394b7f6360d3f7f9db7b642c7",
+          "source": "skills.sh:getsentry/sentry-react-native-sdk",
+          "version": "advisory-85c46c3e8820"
+        }
+      ],
+      "standards": [
+        "Runs on both iOS and Android with no platform regressions",
+        "60fps interactions; no jank on lists/animations",
+        "Secrets in secure storage; no tokens in AsyncStorage",
+        "Detox e2e coverage for critical flows"
+      ],
+      "title": "Senior React Native / Expo Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "engineering",
+      "description": "Use to build client-side React applications (Vite/SPA): component architecture, state management, hooks, forms, and accessible UI.",
+      "expertise": [
+        "React 18+ component architecture and custom hooks",
+        "Client state (Redux Toolkit / Zustand) and server state (TanStack Query)",
+        "Forms, validation, and accessible interactive components",
+        "shadcn/ui + Tailwind design systems"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with accessibility-tester when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "accessibility-tester"
+        },
+        {
+          "reason": "Collaborate with design-system-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "design-system-engineer"
+        },
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with unit-test-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "unit-test-engineer"
+        }
+      ],
+      "id": "reactjs-dev",
+      "invocation": "1. Design the component tree and state boundaries\n2. Separate server state from UI state; avoid prop drilling\n3. Implement accessible, tested components\n4. Integrate with the API contract and handle all async states",
+      "model_alias": "implementation",
+      "name": "reactjs-dev",
+      "skills": [
+        {
+          "id": "anthropics/frontend-design",
+          "license": "advisory-unverified",
+          "sha256": "7bd6b342ffee2d0a67ad52fd0374c0a4d3b9aa9a215f63819e6af22997d31297",
+          "source": "skills.sh:anthropics/frontend-design",
+          "version": "advisory-7bd6b342ffee"
+        },
+        {
+          "id": "auth0/auth0-react",
+          "license": "advisory-unverified",
+          "sha256": "21b41c6c9101a22965e4637c291a8610bfdeb77913c286794dfd04013b9d927e",
+          "source": "skills.sh:auth0/auth0-react",
+          "version": "advisory-21b41c6c9101"
+        },
+        {
+          "id": "getsentry/sentry-react-sdk",
+          "license": "advisory-unverified",
+          "sha256": "1760d3898b3ad6f94fde154bdd9395361c687a5b87c007fda2246d8448f6b304",
+          "source": "skills.sh:getsentry/sentry-react-sdk",
+          "version": "advisory-1760d3898b3a"
+        },
+        {
+          "id": "google-labs-code/react-components",
+          "license": "advisory-unverified",
+          "sha256": "d0ae257e973d026e0bb8adc751c31023ccc521578625d9f1ee952a8e3e2f5d5b",
+          "source": "skills.sh:google-labs-code/react-components",
+          "version": "advisory-d0ae257e973d"
+        },
+        {
+          "id": "google-labs-code/shadcn-ui",
+          "license": "advisory-unverified",
+          "sha256": "0ef69135190c915263100be7a9a077e1ef6f0ff715fd77ff7a6d34eea670e1fd",
+          "source": "skills.sh:google-labs-code/shadcn-ui",
+          "version": "advisory-0ef69135190c"
+        },
+        {
+          "id": "microsoft/zustand-store-ts",
+          "license": "advisory-unverified",
+          "sha256": "4df70e042be8b17552da41e8ee01e54b4f3c7a734367318e84a01ca83f83208b",
+          "source": "skills.sh:microsoft/zustand-store-ts",
+          "version": "advisory-4df70e042be8"
+        },
+        {
+          "id": "tailwind",
+          "license": "MIT",
+          "sha256": "fa2cc11e7633ca95957af88cf8f338f9977b5efb69c1ac064322f87dad5ff27c",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        }
+      ],
+      "standards": [
+        "Predictable state; no derived-state-in-effect anti-patterns",
+        "Every interactive element keyboard-accessible (WCAG AA)",
+        "Components covered by unit/component tests",
+        "Memoization only where measured to help"
+      ],
+      "title": "Senior React (SPA) Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "product",
+      "description": "Use to facilitate agile delivery: sprint planning, backlog grooming, ceremony structure, and removing delivery blockers.",
+      "expertise": [
+        "Scrum/Kanban facilitation and flow metrics",
+        "Sprint planning, grooming, and capacity",
+        "Impediment removal and dependency tracking",
+        "Continuous-improvement retrospectives"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with business-analyst when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "business-analyst"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "scrum-master",
+      "invocation": "1. Facilitate planning against real capacity\n2. Keep the backlog groomed and dependencies visible\n3. Surface and drive out blockers\n4. Run retros that produce concrete improvements",
+      "model_alias": "implementation",
+      "name": "scrum-master",
+      "skills": [
+        {
+          "id": "anthropics/doc-coauthoring",
+          "license": "advisory-unverified",
+          "sha256": "ed273c02a8679b4307108eb01faeba456a223ae21c7b332dc2ccac25156ed665",
+          "source": "skills.sh:anthropics/doc-coauthoring",
+          "version": "advisory-ed273c02a867"
+        },
+        {
+          "id": "jira-ticket-planner",
+          "license": "advisory-unverified",
+          "sha256": "c9ecf35773c61fb1d92a853988131d1303c14b7afe9b76e289cbdfe192fc5bd3",
+          "source": "bundled:claude-code",
+          "version": "advisory-c9ecf35773c6"
+        },
+        {
+          "id": "phuryn/release-notes",
+          "license": "advisory-unverified",
+          "sha256": "f971a694c6bee5333bfed743a94063e51bc72f5d04f3924d0901dbbef9fc62de",
+          "source": "skills.sh:phuryn/release-notes",
+          "version": "advisory-f971a694c6be"
+        },
+        {
+          "id": "phuryn/retro",
+          "license": "advisory-unverified",
+          "sha256": "2bb010bb8a54b4f258eea958642a7c3fff3cabcb8b4fbcd5ab0a08605ca4b04f",
+          "source": "skills.sh:phuryn/retro",
+          "version": "advisory-2bb010bb8a54"
+        },
+        {
+          "id": "phuryn/sprint-plan",
+          "license": "advisory-unverified",
+          "sha256": "b88c5ce9112d03352c12753ffe97dec23c3a4c53d74bfb71072b795f63f6bfe8",
+          "source": "skills.sh:phuryn/sprint-plan",
+          "version": "advisory-b88c5ce9112d"
+        }
+      ],
+      "standards": [
+        "Sprint scope matches capacity; no silent overcommit",
+        "Blockers tracked with an owner and ETA",
+        "Retro actions followed through"
+      ],
+      "title": "Scrum Master / Delivery Manager",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-verification",
+      "department_id": "quality",
+      "description": "Use for defensive security review of code and configuration: authn/authz flaws, injection, secrets handling, dependency risk, and remediation guidance. Authorized/defensive use only.",
+      "expertise": [
+        "OWASP Top 10 and common web/mobile vulnerability classes",
+        "AuthN/AuthZ, session, and secrets review",
+        "Dependency and supply-chain risk",
+        "Threat modeling and remediation prioritization"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with code-reviewer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "code-reviewer"
+        },
+        {
+          "reason": "Collaborate with devops-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "devops-engineer"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "security-auditor",
+      "invocation": "1. Map trust boundaries and sensitive data flows\n2. Review auth, input handling, and secret management\n3. Check dependencies for known vulnerabilities\n4. Report findings with severity, impact, and fixes",
+      "model_alias": "verification",
+      "name": "security-auditor",
+      "skills": [
+        {
+          "id": "getsentry/sentry-fix-issues",
+          "license": "advisory-unverified",
+          "sha256": "afd27ca464275561143800aed545183544de3c64902707ba014ff2e559c8d01c",
+          "source": "skills.sh:getsentry/sentry-fix-issues",
+          "version": "advisory-afd27ca46427"
+        },
+        {
+          "id": "openai/security-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "585ec88c4c0be1d97ce6a67f53cb4d55558f388a01f40b3c467f5b2061e2bdfa",
+          "source": "skills.sh:openai/security-best-practices",
+          "version": "advisory-585ec88c4c0b"
+        },
+        {
+          "id": "openai/security-threat-model",
+          "license": "advisory-unverified",
+          "sha256": "f401a40ab5843bbd7dc92fa063045be973c3596509efbd3251b8b38ced53809d",
+          "source": "skills.sh:openai/security-threat-model",
+          "version": "advisory-f401a40ab584"
+        },
+        {
+          "id": "trailofbits/semgrep-rule-creator",
+          "license": "advisory-unverified",
+          "sha256": "a3c9744e3f7b7af7031230515bdf9873df4b695005f0e1bd0e92f1113bfec45e",
+          "source": "skills.sh:trailofbits/semgrep-rule-creator",
+          "version": "advisory-a3c9744e3f7b"
+        },
+        {
+          "id": "trailofbits/static-analysis",
+          "license": "advisory-unverified",
+          "sha256": "1d90f7cb17b54a1d088b1993e09704552f70b0f3bd0e38e2760bc109f47b09b4",
+          "source": "skills.sh:trailofbits/static-analysis",
+          "version": "advisory-1d90f7cb17b5"
+        }
+      ],
+      "standards": [
+        "Defensive scope only; no offensive tooling for misuse",
+        "Findings ranked by exploitability and impact",
+        "Every finding has a concrete remediation",
+        "No secrets, tokens, or PII left in code or logs"
+      ],
+      "title": "Security Auditor",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "product",
+      "description": "Use to plan and audit organic search: technical SEO, on-page and content strategy, structured data/schema, site architecture, Core Web Vitals, and programmatic/AI-search (AEO) optimization.",
+      "expertise": [
+        "Technical SEO audits (crawlability, indexation, canonicals, sitemaps)",
+        "On-page optimization, keyword strategy, and content structure",
+        "Structured data / schema markup and rich results",
+        "Site architecture, internal linking, and programmatic SEO",
+        "Answer-engine optimization (AEO) and Core Web Vitals as ranking factors"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with market-researcher when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "market-researcher"
+        },
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with performance-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "performance-engineer"
+        },
+        {
+          "reason": "Collaborate with technical-writer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "technical-writer"
+        }
+      ],
+      "id": "seo-specialist",
+      "invocation": "1. Audit the site for technical, on-page, and content SEO issues\n2. Prioritize fixes by traffic/ranking impact vs effort\n3. Specify schema markup, metadata, and internal-linking changes\n4. Coordinate implementation with nextjs-dev and content owners, then re-measure",
+      "model_alias": "implementation",
+      "name": "seo-specialist",
+      "skills": [
+        {
+          "id": "addyosmani/core-web-vitals",
+          "license": "advisory-unverified",
+          "sha256": "8b7209611165097b02148679f9bc48e8d92c3e65650c2cf6ec897d6db4fd9995",
+          "source": "skills.sh:addyosmani/core-web-vitals",
+          "version": "advisory-8b7209611165"
+        },
+        {
+          "id": "addyosmani/seo",
+          "license": "advisory-unverified",
+          "sha256": "d85750c0e5559182cbff355eb62b1d09ef73d9414b0114e051c83ffaa222eb48",
+          "source": "skills.sh:addyosmani/seo",
+          "version": "advisory-d85750c0e555"
+        },
+        {
+          "id": "coreyhaines31/programmatic-seo",
+          "license": "advisory-unverified",
+          "sha256": "d47de282d2c59bb86f82f366dab466ab7ae4359d39d6e8fed7af795d5cb813da",
+          "source": "skills.sh:coreyhaines31/programmatic-seo",
+          "version": "advisory-d47de282d2c5"
+        },
+        {
+          "id": "coreyhaines31/schema-markup",
+          "license": "advisory-unverified",
+          "sha256": "5c2890cd1cef71dfff300c31c094de4b6d9e829329e1257a45a7c02941d86d56",
+          "source": "skills.sh:coreyhaines31/schema-markup",
+          "version": "advisory-5c2890cd1cef"
+        },
+        {
+          "id": "coreyhaines31/seo-audit",
+          "license": "advisory-unverified",
+          "sha256": "9d8b3b72fc67ba6a1089ffb28f787cd71487f72bab6faab0096e7d0093e23114",
+          "source": "skills.sh:coreyhaines31/seo-audit",
+          "version": "advisory-9d8b3b72fc67"
+        },
+        {
+          "id": "coreyhaines31/site-architecture",
+          "license": "advisory-unverified",
+          "sha256": "baeb25a88677d0b6510769be462d936f45bd9cd8c076431f6f60a0a60318ff19",
+          "source": "skills.sh:coreyhaines31/site-architecture",
+          "version": "advisory-baeb25a88677"
+        },
+        {
+          "id": "sanity-io/seo-aeo-best-practices",
+          "license": "advisory-unverified",
+          "sha256": "6a97cb2d3a3e55ed118a715e29ba05f64bad863774f49c78f76c103d9391f8db",
+          "source": "skills.sh:sanity-io/seo-aeo-best-practices",
+          "version": "advisory-6a97cb2d3a3e"
+        }
+      ],
+      "standards": [
+        "Recommendations tied to measurable search impact",
+        "No black-hat tactics; sustainable, guideline-compliant SEO only",
+        "Structured data validates and matches on-page content",
+        "Core Web Vitals kept within budget on key templates"
+      ],
+      "title": "SEO & Organic Growth Specialist",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "infrastructure",
+      "description": "Use to define SLOs, monitoring, and alerting, and to lead incident diagnosis and blameless postmortems.",
+      "expertise": [
+        "SLI/SLO/error-budget definition",
+        "Observability: metrics, logs, traces, alerting",
+        "Incident command and rapid diagnosis",
+        "Blameless postmortems and reliability follow-through"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with cloud-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "cloud-architect"
+        },
+        {
+          "reason": "Collaborate with devops-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "devops-engineer"
+        },
+        {
+          "reason": "Collaborate with performance-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "performance-engineer"
+        }
+      ],
+      "id": "sre-incident-responder",
+      "invocation": "1. Define SLOs and the signals that back them\n2. During incidents: stabilize first, diagnose second\n3. Capture a timeline and mitigations as you go\n4. Run a blameless postmortem with concrete actions",
+      "model_alias": "implementation",
+      "name": "sre-incident-responder",
+      "skills": [
+        {
+          "id": "datadog-labs/dd-apm",
+          "license": "advisory-unverified",
+          "sha256": "448ff960ea9fcb1b865d5a999759f894388bf380b0d461d53a1db144dc4392e5",
+          "source": "skills.sh:datadog-labs/dd-apm",
+          "version": "advisory-448ff960ea9f"
+        },
+        {
+          "id": "datadog-labs/dd-monitors",
+          "license": "advisory-unverified",
+          "sha256": "2b092c647290ef30bbeec1d7dfec4742d8095310184bd573c059b3247e6f042e",
+          "source": "skills.sh:datadog-labs/dd-monitors",
+          "version": "advisory-2b092c647290"
+        },
+        {
+          "id": "getsentry/sentry-create-alert",
+          "license": "advisory-unverified",
+          "sha256": "160c0e6e6f53f7227311b18e8c2ec45a52a872f6acffb27bba1250e6167bc276",
+          "source": "skills.sh:getsentry/sentry-create-alert",
+          "version": "advisory-160c0e6e6f53"
+        },
+        {
+          "id": "getsentry/sentry-fix-issues",
+          "license": "advisory-unverified",
+          "sha256": "afd27ca464275561143800aed545183544de3c64902707ba014ff2e559c8d01c",
+          "source": "skills.sh:getsentry/sentry-fix-issues",
+          "version": "advisory-afd27ca46427"
+        },
+        {
+          "id": "redhat/sre-skillpack",
+          "license": "advisory-unverified",
+          "sha256": "5eea722a2598897f8a79c21db1b6e04b17950954f2ee025a791771c3108d976f",
+          "source": "skills.sh:redhat/sre-skillpack",
+          "version": "advisory-5eea722a2598"
+        }
+      ],
+      "standards": [
+        "Alerts are actionable; no alert fatigue",
+        "Postmortems blameless with owned action items",
+        "Mitigations tracked to completion"
+      ],
+      "title": "SRE & Incident Responder",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-planning",
+      "department_id": "engineering",
+      "description": "Use to break a feature or epic into engineering tasks, choose the right specialist (Python/Laravel/Next/Nest/React Native/React), set architecture direction, and coordinate delivery across the engineering department.",
+      "expertise": [
+        "System design and service boundaries across polyglot stacks",
+        "Task decomposition, estimation, and sequencing of engineering work",
+        "Choosing the right specialist agent for each unit of work",
+        "Technical trade-off analysis and Architecture Decision Records (ADRs)",
+        "Code health, tech-debt triage, and release readiness"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with api-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "api-architect"
+        },
+        {
+          "reason": "Collaborate with code-reviewer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "code-reviewer"
+        },
+        {
+          "reason": "Collaborate with laravel-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "laravel-dev"
+        },
+        {
+          "reason": "Collaborate with nestjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nestjs-dev"
+        },
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with python-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "python-dev"
+        },
+        {
+          "reason": "Collaborate with qa-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "qa-engineer"
+        },
+        {
+          "reason": "Collaborate with react-native-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "react-native-dev"
+        },
+        {
+          "reason": "Collaborate with reactjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "reactjs-dev"
+        }
+      ],
+      "id": "tech-lead",
+      "invocation": "1. Clarify the goal, constraints, and definition of done\n2. Decompose into tasks and map each to the best specialist (api-architect, *-dev, qa)\n3. Define interfaces/contracts between components before implementation\n4. Review integration points and sign off on release readiness",
+      "model_alias": "planning",
+      "name": "tech-lead",
+      "skills": [
+        {
+          "id": "anthropics/mcp-builder",
+          "license": "advisory-unverified",
+          "sha256": "ad5c9152d8c9f057434eff63d5378b70a6ed80abc80b0f755f16a5714a1321e3",
+          "source": "skills.sh:anthropics/mcp-builder",
+          "version": "advisory-ad5c9152d8c9"
+        },
+        {
+          "id": "find-subagents",
+          "license": "MIT",
+          "sha256": "470943fb132aca9a31fbf229dec525e96223885162cc3ddc387ce8d9a28ebaf1",
+          "source": "local:GNour/subagents",
+          "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+        },
+        {
+          "id": "getsentry/sentry-code-review",
+          "license": "advisory-unverified",
+          "sha256": "b7ed5718f7bfd078e254f86e7023c47fc1162e1629a9e8bb85e8794fb267adb7",
+          "source": "skills.sh:getsentry/sentry-code-review",
+          "version": "advisory-b7ed5718f7bf"
+        },
+        {
+          "id": "gsd",
+          "license": "advisory-unverified",
+          "sha256": "fb5357db91d9e4d3e0a2c1119507a4a414ffae1f2ea1362b094b15c09ddec76f",
+          "source": "framework:github.com/shoootyou/get-shit-done-multi",
+          "version": "advisory-fb5357db91d9"
+        }
+      ],
+      "standards": [
+        "Every task has a clear owner, acceptance criteria, and test plan",
+        "Cross-cutting concerns (auth, logging, errors) decided once, applied everywhere",
+        "Architecture decisions captured as short ADRs",
+        "No feature ships without QA + code-review sign-off"
+      ],
+      "title": "Engineering Tech Lead & Delivery Orchestrator",
+      "tools": [
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "product",
+      "description": "Use to write and maintain docs: API references, guides, READMEs, changelogs, and onboarding — accurate, tested, and reader-focused.",
+      "expertise": [
+        "API reference and developer guides",
+        "Task-oriented docs and tutorials",
+        "READMEs, changelogs, and onboarding material",
+        "Docs-as-code and example verification"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with api-architect when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "api-architect"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with tech-lead when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "tech-lead"
+        }
+      ],
+      "id": "technical-writer",
+      "invocation": "1. Identify the reader and the task they need to accomplish\n2. Structure docs task-first with runnable examples\n3. Verify every code example actually works\n4. Keep docs in sync with the code they describe",
+      "model_alias": "implementation",
+      "name": "technical-writer",
+      "skills": [
+        {
+          "id": "anthropics/doc-coauthoring",
+          "license": "advisory-unverified",
+          "sha256": "ed273c02a8679b4307108eb01faeba456a223ae21c7b332dc2ccac25156ed665",
+          "source": "skills.sh:anthropics/doc-coauthoring",
+          "version": "advisory-ed273c02a867"
+        },
+        {
+          "id": "anthropics/docx",
+          "license": "advisory-unverified",
+          "sha256": "d2ef771cde66044a9d411a58412baf001b8499674fcc07ea887eb8f1e0459317",
+          "source": "skills.sh:anthropics/docx",
+          "version": "advisory-d2ef771cde66"
+        },
+        {
+          "id": "brave/web-search",
+          "license": "advisory-unverified",
+          "sha256": "357a8232045e530e9a13675b964ba2714948b1d2927825ee20c2beb15a83aed9",
+          "source": "skills.sh:brave/web-search",
+          "version": "advisory-357a8232045e"
+        },
+        {
+          "id": "makenotion/research-documentation",
+          "license": "advisory-unverified",
+          "sha256": "76047967483d95be7615300283efd4e5c0779ae91e5db82a6ad8742021b6ba22",
+          "source": "skills.sh:makenotion/research-documentation",
+          "version": "advisory-76047967483d"
+        },
+        {
+          "id": "phuryn/release-notes",
+          "license": "advisory-unverified",
+          "sha256": "f971a694c6bee5333bfed743a94063e51bc72f5d04f3924d0901dbbef9fc62de",
+          "source": "skills.sh:phuryn/release-notes",
+          "version": "advisory-f971a694c6be"
+        }
+      ],
+      "standards": [
+        "Examples tested and current",
+        "Docs task-oriented, not just reference dumps",
+        "Terminology consistent across the product"
+      ],
+      "title": "Technical Writer & Documentation Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "design",
+      "description": "Use to design interfaces and visual layouts, translate Figma into implementation-ready specs, and ensure visual consistency and polish.",
+      "expertise": [
+        "Visual hierarchy, layout, spacing, and typography",
+        "Figma-to-code handoff and design specs",
+        "Interaction and state design",
+        "Consistent, brand-aligned visual language"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with accessibility-tester when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "accessibility-tester"
+        },
+        {
+          "reason": "Collaborate with design-system-engineer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "design-system-engineer"
+        },
+        {
+          "reason": "Collaborate with nextjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nextjs-dev"
+        },
+        {
+          "reason": "Collaborate with ux-researcher when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "ux-researcher"
+        }
+      ],
+      "id": "ui-designer",
+      "invocation": "1. Ground designs in the design system and constraints\n2. Design states (empty/loading/error), not just the happy path\n3. Produce implementation-ready specs and tokens\n4. Review the built UI against the design",
+      "model_alias": "implementation",
+      "name": "ui-designer",
+      "skills": [
+        {
+          "id": "anthropics/canvas-design",
+          "license": "advisory-unverified",
+          "sha256": "6b6685c767572625ef651a1224057022dffe45373882ff15a761a5975a778f3a",
+          "source": "skills.sh:anthropics/canvas-design",
+          "version": "advisory-6b6685c76757"
+        },
+        {
+          "id": "figma/figma-generate-design",
+          "license": "advisory-unverified",
+          "sha256": "97e3504af656cdf3adc44390286fb9895af57489cd2c0f95e4c606dedc8b4aef",
+          "source": "skills.sh:figma/figma-generate-design",
+          "version": "advisory-97e3504af656"
+        },
+        {
+          "id": "figma/figma-implement-design",
+          "license": "advisory-unverified",
+          "sha256": "9a2f565728f3ee00f54f4d44f908794414ac552f27f02ecde4431ade908bcc2e",
+          "source": "skills.sh:figma/figma-implement-design",
+          "version": "advisory-9a2f565728f3"
+        },
+        {
+          "id": "garrytan/design-consultation",
+          "license": "advisory-unverified",
+          "sha256": "0e57d6c8beee793bb9647761ef32b3d329be4cb4ddd9efcacb3a9462107de7e2",
+          "source": "skills.sh:garrytan/design-consultation",
+          "version": "advisory-0e57d6c8beee"
+        }
+      ],
+      "standards": [
+        "Designs use system tokens, not one-off values",
+        "All states and responsive breakpoints covered",
+        "Accessible contrast and target sizes"
+      ],
+      "title": "UI Designer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "read-only-verification",
+      "department_id": "quality",
+      "description": "Use to add fast, focused unit and integration tests across the stack (pytest, Jest, Vitest, PHPUnit) and to raise coverage on critical logic.",
+      "expertise": [
+        "Unit + integration testing across Python, TS/JS, PHP",
+        "Test doubles, fixtures, and dependency isolation",
+        "Coverage analysis and mutation-testing mindset",
+        "Fast, hermetic test suites"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with laravel-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "laravel-dev"
+        },
+        {
+          "reason": "Collaborate with nestjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "nestjs-dev"
+        },
+        {
+          "reason": "Collaborate with python-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "python-dev"
+        },
+        {
+          "reason": "Collaborate with reactjs-dev when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "reactjs-dev"
+        }
+      ],
+      "id": "unit-test-engineer",
+      "invocation": "1. Target the highest-risk, least-covered logic first\n2. Isolate units with the minimum necessary doubles\n3. Add integration tests at real boundaries (DB, HTTP)\n4. Report coverage deltas on changed code",
+      "model_alias": "verification",
+      "name": "unit-test-engineer",
+      "skills": [
+        {
+          "id": "testmu-ai/jest-skill",
+          "license": "advisory-unverified",
+          "sha256": "11125eb62768f364a322f7bf498c1627fdec256dfe0772c37333fe05bab30983",
+          "source": "skills.sh:testmu-ai/jest-skill",
+          "version": "advisory-11125eb62768"
+        },
+        {
+          "id": "testmu-ai/phpunit-skill",
+          "license": "advisory-unverified",
+          "sha256": "034d566762811ec70dcfac8ed68f24bbde2b7648e0abd57826e4061131f0cc60",
+          "source": "skills.sh:testmu-ai/phpunit-skill",
+          "version": "advisory-034d56676281"
+        },
+        {
+          "id": "testmu-ai/pytest-skill",
+          "license": "advisory-unverified",
+          "sha256": "224d639f8cd865acb99a0acacf602c0b7e68b8357624c44fee6a4d113863c5c8",
+          "source": "skills.sh:testmu-ai/pytest-skill",
+          "version": "advisory-224d639f8cd8"
+        },
+        {
+          "id": "testmu-ai/vitest-skill",
+          "license": "advisory-unverified",
+          "sha256": "39857400730c42381312989e10dc42619db8093232557c7371e847a96e2bf4f1",
+          "source": "skills.sh:testmu-ai/vitest-skill",
+          "version": "advisory-39857400730c"
+        },
+        {
+          "id": "trailofbits/property-based-testing",
+          "license": "advisory-unverified",
+          "sha256": "ad6771f2290092a5af263cbe86f7982753e3aef389062c25ad0fdeae9ea5b81a",
+          "source": "skills.sh:trailofbits/property-based-testing",
+          "version": "advisory-ad6771f22900"
+        }
+      ],
+      "standards": [
+        "Tests are fast, isolated, and deterministic",
+        "Assert behavior, not implementation detail",
+        "New/changed code carries meaningful tests"
+      ],
+      "title": "Unit & Integration Test Engineer",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    },
+    {
+      "capability_profile": "worktree-write",
+      "department_id": "design",
+      "description": "Use to plan and analyze user research: interview guides, usability findings, journey maps, and evidence-based product recommendations.",
+      "expertise": [
+        "Qualitative and quantitative research methods",
+        "Usability testing and heuristic evaluation",
+        "Journey mapping and jobs-to-be-done",
+        "Synthesizing findings into actionable insight"
+      ],
+      "handoffs": [
+        {
+          "reason": "Collaborate with data-analyst when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "data-analyst"
+        },
+        {
+          "reason": "Collaborate with product-owner when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "product-owner"
+        },
+        {
+          "reason": "Collaborate with ui-designer when the work crosses into their specialism.",
+          "required": false,
+          "role_id": "ui-designer"
+        }
+      ],
+      "id": "ux-researcher",
+      "invocation": "1. Define the research question and method to match it\n2. Draft unbiased interview/usability protocols\n3. Synthesize findings into themes with evidence\n4. Recommend changes tied to observed user needs",
+      "model_alias": "implementation",
+      "name": "ux-researcher",
+      "skills": [
+        {
+          "id": "deanpeters/discovery-interview-prep",
+          "license": "advisory-unverified",
+          "sha256": "68837effc21bba87d85f0e61f30201780512660d83f6e37aadb619c3f37fc682",
+          "source": "skills.sh:deanpeters/discovery-interview-prep",
+          "version": "advisory-68837effc21b"
+        },
+        {
+          "id": "deanpeters/jobs-to-be-done",
+          "license": "advisory-unverified",
+          "sha256": "fb6b029b440e9359e9a16aeb577499ab67f12433bd7847b83013cb11f9dff390",
+          "source": "skills.sh:deanpeters/jobs-to-be-done",
+          "version": "advisory-fb6b029b440e"
+        },
+        {
+          "id": "phuryn/customer-journey-map",
+          "license": "advisory-unverified",
+          "sha256": "51618e30db51ebe9abd85faf9c4d179318c09b3de03e9fc3c103f77dbe331cc4",
+          "source": "skills.sh:phuryn/customer-journey-map",
+          "version": "advisory-51618e30db51"
+        },
+        {
+          "id": "phuryn/interview-script",
+          "license": "advisory-unverified",
+          "sha256": "55e6a03764ed924eecf7f7d7883227079b2dd3328174911abbf833f5edaa35a8",
+          "source": "skills.sh:phuryn/interview-script",
+          "version": "advisory-55e6a03764ed"
+        },
+        {
+          "id": "phuryn/user-personas",
+          "license": "advisory-unverified",
+          "sha256": "957c11de2e51184b40403c0dd8a2c47519172c58967f38551741014292e23eef",
+          "source": "skills.sh:phuryn/user-personas",
+          "version": "advisory-957c11de2e51"
+        }
+      ],
+      "standards": [
+        "Methods match the question; sample/limits stated",
+        "Findings backed by evidence, not opinion",
+        "Recommendations prioritized by impact"
+      ],
+      "title": "UX Researcher",
+      "tools": [
+        "project_test",
+        "qmd_get",
+        "qmd_search"
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "source_catalog_schema_version": "1",
+  "source_commit": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56",
+  "source_package_version": "1.0.0-aegis.0"
+}

@@ -161,9 +161,10 @@ class CompiledCatalog(StrictModel):
                     standards=role.standards,
                     model_alias=mapping.model_alias,
                     capability_profile=mapping.capability_profile,
-                    skills=tuple(selected_skills),
-                    tools=mapping.tools,
-                    handoffs=role.handoffs,
+                    # Sort skills/tools/handoffs by stable id for deterministic output.
+                    skills=tuple(sorted(selected_skills, key=lambda s: s.id)),
+                    tools=tuple(sorted(mapping.tools)),
+                    handoffs=tuple(sorted(role.handoffs, key=lambda h: h.role_id)),
                 )
             )
         return cls(
@@ -171,5 +172,5 @@ class CompiledCatalog(StrictModel):
             source_commit=source.source_commit,
             source_package_version=source.package_version,
             source_catalog_schema_version=source.catalog_schema_version,
-            roles=tuple(compiled),
+            roles=tuple(sorted(compiled, key=lambda r: r.id)),
         )

@@ -1,0 +1,783 @@
+{
+  "catalog_sha256": "b82c1c8b62ee408f2a1bc204343289690892a1087506313f2fe01f29e1df7125",
+  "schema_version": 1,
+  "skills": {
+    "addyosmani/accessibility": {
+      "license": "advisory-unverified",
+      "sha256": "f16b03e9f6085d8764876ed1a70dfac55ec5b5ac5347b7bf4095324d2d19285e",
+      "source": "skills.sh:addyosmani/accessibility",
+      "version": "advisory-f16b03e9f608"
+    },
+    "addyosmani/core-web-vitals": {
+      "license": "advisory-unverified",
+      "sha256": "8b7209611165097b02148679f9bc48e8d92c3e65650c2cf6ec897d6db4fd9995",
+      "source": "skills.sh:addyosmani/core-web-vitals",
+      "version": "advisory-8b7209611165"
+    },
+    "addyosmani/performance": {
+      "license": "advisory-unverified",
+      "sha256": "e94a2dc5d03fc349d6c8835da58b09646aac097ba057f0561cf45043d8e85c97",
+      "source": "skills.sh:addyosmani/performance",
+      "version": "advisory-e94a2dc5d03f"
+    },
+    "addyosmani/seo": {
+      "license": "advisory-unverified",
+      "sha256": "d85750c0e5559182cbff355eb62b1d09ef73d9414b0114e051c83ffaa222eb48",
+      "source": "skills.sh:addyosmani/seo",
+      "version": "advisory-d85750c0e555"
+    },
+    "addyosmani/web-quality-audit": {
+      "license": "advisory-unverified",
+      "sha256": "cf8c406b57d4f7fd60c5e8fe5d0290625b737eded9195947fd640667160e064b",
+      "source": "skills.sh:addyosmani/web-quality-audit",
+      "version": "advisory-cf8c406b57d4"
+    },
+    "anthropics/canvas-design": {
+      "license": "advisory-unverified",
+      "sha256": "6b6685c767572625ef651a1224057022dffe45373882ff15a761a5975a778f3a",
+      "source": "skills.sh:anthropics/canvas-design",
+      "version": "advisory-6b6685c76757"
+    },
+    "anthropics/doc-coauthoring": {
+      "license": "advisory-unverified",
+      "sha256": "ed273c02a8679b4307108eb01faeba456a223ae21c7b332dc2ccac25156ed665",
+      "source": "skills.sh:anthropics/doc-coauthoring",
+      "version": "advisory-ed273c02a867"
+    },
+    "anthropics/docx": {
+      "license": "advisory-unverified",
+      "sha256": "d2ef771cde66044a9d411a58412baf001b8499674fcc07ea887eb8f1e0459317",
+      "source": "skills.sh:anthropics/docx",
+      "version": "advisory-d2ef771cde66"
+    },
+    "anthropics/frontend-design": {
+      "license": "advisory-unverified",
+      "sha256": "7bd6b342ffee2d0a67ad52fd0374c0a4d3b9aa9a215f63819e6af22997d31297",
+      "source": "skills.sh:anthropics/frontend-design",
+      "version": "advisory-7bd6b342ffee"
+    },
+    "anthropics/mcp-builder": {
+      "license": "advisory-unverified",
+      "sha256": "ad5c9152d8c9f057434eff63d5378b70a6ed80abc80b0f755f16a5714a1321e3",
+      "source": "skills.sh:anthropics/mcp-builder",
+      "version": "advisory-ad5c9152d8c9"
+    },
+    "anthropics/webapp-testing": {
+      "license": "advisory-unverified",
+      "sha256": "e4e5b177edff9fb5100d7955d8899899ccbcea1c5916b9403ee456f88f582503",
+      "source": "skills.sh:anthropics/webapp-testing",
+      "version": "advisory-e4e5b177edff"
+    },
+    "apollographql/apollo-server": {
+      "license": "advisory-unverified",
+      "sha256": "b543c5c63e182b97bba5bf88017091622254b9c3bb0d3af5ba0d0d7fa9c63551",
+      "source": "skills.sh:apollographql/apollo-server",
+      "version": "advisory-b543c5c63e18"
+    },
+    "apollographql/graphql-schema": {
+      "license": "advisory-unverified",
+      "sha256": "a1e3b3a25cc4295a76d3286c9f9f8a402e80ffe50a0f7be2cfae046a8aeec313",
+      "source": "skills.sh:apollographql/graphql-schema",
+      "version": "advisory-a1e3b3a25cc4"
+    },
+    "auth0/auth0-nextjs": {
+      "license": "advisory-unverified",
+      "sha256": "3449cacc93e05c75855247ef295eef53c1712c5812b9b58531d1f3a7e63c9a94",
+      "source": "skills.sh:auth0/auth0-nextjs",
+      "version": "advisory-3449cacc93e0"
+    },
+    "auth0/auth0-react": {
+      "license": "advisory-unverified",
+      "sha256": "21b41c6c9101a22965e4637c291a8610bfdeb77913c286794dfd04013b9d927e",
+      "source": "skills.sh:auth0/auth0-react",
+      "version": "advisory-21b41c6c9101"
+    },
+    "auth0/auth0-react-native": {
+      "license": "advisory-unverified",
+      "sha256": "df3f0fb4e013b7a02e4d50979e350b0360db1c30ee484eb44f1046fdcc5ae4be",
+      "source": "skills.sh:auth0/auth0-react-native",
+      "version": "advisory-df3f0fb4e013"
+    },
+    "better-auth/best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "31874092487ac1220640fe573542fc89080f4b8685cfa21fdd4c53114006355d",
+      "source": "skills.sh:better-auth/best-practices",
+      "version": "advisory-31874092487a"
+    },
+    "brave/web-search": {
+      "license": "advisory-unverified",
+      "sha256": "357a8232045e530e9a13675b964ba2714948b1d2927825ee20c2beb15a83aed9",
+      "source": "skills.sh:brave/web-search",
+      "version": "advisory-357a8232045e"
+    },
+    "callstackincubator/react-native-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "ba3aa4885df4d18b0a4a559444edc9a1deb775007a50e5cea6a963eaefddad0a",
+      "source": "skills.sh:callstackincubator/react-native-best-practices",
+      "version": "advisory-ba3aa4885df4"
+    },
+    "clickhouse/clickhouse-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "cfdca16a1013a7ac99ef8abe306f019ef75baa50bb4cc8c2c4d04e84194e1227",
+      "source": "skills.sh:clickhouse/clickhouse-best-practices",
+      "version": "advisory-cfdca16a1013"
+    },
+    "cloudflare/web-perf": {
+      "license": "advisory-unverified",
+      "sha256": "fd519cbae5e72861485614ec08d7592572d49148807168d1cae49ecc8b2398cb",
+      "source": "skills.sh:cloudflare/web-perf",
+      "version": "advisory-fd519cbae5e7"
+    },
+    "cloudflare/workers-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "07ed2cf1df7a009b149e3aa79ef1013c2f1a33711181028d67f221df0bd839d4",
+      "source": "skills.sh:cloudflare/workers-best-practices",
+      "version": "advisory-07ed2cf1df7a"
+    },
+    "cloudflare/wrangler": {
+      "license": "advisory-unverified",
+      "sha256": "019769b4915a2f9389c58d50f602bf5ef3141aa154b51e11c1812d2180d5976a",
+      "source": "skills.sh:cloudflare/wrangler",
+      "version": "advisory-019769b4915a"
+    },
+    "coderabbitai/code-review": {
+      "license": "advisory-unverified",
+      "sha256": "f077d76e5798f232293bd13a2995cedd0e9efbc310644fe01eaf54550c57fd7b",
+      "source": "skills.sh:coderabbitai/code-review",
+      "version": "advisory-f077d76e5798"
+    },
+    "coreyhaines31/programmatic-seo": {
+      "license": "advisory-unverified",
+      "sha256": "d47de282d2c59bb86f82f366dab466ab7ae4359d39d6e8fed7af795d5cb813da",
+      "source": "skills.sh:coreyhaines31/programmatic-seo",
+      "version": "advisory-d47de282d2c5"
+    },
+    "coreyhaines31/schema-markup": {
+      "license": "advisory-unverified",
+      "sha256": "5c2890cd1cef71dfff300c31c094de4b6d9e829329e1257a45a7c02941d86d56",
+      "source": "skills.sh:coreyhaines31/schema-markup",
+      "version": "advisory-5c2890cd1cef"
+    },
+    "coreyhaines31/seo-audit": {
+      "license": "advisory-unverified",
+      "sha256": "9d8b3b72fc67ba6a1089ffb28f787cd71487f72bab6faab0096e7d0093e23114",
+      "source": "skills.sh:coreyhaines31/seo-audit",
+      "version": "advisory-9d8b3b72fc67"
+    },
+    "coreyhaines31/site-architecture": {
+      "license": "advisory-unverified",
+      "sha256": "baeb25a88677d0b6510769be462d936f45bd9cd8c076431f6f60a0a60318ff19",
+      "source": "skills.sh:coreyhaines31/site-architecture",
+      "version": "advisory-baeb25a88677"
+    },
+    "datadog-labs/dd-apm": {
+      "license": "advisory-unverified",
+      "sha256": "448ff960ea9fcb1b865d5a999759f894388bf380b0d461d53a1db144dc4392e5",
+      "source": "skills.sh:datadog-labs/dd-apm",
+      "version": "advisory-448ff960ea9f"
+    },
+    "datadog-labs/dd-monitors": {
+      "license": "advisory-unverified",
+      "sha256": "2b092c647290ef30bbeec1d7dfec4742d8095310184bd573c059b3247e6f042e",
+      "source": "skills.sh:datadog-labs/dd-monitors",
+      "version": "advisory-2b092c647290"
+    },
+    "dataviz": {
+      "license": "advisory-unverified",
+      "sha256": "91dbc520a7b2f7358a230c58a2d187214fd27d97ffeb0a07aec705da4371c5ba",
+      "source": "bundled:claude-code",
+      "version": "advisory-91dbc520a7b2"
+    },
+    "deanpeters/company-research": {
+      "license": "advisory-unverified",
+      "sha256": "782735b80a471a747d24a97211fbfaa2a9cfec74c9129a6c60b5ee3c8f927bbb",
+      "source": "skills.sh:deanpeters/company-research",
+      "version": "advisory-782735b80a47"
+    },
+    "deanpeters/discovery-interview-prep": {
+      "license": "advisory-unverified",
+      "sha256": "68837effc21bba87d85f0e61f30201780512660d83f6e37aadb619c3f37fc682",
+      "source": "skills.sh:deanpeters/discovery-interview-prep",
+      "version": "advisory-68837effc21b"
+    },
+    "deanpeters/jobs-to-be-done": {
+      "license": "advisory-unverified",
+      "sha256": "fb6b029b440e9359e9a16aeb577499ab67f12433bd7847b83013cb11f9dff390",
+      "source": "skills.sh:deanpeters/jobs-to-be-done",
+      "version": "advisory-fb6b029b440e"
+    },
+    "deanpeters/opportunity-solution-tree": {
+      "license": "advisory-unverified",
+      "sha256": "b16af2b4c0bfb7807f5ed718eb03958e9f976b43098138697f0c263667fa579a",
+      "source": "skills.sh:deanpeters/opportunity-solution-tree",
+      "version": "advisory-b16af2b4c0bf"
+    },
+    "deanpeters/pestel-analysis": {
+      "license": "advisory-unverified",
+      "sha256": "80b5204d207681fec90429f2c19b16b3e92a076e55c2f65dab3aaf2f950d5aa5",
+      "source": "skills.sh:deanpeters/pestel-analysis",
+      "version": "advisory-80b5204d2076"
+    },
+    "deanpeters/user-story-splitting": {
+      "license": "advisory-unverified",
+      "sha256": "27834c37bf3e18af7a7f66431d7c85acc96bb95e575c3e2a53d5fa2ccb5cbab5",
+      "source": "skills.sh:deanpeters/user-story-splitting",
+      "version": "advisory-27834c37bf3e"
+    },
+    "drawio": {
+      "license": "advisory-unverified",
+      "sha256": "6d9a74dc35f949fd4113cae50df27c85e605423e7ac2a98c12407f8a8cd69ac4",
+      "source": "bundled:claude-code",
+      "version": "advisory-6d9a74dc35f9"
+    },
+    "duckdb/query": {
+      "license": "advisory-unverified",
+      "sha256": "5ac3178e13e7879aba18bf02962878f0e1413425fcc2e60cdb968007c2f3fabe",
+      "source": "skills.sh:duckdb/query",
+      "version": "advisory-5ac3178e13e7"
+    },
+    "expo/building-native-ui": {
+      "license": "advisory-unverified",
+      "sha256": "e8f02fd0e2544a9c52034fc9812df2f0a66ae8f4ec286c05000d0067365763fc",
+      "source": "skills.sh:expo/building-native-ui",
+      "version": "advisory-e8f02fd0e254"
+    },
+    "expo/expo-cicd-workflows": {
+      "license": "advisory-unverified",
+      "sha256": "c3db9ee1fd6f8e8cfe4807e4a57a7e20be5a2a4edbb4592c90627b3d765c63d0",
+      "source": "skills.sh:expo/expo-cicd-workflows",
+      "version": "advisory-c3db9ee1fd6f"
+    },
+    "expo/expo-deployment": {
+      "license": "advisory-unverified",
+      "sha256": "c246202efd5c3b35bd97ee51615045863a6c7aff9ffecb6b802404d3d093f64e",
+      "source": "skills.sh:expo/expo-deployment",
+      "version": "advisory-c246202efd5c"
+    },
+    "expo/expo-tailwind-setup": {
+      "license": "advisory-unverified",
+      "sha256": "6ce2faa5f27e771680accf3c33e46c455b0c9ce83f161be10f11169d4195d716",
+      "source": "skills.sh:expo/expo-tailwind-setup",
+      "version": "advisory-6ce2faa5f27e"
+    },
+    "expo/native-data-fetching": {
+      "license": "advisory-unverified",
+      "sha256": "b471d3af0b809a7def92e121b94d765bd9981a577c2e4c9a34922361e0ff13ae",
+      "source": "skills.sh:expo/native-data-fetching",
+      "version": "advisory-b471d3af0b80"
+    },
+    "figma/figma-code-connect-components": {
+      "license": "advisory-unverified",
+      "sha256": "5eda185d3578aece77abb44ea6f6a06490d0659ea4850f9696033f21413eec98",
+      "source": "skills.sh:figma/figma-code-connect-components",
+      "version": "advisory-5eda185d3578"
+    },
+    "figma/figma-create-design-system-rules": {
+      "license": "advisory-unverified",
+      "sha256": "95f0fb5ad3e4592bdf5bf4460da1557dda677a241d0fb900180c28c4b0d0c374",
+      "source": "skills.sh:figma/figma-create-design-system-rules",
+      "version": "advisory-95f0fb5ad3e4"
+    },
+    "figma/figma-generate-design": {
+      "license": "advisory-unverified",
+      "sha256": "97e3504af656cdf3adc44390286fb9895af57489cd2c0f95e4c606dedc8b4aef",
+      "source": "skills.sh:figma/figma-generate-design",
+      "version": "advisory-97e3504af656"
+    },
+    "figma/figma-implement-design": {
+      "license": "advisory-unverified",
+      "sha256": "9a2f565728f3ee00f54f4d44f908794414ac552f27f02ecde4431ade908bcc2e",
+      "source": "skills.sh:figma/figma-implement-design",
+      "version": "advisory-9a2f565728f3"
+    },
+    "find-subagents": {
+      "license": "MIT",
+      "sha256": "470943fb132aca9a31fbf229dec525e96223885162cc3ddc387ce8d9a28ebaf1",
+      "source": "local:GNour/subagents",
+      "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+    },
+    "garrytan/design-consultation": {
+      "license": "advisory-unverified",
+      "sha256": "0e57d6c8beee793bb9647761ef32b3d329be4cb4ddd9efcacb3a9462107de7e2",
+      "source": "skills.sh:garrytan/design-consultation",
+      "version": "advisory-0e57d6c8beee"
+    },
+    "garrytan/design-review": {
+      "license": "advisory-unverified",
+      "sha256": "a28dee3bd8f47abfe21968887070a551217665581ad429c5fc9b9677692616b5",
+      "source": "skills.sh:garrytan/design-review",
+      "version": "advisory-a28dee3bd8f4"
+    },
+    "getsentry/sentry-code-review": {
+      "license": "advisory-unverified",
+      "sha256": "b7ed5718f7bfd078e254f86e7023c47fc1162e1629a9e8bb85e8794fb267adb7",
+      "source": "skills.sh:getsentry/sentry-code-review",
+      "version": "advisory-b7ed5718f7bf"
+    },
+    "getsentry/sentry-create-alert": {
+      "license": "advisory-unverified",
+      "sha256": "160c0e6e6f53f7227311b18e8c2ec45a52a872f6acffb27bba1250e6167bc276",
+      "source": "skills.sh:getsentry/sentry-create-alert",
+      "version": "advisory-160c0e6e6f53"
+    },
+    "getsentry/sentry-fix-issues": {
+      "license": "advisory-unverified",
+      "sha256": "afd27ca464275561143800aed545183544de3c64902707ba014ff2e559c8d01c",
+      "source": "skills.sh:getsentry/sentry-fix-issues",
+      "version": "advisory-afd27ca46427"
+    },
+    "getsentry/sentry-nestjs-sdk": {
+      "license": "advisory-unverified",
+      "sha256": "478cea1d47ea3c290594db075effc363f3898cb3bc6b558aec13c30187d52741",
+      "source": "skills.sh:getsentry/sentry-nestjs-sdk",
+      "version": "advisory-478cea1d47ea"
+    },
+    "getsentry/sentry-nextjs-sdk": {
+      "license": "advisory-unverified",
+      "sha256": "f9ceb3a2f861ab9a81fc6b1d10684afb48159d97a388512f47fb634684ba9914",
+      "source": "skills.sh:getsentry/sentry-nextjs-sdk",
+      "version": "advisory-f9ceb3a2f861"
+    },
+    "getsentry/sentry-php-sdk": {
+      "license": "advisory-unverified",
+      "sha256": "412c26af32ff7241ff76f632d65c168c63ba27c219f13d1d8d444f526ccfedc9",
+      "source": "skills.sh:getsentry/sentry-php-sdk",
+      "version": "advisory-412c26af32ff"
+    },
+    "getsentry/sentry-pr-code-review": {
+      "license": "advisory-unverified",
+      "sha256": "a1e2f60fd02672377b78ce613b5a0642f26395521e2c88ffd4aa718f258c4b3a",
+      "source": "skills.sh:getsentry/sentry-pr-code-review",
+      "version": "advisory-a1e2f60fd026"
+    },
+    "getsentry/sentry-python-sdk": {
+      "license": "advisory-unverified",
+      "sha256": "eab03f2224c96a23611d2ab81ea10bf175ec8279545ae06ddfca668802b0357c",
+      "source": "skills.sh:getsentry/sentry-python-sdk",
+      "version": "advisory-eab03f2224c9"
+    },
+    "getsentry/sentry-react-native-sdk": {
+      "license": "advisory-unverified",
+      "sha256": "85c46c3e882015421646bfe77550ff93b0a8054394b7f6360d3f7f9db7b642c7",
+      "source": "skills.sh:getsentry/sentry-react-native-sdk",
+      "version": "advisory-85c46c3e8820"
+    },
+    "getsentry/sentry-react-sdk": {
+      "license": "advisory-unverified",
+      "sha256": "1760d3898b3ad6f94fde154bdd9395361c687a5b87c007fda2246d8448f6b304",
+      "source": "skills.sh:getsentry/sentry-react-sdk",
+      "version": "advisory-1760d3898b3a"
+    },
+    "google-gemini/gemini-api-dev": {
+      "license": "advisory-unverified",
+      "sha256": "70c36dc067392915f1742ce71f78c004736297b24b4afc2a26a97608da836c3b",
+      "source": "skills.sh:google-gemini/gemini-api-dev",
+      "version": "advisory-70c36dc06739"
+    },
+    "google-labs-code/react-components": {
+      "license": "advisory-unverified",
+      "sha256": "d0ae257e973d026e0bb8adc751c31023ccc521578625d9f1ee952a8e3e2f5d5b",
+      "source": "skills.sh:google-labs-code/react-components",
+      "version": "advisory-d0ae257e973d"
+    },
+    "google-labs-code/shadcn-ui": {
+      "license": "advisory-unverified",
+      "sha256": "0ef69135190c915263100be7a9a077e1ef6f0ff715fd77ff7a6d34eea670e1fd",
+      "source": "skills.sh:google-labs-code/shadcn-ui",
+      "version": "advisory-0ef69135190c"
+    },
+    "gsd": {
+      "license": "advisory-unverified",
+      "sha256": "fb5357db91d9e4d3e0a2c1119507a4a414ffae1f2ea1362b094b15c09ddec76f",
+      "source": "framework:github.com/shoootyou/get-shit-done-multi",
+      "version": "advisory-fb5357db91d9"
+    },
+    "hamelsmu/error-analysis": {
+      "license": "advisory-unverified",
+      "sha256": "2daaecda486d438719d4870cfd67747d036177019899667a97d5c67c4846b6e1",
+      "source": "skills.sh:hamelsmu/error-analysis",
+      "version": "advisory-2daaecda486d"
+    },
+    "hamelsmu/write-judge-prompt": {
+      "license": "advisory-unverified",
+      "sha256": "3a2ed3ea9b9700ccb2575d102eb8cb4af962e4db9acb2c96f4123a095ff1a312",
+      "source": "skills.sh:hamelsmu/write-judge-prompt",
+      "version": "advisory-3a2ed3ea9b97"
+    },
+    "hashicorp/terraform-style-guide": {
+      "license": "advisory-unverified",
+      "sha256": "4f25470760d8359ed045efb08b68e912bf3c3156b23c1f0d528a661d543852a1",
+      "source": "skills.sh:hashicorp/terraform-style-guide",
+      "version": "advisory-4f25470760d8"
+    },
+    "huggingface/hugging-face-model-trainer": {
+      "license": "advisory-unverified",
+      "sha256": "7db3180421b8f102d4826994a1283b821197a1e5293802d01c2a17dc8061549c",
+      "source": "skills.sh:huggingface/hugging-face-model-trainer",
+      "version": "advisory-7db3180421b8"
+    },
+    "jira-ticket-planner": {
+      "license": "advisory-unverified",
+      "sha256": "c9ecf35773c61fb1d92a853988131d1303c14b7afe9b76e289cbdfe192fc5bd3",
+      "source": "bundled:claude-code",
+      "version": "advisory-c9ecf35773c6"
+    },
+    "makenotion/knowledge-capture": {
+      "license": "advisory-unverified",
+      "sha256": "c9cb7520f5c5fa474e93810efc1f00c162c996defc16beadd866ea9892934f34",
+      "source": "skills.sh:makenotion/knowledge-capture",
+      "version": "advisory-c9cb7520f5c5"
+    },
+    "makenotion/research-documentation": {
+      "license": "advisory-unverified",
+      "sha256": "76047967483d95be7615300283efd4e5c0779ae91e5db82a6ad8742021b6ba22",
+      "source": "skills.sh:makenotion/research-documentation",
+      "version": "advisory-76047967483d"
+    },
+    "microsoft/cloud-solution-architect": {
+      "license": "advisory-unverified",
+      "sha256": "4f3e2f0aa290383754eab40c01ecf323864467bdefff98728aa35ca59a2a5b9e",
+      "source": "skills.sh:microsoft/cloud-solution-architect",
+      "version": "advisory-4f3e2f0aa290"
+    },
+    "microsoft/fastapi-router-py": {
+      "license": "advisory-unverified",
+      "sha256": "ccdb35dd28555b8145162d124aa975c74b869ff09f7061d7f0a54a21f8d444ef",
+      "source": "skills.sh:microsoft/fastapi-router-py",
+      "version": "advisory-ccdb35dd2855"
+    },
+    "microsoft/pydantic-models-py": {
+      "license": "advisory-unverified",
+      "sha256": "5cd260d8dc87fdf2b7673a3688a562380a56029f259e57bcb9363e240af79c0b",
+      "source": "skills.sh:microsoft/pydantic-models-py",
+      "version": "advisory-5cd260d8dc87"
+    },
+    "microsoft/zustand-store-ts": {
+      "license": "advisory-unverified",
+      "sha256": "4df70e042be8b17552da41e8ee01e54b4f3c7a734367318e84a01ca83f83208b",
+      "source": "skills.sh:microsoft/zustand-store-ts",
+      "version": "advisory-4df70e042be8"
+    },
+    "mongodb/mongodb-query-optimizer": {
+      "license": "advisory-unverified",
+      "sha256": "ededb38d7dddd6aca877e5949d3a00aafd1d98c6ec90748bb29b10e6dcb1b244",
+      "source": "skills.sh:mongodb/mongodb-query-optimizer",
+      "version": "advisory-ededb38d7ddd"
+    },
+    "mongodb/mongodb-schema-design": {
+      "license": "advisory-unverified",
+      "sha256": "b07f2ee32d33c46bb4ea58d72f3f384bbeadcb3cc2ed72ce6c2c2416ae191cb9",
+      "source": "skills.sh:mongodb/mongodb-schema-design",
+      "version": "advisory-b07f2ee32d33"
+    },
+    "muratcankoylan/context-compression": {
+      "license": "advisory-unverified",
+      "sha256": "6cf930cc7a141515436c531989f28e2cbe2169a9e111f1499bfb1b93c8412866",
+      "source": "skills.sh:muratcankoylan/context-compression",
+      "version": "advisory-6cf930cc7a14"
+    },
+    "muratcankoylan/context-fundamentals": {
+      "license": "advisory-unverified",
+      "sha256": "20e419c2dc1d00e864a12a4738204c4fb45aedd037daafdbcfee044f678d6f77",
+      "source": "skills.sh:muratcankoylan/context-fundamentals",
+      "version": "advisory-20e419c2dc1d"
+    },
+    "muratcankoylan/multi-agent-patterns": {
+      "license": "advisory-unverified",
+      "sha256": "3674367eb54bcf709fe414a98b4e6a691824dbc7b94d6208c29b631c705bf5fe",
+      "source": "skills.sh:muratcankoylan/multi-agent-patterns",
+      "version": "advisory-3674367eb54b"
+    },
+    "neondatabase/neon-postgres": {
+      "license": "advisory-unverified",
+      "sha256": "fb209fd6662170cd552d7886f31916971f8276de2defa6cc8d18cf3bd75ccbf6",
+      "source": "skills.sh:neondatabase/neon-postgres",
+      "version": "advisory-fb209fd66621"
+    },
+    "netlify/netlify-cli-and-deploy": {
+      "license": "advisory-unverified",
+      "sha256": "07b1fb35d7f9d7cb3062e26e0d6b87cc4984e098056b2c1c0496ab0de199657f",
+      "source": "skills.sh:netlify/netlify-cli-and-deploy",
+      "version": "advisory-07b1fb35d7f9"
+    },
+    "openai/playwright": {
+      "license": "advisory-unverified",
+      "sha256": "e0eeb2b2d2978499de661ac9b07d27cbb6dfb086ca8a189ead35768f31281887",
+      "source": "skills.sh:openai/playwright",
+      "version": "advisory-e0eeb2b2d297"
+    },
+    "openai/security-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "585ec88c4c0be1d97ce6a67f53cb4d55558f388a01f40b3c467f5b2061e2bdfa",
+      "source": "skills.sh:openai/security-best-practices",
+      "version": "advisory-585ec88c4c0b"
+    },
+    "openai/security-threat-model": {
+      "license": "advisory-unverified",
+      "sha256": "f401a40ab5843bbd7dc92fa063045be973c3596509efbd3251b8b38ced53809d",
+      "source": "skills.sh:openai/security-threat-model",
+      "version": "advisory-f401a40ab584"
+    },
+    "openai/vercel-deploy": {
+      "license": "advisory-unverified",
+      "sha256": "7dac57395c4a7f74a3995a8fec677f65352f65fe502c9c3da456e379039f5076",
+      "source": "skills.sh:openai/vercel-deploy",
+      "version": "advisory-7dac57395c4a"
+    },
+    "phuryn/ab-test-analysis": {
+      "license": "advisory-unverified",
+      "sha256": "f65746d77ec99fb48a44cafa559cf8e30a6c384c1d4c5f2d9cc92a0385cc7f91",
+      "source": "skills.sh:phuryn/ab-test-analysis",
+      "version": "advisory-f65746d77ec9"
+    },
+    "phuryn/cohort-analysis": {
+      "license": "advisory-unverified",
+      "sha256": "ad06f52fec2560bab4ca6daa4eaaf48c737a8775bb47b3fa1c9d7555e1182fca",
+      "source": "skills.sh:phuryn/cohort-analysis",
+      "version": "advisory-ad06f52fec25"
+    },
+    "phuryn/competitive-battlecard": {
+      "license": "advisory-unverified",
+      "sha256": "8ef4686ad95885903b1b4c447e8b074b0f344a0ce4c039855def2d87fcc68e9d",
+      "source": "skills.sh:phuryn/competitive-battlecard",
+      "version": "advisory-8ef4686ad958"
+    },
+    "phuryn/competitor-analysis": {
+      "license": "advisory-unverified",
+      "sha256": "8cccf793487f0eaf7915692fcb5d1f2ae6ccb2cd9e60696af7e0e7f41f943252",
+      "source": "skills.sh:phuryn/competitor-analysis",
+      "version": "advisory-8cccf793487f"
+    },
+    "phuryn/create-prd": {
+      "license": "advisory-unverified",
+      "sha256": "f4343eacb2570fe2195c38739aba6bd855ad147d09fbdff0a021837b47fd1126",
+      "source": "skills.sh:phuryn/create-prd",
+      "version": "advisory-f4343eacb257"
+    },
+    "phuryn/customer-journey-map": {
+      "license": "advisory-unverified",
+      "sha256": "51618e30db51ebe9abd85faf9c4d179318c09b3de03e9fc3c103f77dbe331cc4",
+      "source": "skills.sh:phuryn/customer-journey-map",
+      "version": "advisory-51618e30db51"
+    },
+    "phuryn/interview-script": {
+      "license": "advisory-unverified",
+      "sha256": "55e6a03764ed924eecf7f7d7883227079b2dd3328174911abbf833f5edaa35a8",
+      "source": "skills.sh:phuryn/interview-script",
+      "version": "advisory-55e6a03764ed"
+    },
+    "phuryn/market-sizing": {
+      "license": "advisory-unverified",
+      "sha256": "8a9cab890932b0f678e397eeafd35457d304c025994626550cfc8ef266272b51",
+      "source": "skills.sh:phuryn/market-sizing",
+      "version": "advisory-8a9cab890932"
+    },
+    "phuryn/porters-five-forces": {
+      "license": "advisory-unverified",
+      "sha256": "89b8a09c9f8a4b9a30eff9e98d44cfc5401b1502e13400b0e892b5276ee4a9e3",
+      "source": "skills.sh:phuryn/porters-five-forces",
+      "version": "advisory-89b8a09c9f8a"
+    },
+    "phuryn/prioritization-frameworks": {
+      "license": "advisory-unverified",
+      "sha256": "06685399fc7394352f1b1edb62c86944ecd10bba8d23a373bb8793e2bf0281a0",
+      "source": "skills.sh:phuryn/prioritization-frameworks",
+      "version": "advisory-06685399fc73"
+    },
+    "phuryn/release-notes": {
+      "license": "advisory-unverified",
+      "sha256": "f971a694c6bee5333bfed743a94063e51bc72f5d04f3924d0901dbbef9fc62de",
+      "source": "skills.sh:phuryn/release-notes",
+      "version": "advisory-f971a694c6be"
+    },
+    "phuryn/retro": {
+      "license": "advisory-unverified",
+      "sha256": "2bb010bb8a54b4f258eea958642a7c3fff3cabcb8b4fbcd5ab0a08605ca4b04f",
+      "source": "skills.sh:phuryn/retro",
+      "version": "advisory-2bb010bb8a54"
+    },
+    "phuryn/sprint-plan": {
+      "license": "advisory-unverified",
+      "sha256": "b88c5ce9112d03352c12753ffe97dec23c3a4c53d74bfb71072b795f63f6bfe8",
+      "source": "skills.sh:phuryn/sprint-plan",
+      "version": "advisory-b88c5ce9112d"
+    },
+    "phuryn/swot-analysis": {
+      "license": "advisory-unverified",
+      "sha256": "a944c17de56d00c1aef5823b3bf7a0ee6b51890f95318179ecc5efb330282797",
+      "source": "skills.sh:phuryn/swot-analysis",
+      "version": "advisory-a944c17de56d"
+    },
+    "phuryn/test-scenarios": {
+      "license": "advisory-unverified",
+      "sha256": "9d423877cbb7ce57cba2311c68940b69525279b4c6a6c5ce6a9e2f9ed0ab8c04",
+      "source": "skills.sh:phuryn/test-scenarios",
+      "version": "advisory-9d423877cbb7"
+    },
+    "phuryn/user-personas": {
+      "license": "advisory-unverified",
+      "sha256": "957c11de2e51184b40403c0dd8a2c47519172c58967f38551741014292e23eef",
+      "source": "skills.sh:phuryn/user-personas",
+      "version": "advisory-957c11de2e51"
+    },
+    "phuryn/user-stories": {
+      "license": "advisory-unverified",
+      "sha256": "59ab8d149ce21c5dc3dd0040ba740b2c706b345d5a2509129dfcc4bea0f08591",
+      "source": "skills.sh:phuryn/user-stories",
+      "version": "advisory-59ab8d149ce2"
+    },
+    "redhat/sre-skillpack": {
+      "license": "advisory-unverified",
+      "sha256": "5eea722a2598897f8a79c21db1b6e04b17950954f2ee025a791771c3108d976f",
+      "source": "skills.sh:redhat/sre-skillpack",
+      "version": "advisory-5eea722a2598"
+    },
+    "redis/redis-development": {
+      "license": "advisory-unverified",
+      "sha256": "6006834880c6c911f31cd2643bdc18eb7316f3f492cd67d0958180ce895a4968",
+      "source": "skills.sh:redis/redis-development",
+      "version": "advisory-6006834880c6"
+    },
+    "sanity-io/seo-aeo-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "6a97cb2d3a3e55ed118a715e29ba05f64bad863774f49c78f76c103d9391f8db",
+      "source": "skills.sh:sanity-io/seo-aeo-best-practices",
+      "version": "advisory-6a97cb2d3a3e"
+    },
+    "sanjay3290/deep-research": {
+      "license": "advisory-unverified",
+      "sha256": "664d4b1a842a40697ee42c2daf7248b272a3b99502b18859b13e570e64c40075",
+      "source": "skills.sh:sanjay3290/deep-research",
+      "version": "advisory-664d4b1a842a"
+    },
+    "select-skills": {
+      "license": "MIT",
+      "sha256": "a835020cb4a45fa368f74b1c62e64b4d4024b93b8b793c0e017cd63cd0dd8d3f",
+      "source": "local:GNour/subagents",
+      "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+    },
+    "stripe/stripe-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "36df33d880e32ae0e4e4615ff6de54edfe875cafabbf2fcfc81d84565e3c486a",
+      "source": "skills.sh:stripe/stripe-best-practices",
+      "version": "advisory-36df33d880e3"
+    },
+    "supabase/postgres-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "79aeab4fb0671663f9ec079b8d5ca0d957ebfc85ae0ae8e4c36703fa94993d0e",
+      "source": "skills.sh:supabase/postgres-best-practices",
+      "version": "advisory-79aeab4fb067"
+    },
+    "tailwind": {
+      "license": "MIT",
+      "sha256": "fa2cc11e7633ca95957af88cf8f338f9977b5efb69c1ac064322f87dad5ff27c",
+      "source": "local:GNour/subagents",
+      "version": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56"
+    },
+    "testmu-ai/cucumber-skill": {
+      "license": "advisory-unverified",
+      "sha256": "41e3ea637c1cfe59350a4b27e2ddc73480271a112d28609e6e0012d7e0b162b8",
+      "source": "skills.sh:testmu-ai/cucumber-skill",
+      "version": "advisory-41e3ea637c1c"
+    },
+    "testmu-ai/cypress-skill": {
+      "license": "advisory-unverified",
+      "sha256": "31531496924114e02797dc23c724ec2b54ba21630b6cd60f91d4e62add77fd0d",
+      "source": "skills.sh:testmu-ai/cypress-skill",
+      "version": "advisory-315314969241"
+    },
+    "testmu-ai/detox-skill": {
+      "license": "advisory-unverified",
+      "sha256": "3cd28039b9ba0467fd047ed74639dd8e05c35433475bd293535acc07f787387b",
+      "source": "skills.sh:testmu-ai/detox-skill",
+      "version": "advisory-3cd28039b9ba"
+    },
+    "testmu-ai/jest-skill": {
+      "license": "advisory-unverified",
+      "sha256": "11125eb62768f364a322f7bf498c1627fdec256dfe0772c37333fe05bab30983",
+      "source": "skills.sh:testmu-ai/jest-skill",
+      "version": "advisory-11125eb62768"
+    },
+    "testmu-ai/laravel-dusk-skill": {
+      "license": "advisory-unverified",
+      "sha256": "b1ac9466e476824d46ed52a80256f755415863fcfe038c86cbe921ba81f44706",
+      "source": "skills.sh:testmu-ai/laravel-dusk-skill",
+      "version": "advisory-b1ac9466e476"
+    },
+    "testmu-ai/phpunit-skill": {
+      "license": "advisory-unverified",
+      "sha256": "034d566762811ec70dcfac8ed68f24bbde2b7648e0abd57826e4061131f0cc60",
+      "source": "skills.sh:testmu-ai/phpunit-skill",
+      "version": "advisory-034d56676281"
+    },
+    "testmu-ai/playwright-skill": {
+      "license": "advisory-unverified",
+      "sha256": "b4614e1f3e09aff7434cc5426bc1b9cfc180a18bbb85f52f7b47530ad0fc5035",
+      "source": "skills.sh:testmu-ai/playwright-skill",
+      "version": "advisory-b4614e1f3e09"
+    },
+    "testmu-ai/pytest-skill": {
+      "license": "advisory-unverified",
+      "sha256": "224d639f8cd865acb99a0acacf602c0b7e68b8357624c44fee6a4d113863c5c8",
+      "source": "skills.sh:testmu-ai/pytest-skill",
+      "version": "advisory-224d639f8cd8"
+    },
+    "testmu-ai/vitest-skill": {
+      "license": "advisory-unverified",
+      "sha256": "39857400730c42381312989e10dc42619db8093232557c7371e847a96e2bf4f1",
+      "source": "skills.sh:testmu-ai/vitest-skill",
+      "version": "advisory-39857400730c"
+    },
+    "tinybirdco/tinybird-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "2c0734279fb7f911ddabbd16505b82dd698f929eb6b834d852621d750a9db63e",
+      "source": "skills.sh:tinybirdco/tinybird-best-practices",
+      "version": "advisory-2c0734279fb7"
+    },
+    "trailofbits/modern-python": {
+      "license": "advisory-unverified",
+      "sha256": "c327b76e26f7f14241de4243f60b1b22c690bfd1453341e0dda81ab759d1721b",
+      "source": "skills.sh:trailofbits/modern-python",
+      "version": "advisory-c327b76e26f7"
+    },
+    "trailofbits/property-based-testing": {
+      "license": "advisory-unverified",
+      "sha256": "ad6771f2290092a5af263cbe86f7982753e3aef389062c25ad0fdeae9ea5b81a",
+      "source": "skills.sh:trailofbits/property-based-testing",
+      "version": "advisory-ad6771f22900"
+    },
+    "trailofbits/semgrep-rule-creator": {
+      "license": "advisory-unverified",
+      "sha256": "a3c9744e3f7b7af7031230515bdf9873df4b695005f0e1bd0e92f1113bfec45e",
+      "source": "skills.sh:trailofbits/semgrep-rule-creator",
+      "version": "advisory-a3c9744e3f7b"
+    },
+    "trailofbits/static-analysis": {
+      "license": "advisory-unverified",
+      "sha256": "1d90f7cb17b54a1d088b1993e09704552f70b0f3bd0e38e2760bc109f47b09b4",
+      "source": "skills.sh:trailofbits/static-analysis",
+      "version": "advisory-1d90f7cb17b5"
+    },
+    "vercel-labs/next-best-practices": {
+      "license": "advisory-unverified",
+      "sha256": "2ac6fcec88fc8b9210b2ca51c4847277d449bcf87eb15eda155409398bc745ed",
+      "source": "skills.sh:vercel-labs/next-best-practices",
+      "version": "advisory-2ac6fcec88fc"
+    },
+    "vercel-labs/next-cache-components": {
+      "license": "advisory-unverified",
+      "sha256": "326eba898a4db557d96d3039d25a1071c20f4ee3b204791973c7cc356e88c089",
+      "source": "skills.sh:vercel-labs/next-cache-components",
+      "version": "advisory-326eba898a4d"
+    },
+    "zxkane/aws-skills": {
+      "license": "advisory-unverified",
+      "sha256": "91d758199169cfe9c6c82cfa9054da557ddba9fee8e671508f27b461f2defe7a",
+      "source": "skills.sh:zxkane/aws-skills",
+      "version": "advisory-91d758199169"
+    }
+  },
+  "source_catalog_schema_version": "1",
+  "source_commit": "63cc18e8aad56a2c31763cb559c466d4fa2c7a56",
+  "source_package_version": "1.0.0-aegis.0"
+}
