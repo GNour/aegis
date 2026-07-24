@@ -1,0 +1,451 @@
+# Reviewed mapping from advisory Subagents roles to Aegis authority.
+# Generated from the pinned catalog as a baseline; adjust as reviewed.
+roles:
+  accessibility-tester:
+    capability_profile: read-only-verification
+    model_alias: verification
+    skills:
+    - addyosmani/accessibility
+    - addyosmani/web-quality-audit
+    - anthropics/frontend-design
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  api-architect:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - apollographql/graphql-schema
+    - apollographql/apollo-server
+    - stripe/stripe-best-practices
+    - openai/security-threat-model
+    - anthropics/mcp-builder
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  business-analyst:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - phuryn/swot-analysis
+    - phuryn/porters-five-forces
+    - deanpeters/pestel-analysis
+    - anthropics/doc-coauthoring
+    - drawio
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  cloud-architect:
+    capability_profile: read-only-planning
+    model_alias: planning
+    skills:
+    - microsoft/cloud-solution-architect
+    - zxkane/aws-skills
+    - cloudflare/workers-best-practices
+    - cloudflare/web-perf
+    tools:
+    - qmd_search
+    - qmd_get
+  code-reviewer:
+    capability_profile: read-only-verification
+    model_alias: verification
+    skills:
+    - coderabbitai/code-review
+    - getsentry/sentry-pr-code-review
+    - garrytan/design-review
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  company-orchestrator:
+    capability_profile: read-only-planning
+    model_alias: planning
+    skills:
+    - gsd
+    - find-subagents
+    - select-skills
+    - muratcankoylan/multi-agent-patterns
+    - anthropics/doc-coauthoring
+    tools:
+    - qmd_search
+    - qmd_get
+  context-manager:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - muratcankoylan/context-fundamentals
+    - muratcankoylan/context-compression
+    - makenotion/knowledge-capture
+    - anthropics/doc-coauthoring
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  data-analyst:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - supabase/postgres-best-practices
+    - phuryn/cohort-analysis
+    - phuryn/ab-test-analysis
+    - dataviz
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  data-engineer:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - supabase/postgres-best-practices
+    - duckdb/query
+    - clickhouse/clickhouse-best-practices
+    - tinybirdco/tinybird-best-practices
+    - trailofbits/modern-python
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  database-administrator:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - supabase/postgres-best-practices
+    - neondatabase/neon-postgres
+    - mongodb/mongodb-schema-design
+    - mongodb/mongodb-query-optimizer
+    - redis/redis-development
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  design-system-engineer:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - google-labs-code/shadcn-ui
+    - tailwind
+    - figma/figma-create-design-system-rules
+    - figma/figma-code-connect-components
+    - anthropics/frontend-design
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  devops-engineer:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - hashicorp/terraform-style-guide
+    - cloudflare/wrangler
+    - openai/vercel-deploy
+    - netlify/netlify-cli-and-deploy
+    - expo/expo-cicd-workflows
+    - getsentry/sentry-create-alert
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  dynamic-agent:
+    capability_profile: read-only-planning
+    model_alias: planning
+    skills:
+    - find-subagents
+    - select-skills
+    tools:
+    - qmd_search
+    - qmd_get
+  e2e-test-engineer:
+    capability_profile: read-only-verification
+    model_alias: verification
+    skills:
+    - testmu-ai/playwright-skill
+    - openai/playwright
+    - testmu-ai/cypress-skill
+    - testmu-ai/detox-skill
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  fullstack-dev:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - vercel-labs/next-best-practices
+    - tailwind
+    - google-labs-code/shadcn-ui
+    - anthropics/frontend-design
+    - testmu-ai/vitest-skill
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  laravel-dev:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - testmu-ai/phpunit-skill
+    - testmu-ai/laravel-dusk-skill
+    - getsentry/sentry-php-sdk
+    - jira-ticket-planner
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  market-researcher:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - sanjay3290/deep-research
+    - phuryn/market-sizing
+    - phuryn/competitor-analysis
+    - phuryn/competitive-battlecard
+    - deanpeters/company-research
+    - brave/web-search
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  ml-engineer:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - google-gemini/gemini-api-dev
+    - anthropics/mcp-builder
+    - hamelsmu/write-judge-prompt
+    - hamelsmu/error-analysis
+    - huggingface/hugging-face-model-trainer
+    - trailofbits/modern-python
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  nestjs-dev:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - getsentry/sentry-nestjs-sdk
+    - apollographql/apollo-server
+    - apollographql/graphql-schema
+    - better-auth/best-practices
+    - testmu-ai/jest-skill
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  nextjs-dev:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - vercel-labs/next-best-practices
+    - vercel-labs/next-cache-components
+    - tailwind
+    - google-labs-code/shadcn-ui
+    - auth0/auth0-nextjs
+    - getsentry/sentry-nextjs-sdk
+    - anthropics/frontend-design
+    - addyosmani/core-web-vitals
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  performance-engineer:
+    capability_profile: read-only-verification
+    model_alias: verification
+    skills:
+    - addyosmani/core-web-vitals
+    - addyosmani/performance
+    - cloudflare/web-perf
+    - datadog-labs/dd-apm
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  product-owner:
+    capability_profile: read-only-planning
+    model_alias: planning
+    skills:
+    - gsd
+    - phuryn/create-prd
+    - phuryn/user-stories
+    - phuryn/prioritization-frameworks
+    - deanpeters/opportunity-solution-tree
+    - deanpeters/user-story-splitting
+    - jira-ticket-planner
+    tools:
+    - qmd_search
+    - qmd_get
+  python-dev:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - trailofbits/modern-python
+    - microsoft/fastapi-router-py
+    - microsoft/pydantic-models-py
+    - testmu-ai/pytest-skill
+    - getsentry/sentry-python-sdk
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  qa-engineer:
+    capability_profile: read-only-verification
+    model_alias: verification
+    skills:
+    - anthropics/webapp-testing
+    - testmu-ai/cucumber-skill
+    - phuryn/test-scenarios
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  react-native-dev:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - callstackincubator/react-native-best-practices
+    - expo/building-native-ui
+    - expo/expo-tailwind-setup
+    - expo/native-data-fetching
+    - expo/expo-deployment
+    - getsentry/sentry-react-native-sdk
+    - auth0/auth0-react-native
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  reactjs-dev:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - google-labs-code/react-components
+    - tailwind
+    - google-labs-code/shadcn-ui
+    - microsoft/zustand-store-ts
+    - auth0/auth0-react
+    - getsentry/sentry-react-sdk
+    - anthropics/frontend-design
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  scrum-master:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - phuryn/sprint-plan
+    - phuryn/retro
+    - phuryn/release-notes
+    - jira-ticket-planner
+    - anthropics/doc-coauthoring
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  security-auditor:
+    capability_profile: read-only-verification
+    model_alias: verification
+    skills:
+    - openai/security-threat-model
+    - openai/security-best-practices
+    - trailofbits/static-analysis
+    - trailofbits/semgrep-rule-creator
+    - getsentry/sentry-fix-issues
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  seo-specialist:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - addyosmani/seo
+    - coreyhaines31/seo-audit
+    - coreyhaines31/schema-markup
+    - coreyhaines31/site-architecture
+    - coreyhaines31/programmatic-seo
+    - sanity-io/seo-aeo-best-practices
+    - addyosmani/core-web-vitals
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  sre-incident-responder:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - datadog-labs/dd-monitors
+    - datadog-labs/dd-apm
+    - redhat/sre-skillpack
+    - getsentry/sentry-create-alert
+    - getsentry/sentry-fix-issues
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  tech-lead:
+    capability_profile: read-only-planning
+    model_alias: planning
+    skills:
+    - gsd
+    - find-subagents
+    - getsentry/sentry-code-review
+    - anthropics/mcp-builder
+    tools:
+    - qmd_search
+    - qmd_get
+  technical-writer:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - anthropics/doc-coauthoring
+    - anthropics/docx
+    - makenotion/research-documentation
+    - phuryn/release-notes
+    - brave/web-search
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  ui-designer:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - figma/figma-implement-design
+    - figma/figma-generate-design
+    - anthropics/canvas-design
+    - garrytan/design-consultation
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  unit-test-engineer:
+    capability_profile: read-only-verification
+    model_alias: verification
+    skills:
+    - testmu-ai/pytest-skill
+    - testmu-ai/jest-skill
+    - testmu-ai/vitest-skill
+    - testmu-ai/phpunit-skill
+    - trailofbits/property-based-testing
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+  ux-researcher:
+    capability_profile: worktree-write
+    model_alias: implementation
+    skills:
+    - phuryn/user-personas
+    - phuryn/interview-script
+    - phuryn/customer-journey-map
+    - deanpeters/jobs-to-be-done
+    - deanpeters/discovery-interview-prep
+    tools:
+    - qmd_search
+    - qmd_get
+    - project_test
+schema_version: 1
