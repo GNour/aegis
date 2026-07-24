@@ -1,20 +1,28 @@
 """Shared fixtures for stage-packet tests."""
 
 import json
+from collections.abc import Callable
 
 import pytest
 
 from aegis.domain.ids import new_uuid7
-from aegis.domain.stage_packet import StagePacketInput
+from aegis.domain.stage_packet import StageExecutionPacket, StagePacketInput
+from aegis.engine.stage_packets import StagePacketCompiler
 
 
-def _packet_dict() -> dict:
+def _packet_dict(
+    *,
+    task_id: str | None = None,
+    flow_run_id: str | None = None,
+    stage_run_id: str | None = None,
+    packet_id: str | None = None,
+) -> dict:
     return {
         "schema_version": 1,
-        "id": new_uuid7(),
-        "task_id": new_uuid7(),
-        "flow_run_id": new_uuid7(),
-        "stage_run_id": new_uuid7(),
+        "id": packet_id or new_uuid7(),
+        "task_id": task_id or new_uuid7(),
+        "flow_run_id": flow_run_id or new_uuid7(),
+        "stage_run_id": stage_run_id or new_uuid7(),
         "attempt_ordinal": 0,
         "task_snapshot": {"request": "add caching"},
         "flow_snapshot": {"id": "feature-delivery", "version": 1},
@@ -72,3 +80,21 @@ def packet_input_dict() -> dict:
 @pytest.fixture
 def packet_input() -> StagePacketInput:
     return StagePacketInput.model_validate_json(json.dumps(_packet_dict()))
+
+
+PacketFactory = Callable[[str, str, str], StageExecutionPacket]
+
+
+@pytest.fixture
+def stage_packet_factory() -> PacketFactory:
+    def make(task_id: str, flow_run_id: str, stage_run_id: str) -> StageExecutionPacket:
+        source = StagePacketInput.model_validate_json(
+            json.dumps(
+                _packet_dict(
+                    task_id=task_id, flow_run_id=flow_run_id, stage_run_id=stage_run_id
+                )
+            )
+        )
+        return StagePacketCompiler().compile(source)
+
+    return make
