@@ -11,7 +11,10 @@ from typing import Any
 from textual.app import App
 from textual.binding import Binding
 
+from collections.abc import Callable
+
 from aegis.tui.screens.attention import AttentionScreen
+from aegis.tui.screens.audit import AuditScreen
 from aegis.tui.screens.create_task import CreateTaskScreen
 from aegis.tui.screens.task_detail import TaskDetailScreen
 from aegis.tui.screens.tasks import TaskListScreen
@@ -43,3 +46,6 @@ class AegisTui(App[None]):
 
     def open_attention(self, request: Any) -> None:
         self.push_screen(AttentionScreen(self.client, request))
+
+    def open_audit(self, verifier: Callable[[], dict[str, Any]]) -> None:
+        self.push_screen(AuditScreen(verifier))
