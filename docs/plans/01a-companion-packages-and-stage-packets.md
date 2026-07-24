@@ -1,5 +1,11 @@
 # Companion Packages and Stage Packets Implementation Plan
 
+Status: implemented — all eight tasks complete on branch `feat/companion-integration`.
+Companions are pinned as HTTPS submodules with a digest-verified lock; the reviewed
+role catalog and provenance are compiled and embedded; the bounded PromptX adapter,
+immutable stage packets, insert-once storage, readiness gate, and adversarial/rollback
+suites all pass (`uv run pytest`, `ruff`, `mypy`, and `tools/companions.py check`).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Pin admitted PromptX and Subagents releases, compile an authority-free role catalog, call PromptX through a bounded broker-only adapter, and persist an immutable `StageExecutionPacket` before any future worker dispatch.

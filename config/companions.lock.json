@@ -1,0 +1,23 @@
+{
+  "promptx": {
+    "artifact_sha256": "915c145e853027f785d7b8c893ea463ecbedf275084837a7a442141fbd3ad5f4",
+    "contract_version": "1",
+    "license_spdx": "MIT",
+    "package_version": "1.0.0-aegis.0",
+    "path": "packages/promptx",
+    "sbom_sha256": "b479da5d8de9253236e7f8a1d036f1372623e24987e34da26ffbc4c0740e99fd",
+    "source_commit": "243416ef4228c69b523ad7c86db1d88bd395494d",
+    "source_url": "https://github.com/GNour/promptx.git"
+  },
+  "schema_version": 1,
+  "subagents": {
+    "artifact_sha256": "558224495894d38fbca3be8d68ba456883c0f55e86caaf522bd34bcb5532c68f",
+    "contract_version": "1",
+    "license_spdx": "MIT",
+    "package_version": "1.0.0-aegis.0",
+    "path": "packages/subagents",
+    "sbom_sha256": "b60d22449eb8641b7ec8b2eaf8db571f8fef6bb09141e1c46845497bd19a4028",
+    "source_commit": "539c3f3d8356b9961afa2227b7df973a2062338a",
+    "source_url": "https://github.com/GNour/subagents.git"
+  }
+}

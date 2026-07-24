@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Final, Self, cast
 
 from aegis.domain.ids import ensure_uuid7, new_uuid7
+from aegis.domain.stage_packet import StageExecutionPacket, canonical_packet_hash
 
 _SCHEMA_DIR: Final = Path(__file__).with_name("schema")
 _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {
@@ -29,13 +30,14 @@ _TABLE_SPECS: Final[dict[str, tuple[frozenset[str], dict[str, str]]]] = {
     "knowledge_syncs": (frozenset({"id", "task_id", "canonical_commit", "state", "ready_for_cleanup", "qmd_receipt", "qmd_collection", "qmd_source_commit", "openviking_receipt", "openviking_uri", "openviking_source_commit", "schema_version"}), {"task_id": "tasks"}),
     "cleanup_records": (frozenset({"id", "task_id", "target_labels_json", "preconditions_json", "actions_json", "verified", "state", "failure_reason", "schema_version"}), {"task_id": "tasks"}),
     "audit_events": (frozenset({"id", "sequence", "event_type", "event_version", "actor_id", "correlation_id", "payload_json", "prior_hash", "event_hash", "occurred_at", "task_id", "causation_id", "schema_version"}), {"task_id": "tasks"}),
+    "stage_execution_packets": (frozenset({"id", "task_id", "flow_run_id", "stage_run_id", "schema_version", "packet_json", "packet_hash", "created_at"}), {"task_id": "tasks", "flow_run_id": "flow_runs", "stage_run_id": "stage_runs"}),
 }
 _PRIMARY_KEYS: Final[dict[str, str]] = {
     "schema_migrations": "filename",
     "tasks": "id", "idempotency_records": "key", "audit_outbox": "sequence", "flow_runs": "id",
     "stage_runs": "id", "attempts": "id", "decision_requests": "id", "approval_requests": "id",
     "session_links": "id", "handoff_packets": "id", "artifacts": "id", "knowledge_syncs": "id",
-    "cleanup_records": "id", "audit_events": "id",
+    "cleanup_records": "id", "audit_events": "id", "stage_execution_packets": "id",
 }
 _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "schema_migrations": frozenset(),
@@ -53,6 +55,7 @@ _NULLABLE_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "knowledge_syncs": frozenset({"qmd_receipt", "qmd_collection", "qmd_source_commit", "openviking_receipt", "openviking_uri", "openviking_source_commit"}),
     "cleanup_records": frozenset({"failure_reason"}),
     "audit_events": frozenset({"task_id", "causation_id"}),
+    "stage_execution_packets": frozenset(),
 }
 _INTEGER_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "schema_migrations": frozenset(),
@@ -70,6 +73,7 @@ _INTEGER_COLUMNS: Final[dict[str, frozenset[str]]] = {
     "knowledge_syncs": frozenset({"ready_for_cleanup", "schema_version"}),
     "cleanup_records": frozenset({"verified", "schema_version"}),
     "audit_events": frozenset({"sequence", "event_version", "schema_version"}),
+    "stage_execution_packets": frozenset({"schema_version"}),
 }
 _REAL_COLUMNS: Final[dict[str, frozenset[str]]] = {
     **{table: frozenset() for table in _TABLE_SPECS},
@@ -79,6 +83,7 @@ _UNIQUE_COLUMNS: Final[dict[str, frozenset[frozenset[str]]]] = {
     **{table: frozenset() for table in _TABLE_SPECS},
     "audit_outbox": frozenset({frozenset({"event_id"})}),
     "audit_events": frozenset({frozenset({"sequence"})}),
+    "stage_execution_packets": frozenset({frozenset({"stage_run_id"})}),
 }
 _NON_UNIQUE_INDEXES: Final[dict[str, frozenset[tuple[str, ...]]]] = {
     "tasks": frozenset({("state",)}),
@@ -86,6 +91,7 @@ _NON_UNIQUE_INDEXES: Final[dict[str, frozenset[tuple[str, ...]]]] = {
     "flow_runs": frozenset({("task_id",)}),
     "stage_runs": frozenset({("flow_run_id",)}),
     "attempts": frozenset({("stage_run_id",)}),
+    "stage_execution_packets": frozenset({("task_id",), ("flow_run_id",)}),
 }
 
 
@@ -200,6 +206,61 @@ class SQLiteStore:
                 ),
             )
             return response
+
+    def save_stage_packet(self, packet: StageExecutionPacket) -> None:
+        """Insert one canonical stage packet for its stage run, exactly once.
+
+        Idempotent for an identical packet; a different packet for the same stage run
+        raises. The row is read back and integrity-checked before the transaction commits.
+        """
+        if packet.canonical_hash != canonical_packet_hash(packet):
+            raise ValueError("stage packet hash mismatch")
+        values = packet.model_dump(mode="json")
+        packet_json = self._canonical_json(values)
+        with self._connection:
+            self._connection.execute("BEGIN IMMEDIATE")
+            existing = self._connection.execute(
+                "SELECT packet_json, packet_hash FROM stage_execution_packets WHERE stage_run_id = ?",
+                (packet.stage_run_id,),
+            ).fetchone()
+            if existing is not None:
+                if str(existing[1]) != packet.canonical_hash or str(existing[0]) != packet_json:
+                    raise ValueError("stage packet conflict")
+                return
+            self._connection.execute(
+                "INSERT INTO stage_execution_packets "
+                "(id, task_id, flow_run_id, stage_run_id, schema_version, packet_json, packet_hash, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    packet.id, packet.task_id, packet.flow_run_id, packet.stage_run_id,
+                    packet.schema_version, packet_json, packet.canonical_hash, values["created_at"],
+                ),
+            )
+            stored = self._connection.execute(
+                "SELECT packet_json, packet_hash FROM stage_execution_packets WHERE stage_run_id = ?",
+                (packet.stage_run_id,),
+            ).fetchone()
+            reloaded = StageExecutionPacket.model_validate_json(str(stored[0]))
+            if canonical_packet_hash(reloaded) != packet.canonical_hash or str(stored[1]) != packet.canonical_hash:
+                raise ValueError("stage packet integrity error")
+
+    def get_stage_packet(self, stage_run_id: str) -> StageExecutionPacket | None:
+        """Return the integrity-checked packet for a stage run, or None if absent."""
+        stage_run_id = ensure_uuid7(stage_run_id)
+        row = self._connection.execute(
+            "SELECT packet_json, packet_hash FROM stage_execution_packets WHERE stage_run_id = ?",
+            (stage_run_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        packet = StageExecutionPacket.model_validate_json(str(row[0]))
+        if canonical_packet_hash(packet) != packet.canonical_hash or str(row[1]) != packet.canonical_hash:
+            raise ValueError("stage packet integrity error")
+        return packet
+
+    def get_stage_packet_for_resume(self, stage_run_id: str) -> StageExecutionPacket | None:
+        """Resume seam: return the stored packet only. Recompilation is unavailable here."""
+        return self.get_stage_packet(stage_run_id)
 
     def count_tasks(self) -> int:
         """Return the number of persisted tasks."""

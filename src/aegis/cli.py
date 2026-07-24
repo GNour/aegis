@@ -1,6 +1,13 @@
+import json
+from pathlib import Path
+
 import typer
 
 app = typer.Typer(no_args_is_help=True)
+companions_app = typer.Typer(no_args_is_help=True, help="Companion package commands.")
+app.add_typer(companions_app, name="companions")
+
+_ROOT = Path(__file__).resolve().parents[2]
 
 
 @app.callback()
@@ -11,3 +18,27 @@ def main() -> None:
 @app.command()
 def version() -> None:
     typer.echo("Aegis 0.1.0-dev")
+
+
+@companions_app.command("verify")
+def companions_verify() -> None:
+    """Emit a bounded JSON readiness verdict for the pinned companions."""
+    from aegis.companions.digests import artifact_sha256
+    from aegis.companions.lock import CompanionSourceError, verify_sources
+    from aegis.companions.readiness import evaluate, load_lock
+
+    lock = load_lock(_ROOT)
+    try:
+        verify_sources(_ROOT, lock, require_present=True)
+        sources_clean = True
+    except CompanionSourceError:
+        sources_clean = False
+
+    payload = evaluate(
+        lock,
+        promptx_artifact_digest=artifact_sha256(_ROOT / "packages" / "promptx" / "dist"),
+        subagents_artifact_digest=artifact_sha256(_ROOT / "packages" / "subagents" / "dist"),
+        sources_clean=sources_clean,
+    )
+    typer.echo(json.dumps(payload, sort_keys=True))
+    raise typer.Exit(code=0 if payload["ready"] else 1)

@@ -1,0 +1,118 @@
+{
+  "package_version": "1.0.0-aegis.0",
+  "catalog_schema_version": "1",
+  "source_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "departments": [
+    {
+      "id": "engineering",
+      "name": "Engineering"
+    },
+    {
+      "id": "quality",
+      "name": "Quality & Testing"
+    }
+  ],
+  "roles": [
+    {
+      "id": "alpha",
+      "department_id": "engineering",
+      "name": "alpha",
+      "title": "Alpha Role",
+      "description": "Does alpha work.",
+      "expertise": [
+        "a",
+        "b"
+      ],
+      "invocation": "1. do the thing",
+      "standards": [
+        "be correct"
+      ],
+      "model_hint": "sonnet",
+      "advisory_tools": [
+        "Read",
+        "Grep"
+      ],
+      "skills": [
+        {
+          "id": "owner/skill-1",
+          "source": "skills.sh:owner/skill-1",
+          "version": "advisory-000000000001",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+          "license": "advisory-unverified"
+        }
+      ],
+      "handoffs": [
+        {
+          "role_id": "beta",
+          "reason": "hand off to beta",
+          "required": false
+        }
+      ],
+      "surprise": "x"
+    },
+    {
+      "id": "beta",
+      "department_id": "quality",
+      "name": "beta",
+      "title": "Beta Role",
+      "description": "Does beta work.",
+      "expertise": [
+        "a",
+        "b"
+      ],
+      "invocation": "1. do the thing",
+      "standards": [
+        "be correct"
+      ],
+      "model_hint": "sonnet",
+      "advisory_tools": [
+        "Read"
+      ],
+      "skills": [
+        {
+          "id": "owner/skill-1",
+          "source": "skills.sh:owner/skill-1",
+          "version": "advisory-000000000001",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+          "license": "advisory-unverified"
+        }
+      ],
+      "handoffs": [
+        {
+          "role_id": "gamma",
+          "reason": "escalate",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "gamma",
+      "department_id": "quality",
+      "name": "gamma",
+      "title": "Gamma Role",
+      "description": "Does gamma work.",
+      "expertise": [
+        "a",
+        "b"
+      ],
+      "invocation": "1. do the thing",
+      "standards": [
+        "be correct"
+      ],
+      "model_hint": "sonnet",
+      "advisory_tools": [
+        "Read"
+      ],
+      "skills": [
+        {
+          "id": "owner/skill-1",
+          "source": "skills.sh:owner/skill-1",
+          "version": "advisory-000000000001",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+          "license": "advisory-unverified"
+        }
+      ],
+      "handoffs": []
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+"""Embedded companion release data."""
