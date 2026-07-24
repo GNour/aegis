@@ -1,0 +1,6 @@
+[submodule "packages/promptx"]
+	path = packages/promptx
+	url = https://github.com/GNour/promptx.git
+[submodule "packages/subagents"]
+	path = packages/subagents
+	url = https://github.com/GNour/subagents.git
