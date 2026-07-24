@@ -34,7 +34,7 @@ def main() -> None:
 
 @app.command()
 def version() -> None:
-    typer.echo("Aegis 0.1.0-dev")
+    typer.echo("Aegis 0.2.0-dev")
 
 
 @companions_app.command("verify")
