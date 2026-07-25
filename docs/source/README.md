@@ -1,3 +1,11 @@
+---
+title: Source Material and Resolved Changes
+tags:
+  - aegis
+  - source
+  - historical
+---
+
 # Source material and resolved changes
 
 `initial-plan.md` is the original WSL-oriented proposal. It is retained verbatim

@@ -1,3 +1,11 @@
+---
+title: Aegis Product Requirements
+tags:
+  - aegis
+  - specification
+  - requirements
+---
+
 # Aegis product requirements
 
 Status: accepted

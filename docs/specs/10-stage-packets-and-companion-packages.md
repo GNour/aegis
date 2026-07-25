@@ -1,3 +1,11 @@
+---
+title: Stage Packets and Companion Packages
+tags:
+  - aegis
+  - specification
+  - companion-packages
+---
+
 # Stage packets and companion packages
 
 Status: approved design

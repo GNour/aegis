@@ -1,3 +1,11 @@
+---
+title: Execution and Isolation Specification
+tags:
+  - aegis
+  - specification
+  - execution
+---
+
 # Execution and isolation specification
 
 Status: accepted

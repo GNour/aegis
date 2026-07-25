@@ -1,3 +1,11 @@
+---
+title: Isolate the Aegis Gateway and Worker Plane
+tags:
+  - aegis
+  - adr
+  - security
+---
+
 # 0001 — Isolate the Aegis gateway and worker plane
 Status: accepted
 Date: 2026-07-23
@@ -7,7 +15,7 @@ Date: 2026-07-23
 The existing `dev` account combines interactive subscription logins, project
 workspaces, Docker-group membership, and the ops Hermes gateway. Docker-group
 membership is root-equivalent, while the Aegis
-[execution specification](../specs/03-execution-and-isolation.md) requires
+[[specs/03-execution-and-isolation|execution specification]] requires
 capability and secret isolation. The owner wants `dev` preserved during the pilot.
 
 ## Decision

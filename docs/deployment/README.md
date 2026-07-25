@@ -1,3 +1,11 @@
+---
+title: Aegis Deployment
+tags:
+  - aegis
+  - deployment
+  - operations
+---
+
 # Aegis deployment (container-first)
 
 Aegis ships as a rootless Docker Compose appliance managed through the `ae appliance`
@@ -6,8 +14,8 @@ infrastructure-as-code integrations call the same installer and configuration co
 and must not fork deployment behavior.
 
 See the accepted
-[container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md)
-and the [implementation plan](../plans/05-deployment-and-rollout.md).
+[[superpowers/specs/2026-07-23-container-first-deployment-design|container-first deployment design]]
+and the [[plans/05-deployment-and-rollout|implementation plan]].
 
 ## Host compatibility (first release)
 

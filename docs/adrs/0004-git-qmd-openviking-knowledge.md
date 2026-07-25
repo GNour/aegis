@@ -1,3 +1,11 @@
+---
+title: Use Git Markdown, QMD, and OpenViking as Separate Knowledge Layers
+tags:
+  - aegis
+  - adr
+  - knowledge
+---
+
 # 0004 — Use Git Markdown, QMD, and OpenViking as separate knowledge layers
 Status: accepted
 Date: 2026-07-23
@@ -8,7 +16,7 @@ Aegis needs auditable canonical knowledge, efficient exact document retrieval,
 and long-term hierarchical memory. Using one opaque vector store for all three
 would make decisions difficult to review or rebuild. Loading all Markdown and all
 skills into every session would violate the bounded-context and role-isolation
-requirements in [spec 04](../specs/04-context-and-knowledge.md).
+requirements in [[specs/04-context-and-knowledge|spec 04]].
 
 ## Decision
 

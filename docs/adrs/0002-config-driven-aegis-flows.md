@@ -1,3 +1,11 @@
+---
+title: Use Versioned Declarative Aegis Flows
+tags:
+  - aegis
+  - adr
+  - flows
+---
+
 # 0002 — Use versioned declarative Aegis flows
 Status: accepted
 Date: 2026-07-23

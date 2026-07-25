@@ -1,3 +1,11 @@
+---
+title: Context and Knowledge Specification
+tags:
+  - aegis
+  - specification
+  - knowledge
+---
+
 # Context and knowledge specification
 
 Status: accepted

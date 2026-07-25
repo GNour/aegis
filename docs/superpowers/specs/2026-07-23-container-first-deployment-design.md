@@ -1,3 +1,11 @@
+---
+title: Container-First Deployment Design
+tags:
+  - aegis
+  - design
+  - deployment
+---
+
 # Container-first deployment design
 
 Status: accepted

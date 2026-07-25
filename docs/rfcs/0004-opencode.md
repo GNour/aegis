@@ -1,3 +1,11 @@
+---
+title: OpenCode Economical Worker Runtime
+tags:
+  - aegis
+  - rfc
+  - opencode
+---
+
 # 0004 — OpenCode economical worker runtime
 Status: accepted for the internal pilot
 Date: 2026-07-23
@@ -61,7 +69,7 @@ environment, process output, session export, and artifacts.
 
 ## 6. Decision & graduation
 
-- ADR: [0003](../adrs/0003-brokered-agent-autonomy.md).
+- ADR: [[adrs/0003-brokered-agent-autonomy|0003]].
 - Graduates to: the future Aegis numbered build guide.
 - Validation: role permissions, rootless worktree isolation, network default
   deny, sanitized export, stats capture, Herdr resume, provider-credit failure

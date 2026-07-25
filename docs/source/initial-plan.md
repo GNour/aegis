@@ -1,3 +1,11 @@
+---
+title: Self-Contained Agent Company for WSL
+tags:
+  - aegis
+  - source
+  - historical
+---
+
 # Self-Contained Agent Company for WSL
 
 ## Summary

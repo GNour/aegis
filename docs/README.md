@@ -1,35 +1,43 @@
+---
+title: Aegis Documentation
+tags:
+  - aegis
+  - index
+  - documentation
+---
+
 # Aegis documentation
 
 This directory is authoritative for the product and implementation. The
-[original request and resolution notes](source/README.md) are preserved under
+[[source/README|original request and resolution notes]] are preserved under
 `source/`; they are historical input, not the current contract.
 
 ## Read order
 
-1. [Architecture](architecture.md) — approved system shape and rollout.
-2. [Product requirements](specs/00-product-requirements.md) — traceable behavior
+1. [[architecture|Architecture]] — approved system shape and rollout.
+2. [[specs/00-product-requirements|Product requirements]] — traceable behavior
    and quality requirements.
 3. Subsystem specifications:
-   - [Domain and control API](specs/01-domain-and-control-api.md)
-   - [Flows, routing, and policy](specs/02-flows-routing-policy.md)
-   - [Execution and isolation](specs/03-execution-and-isolation.md)
-   - [Context and knowledge](specs/04-context-and-knowledge.md)
-   - [Recovery, audit, and cleanup](specs/05-recovery-audit-cleanup.md)
-   - [TUI and Hermes interfaces](specs/06-interfaces.md)
-   - [Deployment and operations](specs/07-deployment-and-operations.md)
-   - [Verification matrix](specs/08-verification-matrix.md)
-   - [Requirement traceability](specs/09-traceability.md)
-   - [Stage packets and companion packages](specs/10-stage-packets-and-companion-packages.md)
-   - [Container-first deployment design](superpowers/specs/2026-07-23-container-first-deployment-design.md)
-4. [Implementation roadmap](plans/00-implementation-roadmap.md). Its first four
+   - [[specs/01-domain-and-control-api|Domain and control API]]
+   - [[specs/02-flows-routing-policy|Flows, routing, and policy]]
+   - [[specs/03-execution-and-isolation|Execution and isolation]]
+   - [[specs/04-context-and-knowledge|Context and knowledge]]
+   - [[specs/05-recovery-audit-cleanup|Recovery, audit, and cleanup]]
+   - [[specs/06-interfaces|TUI and Hermes interfaces]]
+   - [[specs/07-deployment-and-operations|Deployment and operations]]
+   - [[specs/08-verification-matrix|Verification matrix]]
+   - [[specs/09-traceability|Requirement traceability]]
+   - [[specs/10-stage-packets-and-companion-packages|Stage packets and companion packages]]
+   - [[superpowers/specs/2026-07-23-container-first-deployment-design|Container-first deployment design]]
+4. [[plans/00-implementation-roadmap|Implementation roadmap]]. Its first four
    subsystem plans and the
-   [companion-package integration plan](plans/01a-companion-packages-and-stage-packets.md)
+   [[plans/01a-companion-packages-and-stage-packets|companion-package integration plan]]
    are executable; the deployment plan is explicitly superseded pending its
    container-first rewrite.
-5. [ADRs](adrs/README.md) for accepted choices and [RFCs](rfcs/README.md) for
+5. [[adrs/README|ADRs]] for accepted choices and [[rfcs/README|RFCs]] for
    evaluated dependencies.
-6. [VPS integration contract](integration/vps-refined.md).
-7. [PromptX and Subagents maintainer handoff](maintainer-handoff-promptx-subagents.md).
+6. [[integration/vps-refined|VPS integration contract]].
+7. [[maintainer-handoff-promptx-subagents|PromptX and Subagents maintainer handoff]].
 
 ## Status vocabulary
 

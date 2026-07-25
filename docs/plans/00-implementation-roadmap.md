@@ -1,3 +1,11 @@
+---
+title: Aegis Implementation Roadmap
+tags:
+  - aegis
+  - plan
+  - roadmap
+---
+
 # Aegis implementation roadmap
 
 Status: all plans implemented — 1 (core control plane), 1a (companion packages), 2
@@ -15,19 +23,19 @@ plans in order; each ends with a working vertical capability and a commit gate.
 
 | Order | Plan | Deliverable | Depends on |
 |---|---|---|---|
-| 1 | [Core control plane](01-core-control-plane.md) | typed domain, durable state/audit, flow/policy engine, Unix-socket API | approved specs |
-| 1a | [Companion packages and stage packets](01a-companion-packages-and-stage-packets.md) | pinned companions, compiled role catalog, PromptX adapter, immutable stage packets | plan 1 task 4 and admitted upstream P0 releases |
-| 2 | [Workers and services](02-workers-herdr-services.md) | worktrees, rootless services, Herdr/runtime adapters, recovery-safe cleanup | plans 1 and 1a |
-| 3 | [Context and knowledge](03-context-and-knowledge.md) | exact skill injection, QMD/OpenViking, bounded context, knowledge gate | plans 1–2 |
-| 4 | [TUI and Hermes](04-tui-and-hermes.md) | operator TUI and restricted Telegram/Hermes parity | plans 1–3 |
-| 5 | [Deployment and rollout](05-deployment-and-rollout.md) | container-first installer, rootless Compose appliance, management CLI, backup/restore, security suite, soak | plans 1–4 |
+| 1 | [[01-core-control-plane|Core control plane]] | typed domain, durable state/audit, flow/policy engine, Unix-socket API | approved specs |
+| 1a | [[01a-companion-packages-and-stage-packets|Companion packages and stage packets]] | pinned companions, compiled role catalog, PromptX adapter, immutable stage packets | plan 1 task 4 and admitted upstream P0 releases |
+| 2 | [[02-workers-herdr-services|Workers and services]] | worktrees, rootless services, Herdr/runtime adapters, recovery-safe cleanup | plans 1 and 1a |
+| 3 | [[03-context-and-knowledge|Context and knowledge]] | exact skill injection, QMD/OpenViking, bounded context, knowledge gate | plans 1–2 |
+| 4 | [[04-tui-and-hermes|TUI and Hermes]] | operator TUI and restricted Telegram/Hermes parity | plans 1–3 |
+| 5 | [[05-deployment-and-rollout|Deployment and rollout]] | container-first installer, rootless Compose appliance, management CLI, backup/restore, security suite, soak | plans 1–4 |
 
 Every plan uses TDD and focused commits. No later plan may weaken a security or
 state invariant established by an earlier one. When upstream CLI behavior differs
 from a plan, record the evidence in the relevant RFC and adjust the adapter test
 before changing production code.
 
-The required [PromptX/Subagents integration plan](01a-companion-packages-and-stage-packets.md)
+The required [[01a-companion-packages-and-stage-packets|PromptX/Subagents integration plan]]
 executes after core plan 1 task 4 and before core plan 1 task 5. It establishes
 the pinned submodules, catalog compiler, PromptX contract adapter, and immutable
 stage-packet records needed by flow compilation and later worker dispatch.

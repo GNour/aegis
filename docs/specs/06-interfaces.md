@@ -1,3 +1,11 @@
+---
+title: TUI and Hermes Interface Specification
+tags:
+  - aegis
+  - specification
+  - interfaces
+---
+
 # TUI and Hermes interface specification
 
 Status: accepted

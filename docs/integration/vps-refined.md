@@ -1,3 +1,11 @@
+---
+title: VPS Refined Integration Contract
+tags:
+  - aegis
+  - integration
+  - deployment
+---
+
 # VPS Refined integration contract
 
 ## Ownership

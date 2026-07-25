@@ -1,3 +1,11 @@
+---
+title: Companion Packages and Stage Packets Implementation Plan
+tags:
+  - aegis
+  - plan
+  - companion-packages
+---
+
 # Companion Packages and Stage Packets Implementation Plan
 
 Status: implemented — all eight tasks complete on branch `feat/companion-integration`.
@@ -19,7 +27,7 @@ suites all pass (`uv run pytest`, `ruff`, `mypy`, and `tools/companions.py check
 ## Entry gate
 
 Do not start Task 1 until both upstream repositories satisfy the P0 items in
-[`docs/maintainer-handoff-promptx-subagents.md`](../maintainer-handoff-promptx-subagents.md).
+[[maintainer-handoff-promptx-subagents|docs/maintainer-handoff-promptx-subagents.md]].
 The accepted upstream commits must be on their repositories' normal history,
 have package-local tests and release notes, and expose these commands:
 

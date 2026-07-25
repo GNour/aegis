@@ -1,3 +1,11 @@
+---
+title: Give Workers Autonomy Through Capability Brokers
+tags:
+  - aegis
+  - adr
+  - security
+---
+
 # 0003 — Give workers autonomy through capability brokers
 Status: accepted
 Date: 2026-07-23

@@ -1,3 +1,11 @@
+---
+title: Workers, Herdr, and Project Services Implementation Plan
+tags:
+  - aegis
+  - plan
+  - workers
+---
+
 # Workers, Herdr, and Project Services Implementation Plan
 
 Status: implemented — all six tasks complete. Trusted project manifests, contained

@@ -1,3 +1,11 @@
+---
+title: PromptX and Subagents Maintainer Handoff
+tags:
+  - aegis
+  - handoff
+  - companion-packages
+---
+
 # PromptX and Subagents maintainer handoff
 
 Status: requested upstream work
@@ -139,4 +147,4 @@ The companion maintainers do not need to implement Aegis authority:
   compiler, integration tests, release provenance, and coordinated rollback.
 
 The complete consuming contract is
-[Stage packets and companion packages](specs/10-stage-packets-and-companion-packages.md).
+[[specs/10-stage-packets-and-companion-packages|Stage packets and companion packages]].

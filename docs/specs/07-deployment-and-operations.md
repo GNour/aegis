@@ -1,9 +1,17 @@
+---
+title: Deployment and Operations Specification
+tags:
+  - aegis
+  - specification
+  - deployment
+---
+
 # Deployment and operations specification
 
 Status: accepted
 
 The detailed operator experience and component rationale are defined in the
-[container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md).
+[[superpowers/specs/2026-07-23-container-first-deployment-design|container-first deployment design]].
 
 ## 1. Supported hosts and installation
 

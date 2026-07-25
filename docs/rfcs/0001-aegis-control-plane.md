@@ -1,3 +1,11 @@
+---
+title: Aegis Agent Control Plane
+tags:
+  - aegis
+  - rfc
+  - control-plane
+---
+
 # 0001 — Aegis agent control plane
 Status: accepted
 Date: 2026-07-23
@@ -65,7 +73,7 @@ Aegis is built in this repository, installed as a pinned Python package under
 permissions, private state directories, and backup paths.
 
 The implementation contract is the approved
-[architecture](../architecture.md). External
+[[architecture|architecture]]. External
 adapter commands and flags must be rechecked at implementation time against
 RFCs 0002–0005 and their cited upstream sources.
 
@@ -81,9 +89,9 @@ memory.
 
 ## 6. Decision & graduation
 
-- ADRs: [0001](../adrs/0001-isolate-aegis-service-users.md),
-  [0002](../adrs/0002-config-driven-aegis-flows.md),
-  [0003](../adrs/0003-brokered-agent-autonomy.md), and
-  [0004](../adrs/0004-git-qmd-openviking-knowledge.md).
+- ADRs: [[adrs/0001-isolate-aegis-service-users|0001]],
+  [[adrs/0002-config-driven-aegis-flows|0002]],
+  [[adrs/0003-brokered-agent-autonomy|0003]], and
+  [[adrs/0004-git-qmd-openviking-knowledge|0004]].
 - Graduates to: a versioned Aegis release after implementation validation.
-- Validation: the complete checklist in [architecture §16](../architecture.md#16-acceptance-criteria).
+- Validation: the complete checklist in [[architecture#16. Acceptance criteria|architecture §16]].

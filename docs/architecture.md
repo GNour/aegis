@@ -1,3 +1,10 @@
+---
+title: Aegis Architecture
+tags:
+  - aegis
+  - architecture
+---
+
 # Aegis Architecture
 
 Status: approved design
@@ -26,7 +33,7 @@ Read-only inspection on 2026-07-23 found:
 
 - Ubuntu 24.04, 8 vCPU, approximately 23 GiB RAM, 193 GiB root disk, and 4 GiB
   swap. These measured facts supersede the older values preserved in the
-  [initial plan](source/initial-plan.md).
+   [[source/initial-plan|initial plan]].
 - The existing `dev` account owns interactive Claude/Codex logins, project
   workspaces, Docker-group access, and current developer tools.
 - Multica's server containers are removed. A stale daemon, CLI, and home-state

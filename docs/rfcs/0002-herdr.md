@@ -1,3 +1,11 @@
+---
+title: Herdr Durable Agent Sessions
+tags:
+  - aegis
+  - rfc
+  - herdr
+---
+
 # 0002 — Herdr durable agent sessions
 Status: accepted for the internal pilot; commercial reuse requires a license review
 Date: 2026-07-23
@@ -75,7 +83,7 @@ changing production behavior.
 
 ## 6. Decision & graduation
 
-- ADR: [0001](../adrs/0001-isolate-aegis-service-users.md).
+- ADR: [[adrs/0001-isolate-aegis-service-users|0001]].
 - Graduates to: the future Aegis numbered build guide.
 - Validation: create/inspect/remove worktrees; detect Codex/OpenCode states;
   survive detach; restart Herdr; resume supported native sessions; rebuild from a

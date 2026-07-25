@@ -1,7 +1,15 @@
+---
+title: Container-First Deployment Implementation Plan
+tags:
+  - aegis
+  - plan
+  - deployment
+---
+
 # Container-First Deployment Implementation Plan
 
 Status: implemented — all eight tasks complete, written from the accepted
-[container-first deployment design](../superpowers/specs/2026-07-23-container-first-deployment-design.md)
+[[superpowers/specs/2026-07-23-container-first-deployment-design|container-first deployment design]]
 and replacing the superseded Ansible-first plan. The product-metadata source of truth,
 versioned appliance config with secret separation, private Compose bundle, container
 runtime port + management surface, signed releases with digest-pinned updates and

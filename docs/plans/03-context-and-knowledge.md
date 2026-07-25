@@ -1,3 +1,11 @@
+---
+title: Context and Knowledge Implementation Plan
+tags:
+  - aegis
+  - plan
+  - knowledge
+---
+
 # Context and Knowledge Implementation Plan
 
 Status: implemented — all six tasks complete. Exact digest-verified read-only skill

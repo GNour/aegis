@@ -1,3 +1,11 @@
+---
+title: Core Control Plane Implementation Plan
+tags:
+  - aegis
+  - plan
+  - control-plane
+---
+
 # Core Control Plane Implementation Plan
 
 Status: implemented — all six tasks complete. The typed domain, transactional SQLite
@@ -363,7 +371,7 @@ git commit -m "feat(audit): add redacted hash-linked event ledger"
 ```
 
 Before Task 5, execute the
-[companion packages and stage packets plan](01a-companion-packages-and-stage-packets.md).
+[[01a-companion-packages-and-stage-packets|companion packages and stage packets plan]].
 Flow compilation must reference its admitted companion lock, compiled role
 catalog, and immutable packet contracts.
 

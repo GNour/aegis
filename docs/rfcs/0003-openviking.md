@@ -1,3 +1,11 @@
+---
+title: OpenViking Long-Term Agent Context
+tags:
+  - aegis
+  - rfc
+  - knowledge
+---
+
 # 0003 — OpenViking long-term agent context
 Status: accepted for the internal pilot; commercial reuse requires AGPL review
 Date: 2026-07-23
@@ -72,7 +80,7 @@ changing production behavior.
 
 ## 6. Decision & graduation
 
-- ADR: [0004](../adrs/0004-git-qmd-openviking-knowledge.md).
+- ADR: [[adrs/0004-git-qmd-openviking-knowledge|0004]].
 - Graduates to: the future Aegis numbered build guide.
 - Validation: API-key isolation, loopback-only listener, Hermes user-key access,
   source citations, rejected direct canonical writes, readiness checks, backup,

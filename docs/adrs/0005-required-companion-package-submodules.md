@@ -1,3 +1,11 @@
+---
+title: Maintain PromptX and Subagents as Required Companion Packages
+tags:
+  - aegis
+  - adr
+  - companion-packages
+---
+
 # 0005 — Maintain PromptX and Subagents as required companion packages
 Status: accepted
 Date: 2026-07-24

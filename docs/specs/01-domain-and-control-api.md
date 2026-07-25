@@ -1,3 +1,11 @@
+---
+title: Domain and Control API Specification
+tags:
+  - aegis
+  - specification
+  - control-api
+---
+
 # Domain and control API specification
 
 Status: accepted

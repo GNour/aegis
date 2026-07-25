@@ -1,3 +1,11 @@
+---
+title: TUI and Hermes Implementation Plan
+tags:
+  - aegis
+  - plan
+  - interfaces
+---
+
 # TUI and Hermes Implementation Plan
 
 Status: implemented — all five tasks complete. The typed Unix-socket control client

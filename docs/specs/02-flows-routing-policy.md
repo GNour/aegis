@@ -1,3 +1,11 @@
+---
+title: Flows, Routing, and Policy Specification
+tags:
+  - aegis
+  - specification
+  - policy
+---
+
 # Flows, routing, and policy specification
 
 Status: accepted

@@ -1,3 +1,11 @@
+---
+title: Recovery, Audit, and Cleanup Specification
+tags:
+  - aegis
+  - specification
+  - recovery
+---
+
 # Recovery, audit, and cleanup specification
 
 Status: accepted

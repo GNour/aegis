@@ -1,3 +1,11 @@
+---
+title: Verification Matrix
+tags:
+  - aegis
+  - specification
+  - verification
+---
+
 # Verification matrix
 
 Status: accepted test contract
